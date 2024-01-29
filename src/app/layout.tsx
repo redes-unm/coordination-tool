@@ -1,10 +1,11 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from 'next';
+import './globals.css';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: 'CellWatch Community Coordination Tool',
   description: 'Plan cellular network measurement campaigns',
-}
+};
 
 export default function RootLayout({
   children,
@@ -13,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body >{children}</body>
+      <body>{children}</body>
     </html>
-  )
+  );
 }
