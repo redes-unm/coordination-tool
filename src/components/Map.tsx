@@ -74,9 +74,9 @@ export default function Map() {
   }, [lat, lng, zoom]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles['container']}>
       <div ref={mapContainer} className={styles['mapbox-container']} />
-      <div className={styles.sidebar}>
+      <div className={styles['sidebar']}>
         Lng:
         {' '}
         {lng.toFixed(4)}
