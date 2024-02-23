@@ -32,7 +32,7 @@ const {
 const FreehandMode: DrawCustomMode & {
   onPointerEnd(this: DrawCustomModeThis & typeof FreehandMode, state: any): void
   fireUpdate(this: DrawCustomModeThis & typeof FreehandMode): void
-  simplify(this: DrawCustomModeThis & typeof FreehandMode, p: DrawPolygon): DrawPolygon
+  simplify(this: DrawCustomModeThis & typeof FreehandMode, p: DrawPolygon): void
 } = {
   ...MapboxDraw.modes.draw_polygon,
 
@@ -109,7 +109,7 @@ const FreehandMode: DrawCustomMode & {
   simplify(polygon) {
     // increase base to make shapes more true to drawing
     const tolerance = 1 / 1.05 ** (10 * this.map.getZoom()); // https://www.desmos.com/calculator/nolp0g6pwr
-    return simplify(polygon, { tolerance, highQuality: true });
+    simplify(polygon.toGeoJSON(), { tolerance, highQuality: true, mutate: true });
   },
 
   onStop(state) {
