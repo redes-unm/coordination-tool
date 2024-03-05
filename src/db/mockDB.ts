@@ -2,7 +2,7 @@ import { throwErr } from '@/lib/util';
 import { DuplicateKeyError, InternalError, NotFoundError } from './errors';
 import * as mockData from './mockData';
 import {
-  Annotation, Campaign, Community, Task,
+  Annotation, Campaign, Community, Task, User,
 } from './types';
 
 class MockDb {
@@ -15,6 +15,10 @@ class MockDb {
   private campaignAnnotationPairings = mockData.campaignAnnotationPairings;
 
   private tasks = mockData.tasks;
+
+  private users = mockData.users;
+
+  private collaborators = mockData.collaborators;
 
   async getCommunities() {
     return this.communities;
@@ -80,6 +84,27 @@ class MockDb {
     return this.tasks.filter((t) => t.campaignId === campaignId);
   }
 
+  async getUser(userId: string) {
+    return await this.getUserIfExists(userId)
+      ?? throwErr(new NotFoundError('user not found'));
+  }
+
+  async getUsers() {
+    return this.users;
+  }
+
+  async getCommunityCollaborators(communityId: string) {
+    await this.getCommunity(communityId);
+    return this.collaborators
+      .filter((c) => c.communityId === communityId)
+      .map((c) => this.users.find((u) => u.id === c.userId))
+      .filter((u): u is User => !!u ?? throwErr(new InternalError('user for collaborator not found')));
+  }
+
+  async getCommunityCollaboratorCount(communityId: string) {
+    return (await this.getCommunityCollaborators(communityId)).length;
+  }
+
   async insertCommunity(community: Community) {
     if (await this.getCommunityIfExists(community.id)) {
       throw new DuplicateKeyError('duplicate community id');
@@ -115,6 +140,14 @@ class MockDb {
     this.tasks = [...this.tasks, task];
   }
 
+  async insertUser(user: User) {
+    if (await this.getUserIfExists(user.id)) {
+      throw new DuplicateKeyError('duplicate user id');
+    }
+
+    this.users = [...this.users, user];
+  }
+
   async addAnnotationToCampaign(annotation: Annotation, campaign: Campaign) {
     await this.getAnnotation(annotation.id);
     await this.getCampaign(campaign.id);
@@ -124,6 +157,19 @@ class MockDb {
       {
         campaignId: campaign.id,
         annotationId: annotation.id,
+      },
+    ];
+  }
+
+  async addUserToCommunity(user: User, community: Community) {
+    await this.getUser(user.id);
+    await this.getCommunity(community.id);
+
+    this.collaborators = [
+      ...this.collaborators,
+      {
+        communityId: community.id,
+        userId: user.id,
       },
     ];
   }
@@ -138,6 +184,10 @@ class MockDb {
 
   private async getAnnotationIfExists(annotationId: string) {
     return this.annotations.filter((a) => a.id === annotationId)[0];
+  }
+
+  private async getUserIfExists(userId: string) {
+    return this.users.filter((u) => u.id === userId)[0];
   }
 }
 

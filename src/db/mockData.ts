@@ -1,5 +1,5 @@
 import {
-  Annotation, Campaign, CampaignAnnotationPairing, Community, Task,
+  Annotation, Campaign, CampaignAnnotationPairing, Collaborator, Community, Task, User,
 } from './types';
 
 export const communities: Community[] = [
@@ -181,5 +181,43 @@ export const tasks: Task[] = [
     name: 'plan measurement campaigns',
     priority: 'high',
     status: 'in progress',
+  },
+];
+
+export const users: User[] = [
+  {
+    id: 'user0',
+    email: 'jason@example.com',
+    name: 'Jason Cox',
+  },
+  {
+    id: 'user1',
+    email: 'beatriz@example.com',
+    name: 'Beatriz Palacios Abad',
+  },
+  {
+    id: 'user2',
+    email: 'someguy@example.com',
+    name: 'Some Guy',
+  },
+  {
+    id: 'user3',
+    email: 'somelady@example.com',
+    name: 'Some Lady',
+  },
+];
+
+export const collaborators: Collaborator[] = [
+  {
+    communityId: 'community0',
+    userId: 'user0',
+  },
+  {
+    communityId: 'community0',
+    userId: 'user1',
+  },
+  {
+    communityId: 'community0',
+    userId: 'user3',
   },
 ];
