@@ -20,7 +20,7 @@ export default async function Campaign({ params }: Props) {
   ] = await withDbNotFound404(() => Promise.all([
     getDb().getCommunity(params.communityId),
     getDb().getCampaign(params.campaignId),
-    getDb().getTasks(params.campaignId),
+    getDb().getCampaignTasks(params.campaignId),
     getDb().getCampaignAnnotationCount(params.campaignId),
   ]));
 

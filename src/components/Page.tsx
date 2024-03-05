@@ -16,7 +16,7 @@ export default async function Page({
   campaign,
 }: Props) {
   return (
-    <>
+    <div className={styles['page']}>
       <header className={styles['header']}>
         <h1 className={styles['title']}>Coordination Tool</h1>
         <nav className={styles['menus']}>
@@ -25,7 +25,7 @@ export default async function Page({
         </nav>
         <Breadcrumb className={styles['breadcrumb']} campaign={campaign} community={community} />
       </header>
-      <main>{children}</main>
-    </>
+      <main className={styles['main']}>{children}</main>
+    </div>
   );
 }

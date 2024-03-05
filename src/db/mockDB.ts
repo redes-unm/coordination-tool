@@ -79,9 +79,19 @@ class MockDb {
       ?? throwErr(new NotFoundError('annotation not found'));
   }
 
-  async getTasks(campaignId: string) {
+  async getCampaignTasks(campaignId: string) {
     await this.getCampaign(campaignId);
     return this.tasks.filter((t) => t.campaignId === campaignId);
+  }
+
+  async getCommunityTasks(communityId: string) {
+    await this.getCommunity(communityId);
+    const campaigns = await this.getCampaigns(communityId);
+    return (await Promise.all(campaigns.map((c) => this.getCampaignTasks(c.id)))).flat();
+  }
+
+  async getCommunityTaskCount(communityId: string) {
+    return (await this.getCommunityTasks(communityId)).length;
   }
 
   async getUser(userId: string) {
