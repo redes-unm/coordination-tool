@@ -1,8 +1,10 @@
 import Link from 'next/link';
+import styles from './Breadcrumb.module.css';
 
 type Props = {
   community: { id: string, name: string } | undefined
   campaign: { id: string, name: string } | undefined
+  className?: string | undefined
 };
 
 type Element = {
@@ -14,6 +16,7 @@ type Element = {
 export default function Breadcrumb({
   community,
   campaign,
+  className,
 }: Props) {
   function getElements() {
     const elems: Element[] = [
@@ -44,14 +47,12 @@ export default function Breadcrumb({
   }
 
   return (
-    <div>
-      {getElements().map(({ key, text, href }) => {
-        if (!href) {
-          return <span key={key}>{text}</span>;
-        }
-
-        return <Link href={href} key={key}>{text}</Link>;
-      })}
-    </div>
+    <nav className={className}>
+      {getElements().map(({ key, text, href }) => (
+        <span key={key} className={styles['element']}>
+          { href ? <Link href={href}>{text}</Link> : text }
+        </span>
+      ))}
+    </nav>
   );
 }
