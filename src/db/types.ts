@@ -29,3 +29,14 @@ export type Task = {
   priority: 'low' | 'medium' | 'high'
   status: 'todo' | 'in progress' | 'done'
 };
+
+export type User = {
+  id: string
+  email: string
+  name: string
+};
+
+export type Collaborator = {
+  communityId: string
+  userId: string
+};
