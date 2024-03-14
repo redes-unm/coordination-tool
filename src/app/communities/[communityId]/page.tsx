@@ -47,36 +47,13 @@ export default async function Community({ params }: Props) {
               </Link>
             </div>
             <div className={styles['description']}>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Vestibulum consectetur fringilla semper.
-                Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-                per inceptos himenaeos.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Vestibulum consectetur fringilla semper.
-                Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-                per inceptos himenaeos.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Vestibulum consectetur fringilla semper.
-                Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-                per inceptos himenaeos.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Vestibulum consectetur fringilla semper.
-                Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-                per inceptos himenaeos.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Vestibulum consectetur fringilla semper.
-                Class aptent taciti sociosqu ad litora torquent per conubia nostra,
-                per inceptos himenaeos.
-              </p>
+              {
+                community.description.split('\n')
+                  .filter((s) => !!s.trim())
+                  /* eslint-disable-next-line react/no-array-index-key --
+                     there's nothing else unique to use */
+                  .map((p, i) => <p key={i}>{p}</p>)
+              }
             </div>
           </div>
 
