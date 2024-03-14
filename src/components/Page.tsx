@@ -1,3 +1,4 @@
+import AccountMenu from './AccountMenu';
 import Breadcrumb from './Breadcrumb';
 import LanguageMenu from './LanguageMenu';
 import styles from './Page.module.css';
@@ -22,7 +23,7 @@ export default async function Page({
         <h1 className={styles['title']}>Coordination Tool</h1>
         <nav className={styles['menus']}>
           <LanguageMenu />
-          <span>Account</span>
+          <AccountMenu />
         </nav>
         <Breadcrumb className={styles['breadcrumb']} campaign={campaign} community={community} />
       </header>
