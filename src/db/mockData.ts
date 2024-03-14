@@ -18,7 +18,7 @@ Ultrices neque ornare aenean euismod. Diam donec adipiscing tristique risus nec 
   {
     id: 'community1',
     name: 'Emory',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Consectetur a erat nam at lectus urna. Amet justo donec enim diam vulputate. Hendrerit gravida rutrum quisque non. Nam aliquam sem et tortor consequat id. Non quam lacus suspendisse faucibus. Ut sem viverra aliquet eget sit amet. Turpis massa tincidunt dui ut. Scelerisque varius morbi enim nunc faucibus a. Id diam maecenas ultricies mi eget mauris pharetra et. Lectus vestibulum mattis ullamcorper velit. Nisi lacus sed viverra tellus in hac habitasse platea. Non blandit massa enim nec dui nunc mattis. Nam libero justo laoreet sit amet cursus. Arcu risus quis varius quam quisque id diam. Facilisis gravida neque convallis a cras.',
+    description: 'Lorem ipsum dolor sit amet.',
     defaultCampaignId: 'campaign0',
   },
 ];
