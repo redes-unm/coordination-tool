@@ -3,7 +3,7 @@
 import * as Select from '@radix-ui/react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import styles from './LanguageMenu.module.css';
+import styles from './Menu.module.css';
 
 const languages = {
   en: 'English',
