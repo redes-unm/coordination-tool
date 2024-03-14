@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix"
+    "lint:fix": "next lint --fix",
+    "test": "playwright test"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
@@ -24,6 +25,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@playwright/test": "^1.42.1",
     "@types/geojson": "^7946.0.13",
     "@types/mapbox__mapbox-gl-draw": "^1.4.6",
     "@types/mapbox-gl": "^2.7.19",
