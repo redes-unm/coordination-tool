@@ -12,6 +12,14 @@ html {
 body {
   font-family: Roboto, sans-serif;
   line-height: 1.2;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* do margin/padding/height/etc styles on an element within the body to prevent
+ * issues when Radix portals mess with the body to prevent scrolling */
+#body-content {
   margin: 2.75rem;
   height: calc(100% - 5.5rem);
 }

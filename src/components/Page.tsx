@@ -1,4 +1,5 @@
 import Breadcrumb from './Breadcrumb';
+import LanguageMenu from './LanguageMenu';
 import styles from './Page.module.css';
 
 type Props = React.PropsWithChildren<{
@@ -20,7 +21,7 @@ export default async function Page({
       <header className={styles['header']}>
         <h1 className={styles['title']}>Coordination Tool</h1>
         <nav className={styles['menus']}>
-          <span>English</span>
+          <LanguageMenu />
           <span>Account</span>
         </nav>
         <Breadcrumb className={styles['breadcrumb']} campaign={campaign} community={community} />
