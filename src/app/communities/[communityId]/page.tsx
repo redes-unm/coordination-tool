@@ -17,8 +17,8 @@ export default async function Community({ params }: Props) {
   const [
     community,
     campaignCount,
-    taskCount,
     annotationCount,
+    taskCount,
     collaboratorCount,
   ] = await withDbNotFound404(() => Promise.all([
     getDb().getCommunity(params.communityId),

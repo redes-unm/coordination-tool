@@ -48,10 +48,13 @@ export default function Breadcrumb({
 
   return (
     <nav className={className} data-testid="breadcrumb">
-      {getElements().map(({ key, text, href }) => (
-        <span key={key} className={styles['element']}>
-          { href ? <Link href={href}>{text}</Link> : text }
-        </span>
+      {getElements().map(({ key, text, href }, i) => (
+        <>
+          { i > 0 && <span className={styles['separator']}> &gt; </span> }
+          <span key={key} className={styles['element']}>
+            { href ? <Link href={href}>{text}</Link> : text }
+          </span>
+        </>
       ))}
     </nav>
   );

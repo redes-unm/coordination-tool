@@ -7,11 +7,6 @@
   text-decoration: none;
 }
 
-.element::after {
-  content: ">";
-  margin-inline: 0.75rem;
-}
-
-.element:last-of-type::after {
-  content: "";
+.separator {
+  margin-inline: 0.5rem;
 }
