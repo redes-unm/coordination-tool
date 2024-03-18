@@ -4,9 +4,9 @@ const ci = !!process.env['CI'];
 
 const config: PlaywrightTestConfig = {
   testDir: './tests',
-  fullyParallel: true,
   forbidOnly: !!process.env['CI'],
   retries: ci ? 2 : 0,
+  workers: 1,
   reporter: 'html',
   use: {
     baseURL: 'http://localhost:3000',
@@ -24,14 +24,11 @@ const config: PlaywrightTestConfig = {
     },
   ],
   webServer: {
+    env: { TESTING: '1' },
     command: 'npm run build && npm run start',
     url: 'http://localhost:3000',
     reuseExistingServer: !ci,
   },
 };
-
-if (ci) {
-  config.workers = 1;
-}
 
 export default defineConfig(config);

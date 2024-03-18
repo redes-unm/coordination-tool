@@ -1,3 +1,4 @@
+import { headers } from 'next/headers';
 import { throwErr } from '@/lib/util';
 import { DuplicateKeyError, InternalError, NotFoundError } from './errors';
 import * as mockData from './mockData';
@@ -5,23 +6,27 @@ import {
   Annotation, Campaign, Community, Task, User,
 } from './types';
 
+const d = { ...mockData };
+type Data = typeof d;
+
 class MockDb {
-  private communities = mockData.communities;
+  private data: Data = { ...mockData };
 
-  private campaigns = mockData.campaigns;
-
-  private annotations = mockData.annotations;
-
-  private campaignAnnotationPairings = mockData.campaignAnnotationPairings;
-
-  private tasks = mockData.tasks;
-
-  private users = mockData.users;
-
-  private collaborators = mockData.collaborators;
+  async seed(data: Partial<Data>) {
+    this.data = {
+      communities: [],
+      campaigns: [],
+      annotations: [],
+      campaignAnnotationPairings: [],
+      tasks: [],
+      users: [],
+      collaborators: [],
+      ...data,
+    };
+  }
 
   async getCommunities() {
-    return this.communities;
+    return this.data.communities;
   }
 
   async getCommunity(communityId: string) {
@@ -31,7 +36,7 @@ class MockDb {
 
   async getCampaigns(communityId: string) {
     await this.getCommunity(communityId);
-    return this.campaigns.filter((c) => c.communityId === communityId);
+    return this.data.campaigns.filter((c) => c.communityId === communityId);
   }
 
   async getCampaign(campaignId: string) {
@@ -45,7 +50,7 @@ class MockDb {
 
   async getCommunityAnnotations(communityId: string) {
     await this.getCommunity(communityId);
-    return this.annotations.filter((c) => c.communityId === communityId);
+    return this.data.annotations.filter((c) => c.communityId === communityId);
   }
 
   async getCommunityAnnotationCount(communityId: string) {
@@ -54,9 +59,9 @@ class MockDb {
 
   async getCampaignAnnotations(campaignId: string) {
     await this.getCampaign(campaignId);
-    return this.campaignAnnotationPairings
+    return this.data.campaignAnnotationPairings
       .filter((p) => p.campaignId === campaignId)
-      .map((p) => this.annotations.find((a) => a.id === p.annotationId))
+      .map((p) => this.data.annotations.find((a) => a.id === p.annotationId))
       .filter((a): a is Annotation => !!a ?? throwErr(new InternalError('annotation for mapping not found')));
   }
 
@@ -67,11 +72,11 @@ class MockDb {
   async getAnnotations(campaignId: string) {
     await this.getCampaign(campaignId);
 
-    const annotationIds = this.campaignAnnotationPairings
+    const annotationIds = this.data.campaignAnnotationPairings
       .filter((p) => p.campaignId === campaignId)
       .map((p) => p.annotationId);
 
-    return this.annotations.filter((a) => annotationIds.includes(a.id));
+    return this.data.annotations.filter((a) => annotationIds.includes(a.id));
   }
 
   async getAnnotation(annotationId: string) {
@@ -81,7 +86,7 @@ class MockDb {
 
   async getCampaignTasks(campaignId: string) {
     await this.getCampaign(campaignId);
-    return this.tasks.filter((t) => t.campaignId === campaignId);
+    return this.data.tasks.filter((t) => t.campaignId === campaignId);
   }
 
   async getCommunityTasks(communityId: string) {
@@ -100,14 +105,14 @@ class MockDb {
   }
 
   async getUsers() {
-    return this.users;
+    return this.data.users;
   }
 
   async getCommunityCollaborators(communityId: string) {
     await this.getCommunity(communityId);
-    return this.collaborators
+    return this.data.collaborators
       .filter((c) => c.communityId === communityId)
-      .map((c) => this.users.find((u) => u.id === c.userId))
+      .map((c) => this.data.users.find((u) => u.id === c.userId))
       .filter((u): u is User => !!u ?? throwErr(new InternalError('user for collaborator not found')));
   }
 
@@ -120,7 +125,7 @@ class MockDb {
       throw new DuplicateKeyError('duplicate community id');
     }
 
-    this.communities = [...this.communities, community];
+    this.data.communities = [...this.data.communities, community];
   }
 
   async insertCampaign(campaign: Campaign) {
@@ -129,7 +134,7 @@ class MockDb {
     }
 
     await this.getCommunity(campaign.communityId);
-    this.campaigns = [...this.campaigns, campaign];
+    this.data.campaigns = [...this.data.campaigns, campaign];
   }
 
   async insertAnnotation(annotation: Annotation) {
@@ -138,16 +143,16 @@ class MockDb {
     }
 
     await this.getCommunity(annotation.communityId);
-    this.annotations = [...this.annotations, annotation];
+    this.data.annotations = [...this.data.annotations, annotation];
   }
 
   async insertTask(task: Task) {
-    if (this.tasks.filter((c) => c.id === task.id).length > 0) {
+    if (this.data.tasks.filter((c) => c.id === task.id).length > 0) {
       throw new DuplicateKeyError('duplicate task id');
     }
 
     await this.getCampaign(task.campaignId);
-    this.tasks = [...this.tasks, task];
+    this.data.tasks = [...this.data.tasks, task];
   }
 
   async insertUser(user: User) {
@@ -155,15 +160,15 @@ class MockDb {
       throw new DuplicateKeyError('duplicate user id');
     }
 
-    this.users = [...this.users, user];
+    this.data.users = [...this.data.users, user];
   }
 
   async addAnnotationToCampaign(annotation: Annotation, campaign: Campaign) {
     await this.getAnnotation(annotation.id);
     await this.getCampaign(campaign.id);
 
-    this.campaignAnnotationPairings = [
-      ...this.campaignAnnotationPairings,
+    this.data.campaignAnnotationPairings = [
+      ...this.data.campaignAnnotationPairings,
       {
         campaignId: campaign.id,
         annotationId: annotation.id,
@@ -175,8 +180,8 @@ class MockDb {
     await this.getUser(user.id);
     await this.getCommunity(community.id);
 
-    this.collaborators = [
-      ...this.collaborators,
+    this.data.collaborators = [
+      ...this.data.collaborators,
       {
         communityId: community.id,
         userId: user.id,
@@ -185,28 +190,46 @@ class MockDb {
   }
 
   private async getCommunityIfExists(communityId: string) {
-    return this.communities.filter((c) => c.id === communityId)[0];
+    return this.data.communities.filter((c) => c.id === communityId)[0];
   }
 
   private async getCampaignIfExists(campaignId: string) {
-    return this.campaigns.filter((c) => c.id === campaignId)[0];
+    return this.data.campaigns.filter((c) => c.id === campaignId)[0];
   }
 
   private async getAnnotationIfExists(annotationId: string) {
-    return this.annotations.filter((a) => a.id === annotationId)[0];
+    return this.data.annotations.filter((a) => a.id === annotationId)[0];
   }
 
   private async getUserIfExists(userId: string) {
-    return this.users.filter((u) => u.id === userId)[0];
+    return this.data.users.filter((u) => u.id === userId)[0];
   }
 }
 
 let db: MockDb | undefined;
 
 export default function getDb(): MockDb {
+  // call headers function to force dynamic rendering
+  headers();
+
   if (!db) {
     db = new MockDb();
   }
 
   return db;
+}
+
+export async function seedServer(serverBaseUrl: string, data: Partial<Data>) {
+  const res = await fetch(`${serverBaseUrl}/mockDb/seed`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw Error(`failed to seed server: ${res.status}`);
+  }
 }

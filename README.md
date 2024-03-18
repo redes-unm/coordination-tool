@@ -14,4 +14,4 @@ We currently have [Playwright](https://playwright.dev) setup for testing. It run
 
 The first time you run tests, you'll need to have Playwright install the browsers it needs; to do so, run `npm exec playwright install chromium firefox`.
 
-To run the tests, use `npm run test`. This command will build and run the coordination tool (unless something is already running on `localhost:3000`) and then run the tests. If you're doing lots of test runs, you can speed things up by leaving the coordination tool running in one terminal (`npm run build && npm run start` or `npm run dev`) and running tests from another.
+To run the tests, use `npm run test`. This command will build and run the coordination tool (unless something is already running on `localhost:3000`) and then run the tests. If you're doing lots of test runs, you can speed things up by leaving the coordination tool running in one terminal (`npm run build && TESTING=1 npm run start` or `npm run dev`) and running tests from another.

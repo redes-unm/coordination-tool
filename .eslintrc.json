@@ -5,5 +5,13 @@
   },
   "rules": {
     "react/require-default-props": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": "route.ts",
+      "rules": {
+        "import/prefer-default-export": "off"
+      }
+    }
+  ]
 }
