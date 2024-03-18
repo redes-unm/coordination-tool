@@ -19,7 +19,7 @@ export default async function Communities() {
     <Page>
       <div className={styles['cards']}>
         { communities.map((c, i) => (
-          <div key={c.id} className={styles['card']}>
+          <div key={c.id} className={styles['card']} data-testid="community-card">
             <h2 className={styles['card-title']}>
               <Link href={`/communities/${c.id}`}>{c.name}</Link>
             </h2>
@@ -41,7 +41,10 @@ export default async function Communities() {
               }
             </div>
             <div className={styles['read-more']}>
-              <Link href={`/communities/${c.id}`}>Read More</Link>
+              <Link href={`/communities/${c.id}`}>
+                Read More
+                <span className="a11y-only">{`about ${c.name}`}</span>
+              </Link>
             </div>
             <div className={styles['links']}>
               <Link href={`/communities/${c.id}/campaigns`}>
