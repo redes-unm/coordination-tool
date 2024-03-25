@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Annotation } from '@/types';
 import Map from './map/Map';
 
@@ -12,7 +12,6 @@ export default function CommunityMap({
   initialAnnotations,
 }: Props) {
   const [annotations, setAnnotations] = useState(initialAnnotations);
-  const initialLngLat = useMemo<[number, number]>(() => [-84.396, 33.777], []);
 
   const handleAddAnnotation = useCallback((annotation: Annotation) => {
     setAnnotations((old) => [...old, annotation]);
@@ -24,8 +23,6 @@ export default function CommunityMap({
 
   return (
     <Map
-      initialLngLat={initialLngLat}
-      initialZoom={12}
       annotations={annotations}
       onAdd={handleAddAnnotation}
       onDelete={handleDeleteAnnotation}

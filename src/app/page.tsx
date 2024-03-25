@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className={styles['main']}>
       <div style={{ height: '800px' }}>
-        <Map initialLngLat={[-84.396, 33.777]} initialZoom={12} annotations={[]} />
+        <Map annotations={[]} />
       </div>
     </main>
   );

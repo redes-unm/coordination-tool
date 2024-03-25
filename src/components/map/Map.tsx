@@ -22,14 +22,17 @@ type Props = {
   annotations: Annotation[],
   onAdd?: (a: Annotation) => void
   onDelete?: (a: Annotation) => void
-  initialLngLat: [number, number]
-  initialZoom: number
+  initialLngLat?: [number, number]
+  initialZoom?: number
 };
+
+const defaultLngLat: [number, number] = [-84.396, 33.777];
+const defaultZoom = 12;
 
 export default function Map({
   annotations,
-  initialLngLat,
-  initialZoom,
+  initialLngLat = defaultLngLat,
+  initialZoom = defaultZoom,
   onAdd = undefined,
   onDelete = undefined,
 }: Props) {
