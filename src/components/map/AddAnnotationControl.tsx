@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupIndicator, RadioGroupItem } from '@radix-ui/react
 type Props = {
   mode: Mode
   onModeChange: (mode: Mode) => void
+  className?: string | undefined
 };
 
 const cancelMode: Mode = 'simple_select';
@@ -19,9 +20,10 @@ const defaultAddMode = addModes[0] ?? throwErr('no add modes');
 export default function AddAnnotationControl({
   mode,
   onModeChange,
+  className,
 }: Props) {
   return (
-    <div>
+    <div className={className}>
       {
         addModes.includes(mode) ? (
           <>

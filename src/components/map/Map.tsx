@@ -120,9 +120,11 @@ export default function Map({
     <div className={styles['container']}>
       <div ref={mapContainer} className={styles['mapbox-container']} />
       { onAdd && !newAnnotation && (
-        <div className={styles['add-control']}>
-          <AddAnnotationControl mode={drawMode} onModeChange={setDrawMode} />
-        </div>
+        <AddAnnotationControl
+          className={styles['add-control']}
+          mode={drawMode}
+          onModeChange={setDrawMode}
+        />
       )}
     </div>
   );
