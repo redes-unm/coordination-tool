@@ -14,7 +14,7 @@ export default function CommunityMap({
   const [annotations, setAnnotations] = useState(initialAnnotations);
 
   const handleAddAnnotation = useCallback((annotation: Annotation) => {
-    setAnnotations((old) => [...old, annotation]);
+    setAnnotations((old) => old.concat(annotation));
   }, []);
 
   const handleDeleteAnnotation = useCallback((annotation: Annotation) => {

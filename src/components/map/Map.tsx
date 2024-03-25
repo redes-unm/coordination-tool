@@ -18,6 +18,18 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiamNveDk5IiwiYSI6ImNscTE1c2xlcjA1cXoybHBnMDk1c
 
 type AnnotationFeature = Feature<Geometry, Omit<Annotation, 'geometry' | 'id'>>;
 
+function annotationToFeature(a: Annotation): AnnotationFeature {
+  return {
+    type: 'Feature',
+    geometry: a.geometry,
+    id: a.id,
+    properties: {
+      name: a.name,
+      type: a.type,
+    },
+  };
+}
+
 type Props = {
   annotations: Annotation[],
   onAdd?: (a: Annotation) => void
@@ -71,20 +83,11 @@ export default function Map({
   const [drawMode, setDrawMode] = useDraw(
     map,
     useMemo(() => {
-      const as = [...annotations];
+      const features = annotations.map(annotationToFeature);
       if (newAnnotation) {
-        as.push(newAnnotation);
+        features.push(annotationToFeature(newAnnotation));
       }
-
-      return as.map<AnnotationFeature>((a) => ({
-        type: 'Feature',
-        geometry: a.geometry,
-        id: a.id,
-        properties: {
-          name: a.name,
-          type: a.type,
-        },
-      }));
+      return features;
     }, [annotations, newAnnotation]),
     useCallback((f) => {
       setSelectedId(f && `${f.id ?? throwErr('feature selected without id')}`);
