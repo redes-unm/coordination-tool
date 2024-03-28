@@ -36,6 +36,7 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-next": "14.0.4",
+    "supabase": "^1.150.0",
     "typescript": "^5"
   }
 }
