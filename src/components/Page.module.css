@@ -8,6 +8,10 @@
   height: 100%;
 }
 
+.page.no-breadcrumb {
+  --header-height: 5rem;
+}
+
 .header {
   display: flex;
   flex-flow: row wrap;
