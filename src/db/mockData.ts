@@ -40,7 +40,7 @@ export const annotations: Annotation[] = [
     name: 'Klaus building',
     type: 'infra',
     visible: true,
-    geojson: { type: 'Point', coordinates: [-84.3963, 33.7772] },
+    geometry: { type: 'Point', coordinates: [-84.3963, 33.7772] },
   },
   {
     id: 'annotation1',
@@ -48,7 +48,7 @@ export const annotations: Annotation[] = [
     name: 'CoC building',
     type: 'infra',
     visible: true,
-    geojson: { type: 'Point', coordinates: [-84.3972, 33.7773] },
+    geometry: { type: 'Point', coordinates: [-84.3972, 33.7773] },
   },
   {
     id: 'annotation2',
@@ -56,7 +56,7 @@ export const annotations: Annotation[] = [
     name: 'main campus',
     type: 'region',
     visible: false,
-    geojson: {
+    geometry: {
       type: 'Polygon',
       coordinates: [
         [
@@ -82,7 +82,7 @@ export const annotations: Annotation[] = [
     name: 'Tech Square',
     type: 'region',
     visible: true,
-    geojson: {
+    geometry: {
       type: 'Polygon',
       coordinates: [
         [
@@ -101,7 +101,7 @@ export const annotations: Annotation[] = [
     name: 'Home Park Park',
     type: 'poi',
     visible: true,
-    geojson: { type: 'Point', coordinates: [-84.39990549471283, 33.78242533958185] },
+    geometry: { type: 'Point', coordinates: [-84.39990549471283, 33.78242533958185] },
   },
 ];
 

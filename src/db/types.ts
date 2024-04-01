@@ -1,4 +1,4 @@
-import { GeoJSON } from 'geojson';
+import { Annotation as BaseAnnotation } from '@/types';
 
 export type Community = {
   id: string
@@ -12,13 +12,9 @@ export type Campaign = {
   name: string
 };
 
-export type Annotation = {
-  id: string
+export type Annotation = BaseAnnotation & {
   communityId: string
-  name: string
-  type: 'infra' | 'equipment' | 'person' | 'poi' | 'region'
   visible: boolean
-  geojson: GeoJSON
 };
 
 export type CampaignAnnotationPairing = {

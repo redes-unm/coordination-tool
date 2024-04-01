@@ -1,3 +1,4 @@
+import CommunityMap from '@/components/CommunityMap';
 import Page from '@/components/Page';
 import getDb from '@/db/mockDB';
 import { withDbNotFound404 } from '@/lib/util';
@@ -11,11 +12,11 @@ export default async function Community({ params }: Props) {
   const [
     community,
     campaignCount,
-    annotationCount,
+    annotations,
   ] = await withDbNotFound404(() => Promise.all([
     getDb().getCommunity(params.communityId),
     getDb().getCampaignCount(params.communityId),
-    getDb().getCommunityAnnotationCount(params.communityId),
+    getDb().getCommunityAnnotations(params.communityId),
   ]));
 
   return (
@@ -30,8 +31,11 @@ export default async function Community({ params }: Props) {
       <div>
         <Link href={`/communities/${community.id}/annotations`}>
           <span>Annotations</span>
-          <span>{annotationCount}</span>
+          <span>{annotations.length}</span>
         </Link>
+      </div>
+      <div style={{ height: '600px' }}>
+        <CommunityMap initialAnnotations={annotations} />
       </div>
     </Page>
   );
