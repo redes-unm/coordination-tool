@@ -3,6 +3,7 @@ import { Annotation as BaseAnnotation } from '@/types';
 export type Community = {
   id: string
   name: string
+  description: string
   defaultCampaignId: string
 };
 
@@ -10,6 +11,7 @@ export type Campaign = {
   id: string
   communityId: string
   name: string
+  description: string
 };
 
 export type Annotation = BaseAnnotation & {
@@ -26,6 +28,18 @@ export type Task = {
   id: string
   campaignId: string
   name: string
+  description: string
   priority: 'low' | 'medium' | 'high'
   status: 'todo' | 'in progress' | 'done'
+};
+
+export type User = {
+  id: string
+  email: string
+  name: string
+};
+
+export type Collaborator = {
+  communityId: string
+  userId: string
 };

@@ -1,4 +1,7 @@
+import AccountMenu from './AccountMenu';
 import Breadcrumb from './Breadcrumb';
+import LanguageMenu from './LanguageMenu';
+import styles from './Page.module.css';
 
 type Props = React.PropsWithChildren<{
   community?: { id: string, name: string }
@@ -15,12 +18,16 @@ export default async function Page({
   campaign,
 }: Props) {
   return (
-    <>
-      <header>
-        <h1>Coordination Tool</h1>
-        <Breadcrumb campaign={campaign} community={community} />
+    <div className={styles['page']}>
+      <header className={styles['header']}>
+        <h1 className={styles['title']}>Coordination Tool</h1>
+        <nav className={styles['menus']}>
+          <LanguageMenu />
+          <AccountMenu />
+        </nav>
+        <Breadcrumb className={styles['breadcrumb']} campaign={campaign} community={community} />
       </header>
-      <main>{children}</main>
-    </>
+      <main className={styles['main']}>{children}</main>
+    </div>
   );
 }

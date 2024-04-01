@@ -13,6 +13,7 @@ export type AnnotationType = keyof typeof annotationTypeDisplayNames;
 export type Annotation = {
   id: string
   name: string
+  description: string
   type: AnnotationType
   geometry: Geometry
 };

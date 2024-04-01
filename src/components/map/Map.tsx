@@ -25,6 +25,7 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
     id: a.id,
     properties: {
       name: a.name,
+      description: a.description,
       type: a.type,
     },
   };
@@ -96,6 +97,7 @@ export default function Map({
       setNewAnnotation({
         id: `${f.id ?? throwErr('feature created without id')}`,
         name: '',
+        description: '',
         type: 'infra',
         geometry: f.geometry,
       });
