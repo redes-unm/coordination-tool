@@ -1,4 +1,3 @@
-import Page from '@/components/Page';
 import { redirect } from 'next/navigation';
 import LoginSignup from '@/components/LoginSignup';
 import { isLoggedIn, logIn } from '@/lib/auth/server';
@@ -37,9 +36,5 @@ export default async function Login({ searchParams }: Props) {
     return redirect(redirectPath);
   };
 
-  return (
-    <Page hideBreadcrumb>
-      <LoginSignup redirectPath={redirectPath} onSubmit={handleSubmit} />
-    </Page>
-  );
+  return <LoginSignup redirectPath={redirectPath} onSubmit={handleSubmit} />;
 }

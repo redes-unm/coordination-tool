@@ -3,6 +3,8 @@
 import btnStyles from '@/components/Button.module.css';
 import Link from 'next/link';
 import { useFormState } from 'react-dom';
+import { useContext, useEffect } from 'react';
+import AuthContext from '@/contexts/AuthContext';
 import TextInput from './TextInput';
 import styles from './LoginSignup.module.css';
 import SubmitButton from './SubmitButton';
@@ -18,7 +20,11 @@ export default function LoginSignup({
   signup = false,
   onSubmit,
 }: Props) {
+  const { reset } = useContext(AuthContext);
   const [error, action] = useFormState(onSubmit, null);
+
+  // reset auth status when this component unmounts, indicating that auth is done
+  useEffect(() => reset, [reset]);
 
   return (
     <div className={styles['container']}>

@@ -8,7 +8,7 @@ type State<T> = {
   error: unknown
 };
 
-class AsyncResource<T> {
+export class AsyncResource<T> {
   private state: State<T>;
 
   constructor(p: Promise<T>) {

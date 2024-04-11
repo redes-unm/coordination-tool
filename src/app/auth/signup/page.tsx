@@ -1,4 +1,3 @@
-import Page from '@/components/Page';
 import LoginSignup from '@/components/LoginSignup';
 import { signUp } from '@/lib/auth/server';
 import { revalidatePath } from 'next/cache';
@@ -30,9 +29,5 @@ export default function Signup({ searchParams }: Props) {
     return redirect(redirectPath);
   };
 
-  return (
-    <Page hideBreadcrumb>
-      <LoginSignup redirectPath={redirectPath} onSubmit={handleSubmit} signup />
-    </Page>
-  );
+  return <LoginSignup redirectPath={redirectPath} onSubmit={handleSubmit} signup />;
 }

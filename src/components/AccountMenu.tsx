@@ -4,9 +4,10 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faUser } from '@fortawesome/free-solid-svg-icons';
 import { usePathname, useRouter } from 'next/navigation';
-import { isLoggedIn, logOut } from '@/lib/auth/client';
-import { useAsyncResource } from '@/lib/AsyncResource';
+import { logOut } from '@/lib/auth/client';
 import Link from 'next/link';
+import AuthContext from '@/contexts/AuthContext';
+import { useContext } from 'react';
 import menuStyles from './Menu.module.css';
 import btnStyles from './Button.module.css';
 import styles from './AccountMenu.module.css';
@@ -14,11 +15,12 @@ import styles from './AccountMenu.module.css';
 export default function AccountMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const loggedIn = useAsyncResource(isLoggedIn);
+  const { loggedIn, reset } = useContext(AuthContext);
 
   const handleLogOut = async () => {
     await logOut();
     router.push('/auth/login');
+    reset();
   };
 
   return loggedIn ? (

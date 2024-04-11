@@ -1,4 +1,3 @@
-import Page from '@/components/Page';
 import getDb from '@/db/mockDB';
 import { withDbNotFound404 } from '@/lib/util';
 import Link from 'next/link';
@@ -29,7 +28,7 @@ export default async function Campaign({ params }: Props) {
   }
 
   return (
-    <Page community={community} campaign={campaign}>
+    <>
       <h2>Campaign Overview</h2>
       <ul>
         {tasks.map((t) => (
@@ -46,6 +45,6 @@ export default async function Campaign({ params }: Props) {
           <span>{annotationCount}</span>
         </Link>
       </div>
-    </Page>
+    </>
   );
 }
