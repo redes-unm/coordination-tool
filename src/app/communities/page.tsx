@@ -1,22 +1,21 @@
-import getDb from '@/db/mockDB';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faClipboard, faListCheck, faPenRuler, faPlus, faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
+import { newDb } from '@/db/server';
+import { withDbNotFound404 } from '@/lib/util';
 import styles from './page.module.css';
 
 const descriptionMaxLength = 80;
 
 export default async function Communities() {
-  const communities = await getDb().getCommunities();
-  const collaboratorCounts = await Promise.all(
-    communities.map((c) => getDb().getCommunityCollaboratorCount(c.id)),
-  );
+  const db = newDb();
+  const communities = await withDbNotFound404(db.getCommunities());
 
   return (
     <div className={styles['cards']}>
-      { communities.map((c, i) => (
+      { communities.map((c) => (
         <div key={c.id} className={styles['card']}>
           <h2 className={styles['card-title']}>
             <Link href={`/communities/${c.id}`}>{c.name}</Link>
@@ -28,7 +27,7 @@ export default async function Communities() {
             </span>
             <span>&bull;</span>
             <Link href={`/communities/${c.id}/collaborators`}>
-              {`${collaboratorCounts[i]} collaborator${(collaboratorCounts[i] ?? 0) === 1 ? '' : 's'}`}
+              {`${c.collaboratorCount} collaborator${c.collaboratorCount === 1 ? '' : 's'}`}
             </Link>
           </div>
           <div className={styles['description']}>

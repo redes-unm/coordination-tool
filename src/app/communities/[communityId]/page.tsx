@@ -1,11 +1,11 @@
 import CommunityMap from '@/components/CommunityMap';
-import getDb from '@/db/mockDB';
-import { withDbNotFound404 } from '@/lib/util';
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUserLock, faClipboard, faListCheck, faPenRuler,
 } from '@fortawesome/free-solid-svg-icons';
+import { newDb } from '@/db/server';
+import { withDbNotFound404 } from '@/lib/util';
 import styles from './page.module.css';
 
 type Props = {
@@ -13,19 +13,8 @@ type Props = {
 };
 
 export default async function Community({ params }: Props) {
-  const [
-    community,
-    campaignCount,
-    annotations,
-    taskCount,
-    collaboratorCount,
-  ] = await withDbNotFound404(() => Promise.all([
-    getDb().getCommunity(params.communityId),
-    getDb().getCampaignCount(params.communityId),
-    getDb().getCommunityAnnotations(params.communityId),
-    getDb().getCommunityTaskCount(params.communityId),
-    getDb().getCommunityCollaboratorCount(params.communityId),
-  ]));
+  const db = newDb();
+  const community = await withDbNotFound404(db.getCommunity(params.communityId));
 
   return (
     <div className={styles['panes']}>
@@ -41,7 +30,7 @@ export default async function Community({ params }: Props) {
             </span>
             <span>&bull;</span>
             <Link href={`/communities/${community.id}/collaborators`}>
-              {`${collaboratorCount} collaborator${collaboratorCount > 1 ? 's' : ''}`}
+              {`${community.collaboratorCount} collaborator${community.collaboratorCount > 1 ? 's' : ''}`}
             </Link>
           </div>
           <div className={styles['description']}>
@@ -61,7 +50,7 @@ export default async function Community({ params }: Props) {
               <FontAwesomeIcon icon={faClipboard} />
               <span className={styles['link-name']}>Campaigns</span>
               <span className={styles['link-count']}>
-                <span className={styles['count']}>{campaignCount}</span>
+                <span className={styles['count']}>{community.campaignCount}</span>
                 <span className={styles['count-label']}>open</span>
               </span>
             </div>
@@ -71,7 +60,7 @@ export default async function Community({ params }: Props) {
               <FontAwesomeIcon icon={faListCheck} />
               <span className={styles['link-name']}>Tasks</span>
               <span className={styles['link-count']}>
-                <span className={styles['count']}>{taskCount}</span>
+                <span className={styles['count']}>{community.taskCount}</span>
                 <span className={styles['count-label']}>pending</span>
               </span>
             </div>
@@ -81,7 +70,7 @@ export default async function Community({ params }: Props) {
               <FontAwesomeIcon icon={faPenRuler} />
               <span className={styles['link-name']}>Annotations</span>
               <span className={styles['link-count']}>
-                <span className={styles['count']}>{annotations.length}</span>
+                <span className={styles['count']}>{community.annotations.length}</span>
                 <span className={styles['count-label']}>total</span>
               </span>
             </div>
@@ -89,7 +78,7 @@ export default async function Community({ params }: Props) {
         </div>
       </div>
       <div className={styles['map-pane']}>
-        <CommunityMap initialAnnotations={annotations} />
+        <CommunityMap initialAnnotations={community.annotations} />
       </div>
     </div>
   );

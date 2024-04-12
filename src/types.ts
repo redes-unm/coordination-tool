@@ -1,5 +1,18 @@
 import { Geometry } from 'geojson';
 
+export type Community = {
+  id: string
+  name: string
+  description: string
+};
+
+export type Campaign = {
+  id: string
+  name: string
+  description: string
+  communityId: string
+};
+
 export const annotationTypeDisplayNames = {
   infra: 'infrastructure',
   equipment: 'equipment',
@@ -23,3 +36,11 @@ export function assertAnnotationType(t: string): asserts t is AnnotationType {
     throw new Error(`expected annotation type, got ${t}`);
   }
 }
+
+export type Task = {
+  id: string
+  name: string
+  description: string
+  priority: 'low' | 'medium' | 'high'
+  status: 'todo' | 'in progress' | 'done'
+};

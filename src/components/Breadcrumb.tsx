@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
 import { Suspense, useMemo } from 'react';
-import getDb from '@/db/mockDB';
 import { AsyncResource } from '@/lib/AsyncResource';
+import { newDb } from '@/db/client';
+import { ErrorBoundary } from 'react-error-boundary';
 import styles from './Breadcrumb.module.css';
 
 function AsyncText({ text }: { text: AsyncResource<string> }) {
@@ -36,17 +37,15 @@ export default function Breadcrumb({ className }: Props) {
     [segments],
   );
 
-  // TODO: make API call instead of using getDb
   const communityName = useMemo(() => (
     communityId
-      ? new AsyncResource(getDb().getCommunity(communityId).then((c) => c.name))
+      ? new AsyncResource(newDb().getCommunityName(communityId))
       : null
   ), [communityId]);
 
-  // TODO: make API call instead of using getDb
   const campaignName = useMemo(() => (
     campaignId
-      ? new AsyncResource(getDb().getCampaign(campaignId).then((c) => c.name))
+      ? new AsyncResource(newDb().getCampaignName(campaignId))
       : null
   ), [campaignId]);
 
@@ -86,15 +85,17 @@ export default function Breadcrumb({ className }: Props) {
     <nav className={className}>
       {elements.map(({ key, text, href }, i) => {
         const t = text instanceof AsyncResource
-          ? <Suspense><AsyncText text={text} /></Suspense>
+          ? <Suspense fallback="..."><AsyncText text={text} /></Suspense>
           : text;
 
         return (
           <span key={key}>
             { i > 0 && <span className={styles['separator']}> &gt; </span> }
-            <span className={styles['element']}>
-              { href ? <Link href={href}>{t}</Link> : t }
-            </span>
+            <ErrorBoundary fallback={<span>[error]</span>}>
+              <span className={styles['element']}>
+                { href ? <Link href={href}>{t}</Link> : t }
+              </span>
+            </ErrorBoundary>
           </span>
         );
       })}

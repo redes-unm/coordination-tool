@@ -1,0 +1,172 @@
+import {
+  Annotation, Campaign, Community, Task,
+} from '@/types';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Geometry } from 'geojson';
+import { validate } from 'uuid';
+import { Database } from './types.generated';
+import { DbError, DbNotFoundError } from './errors';
+import { getJoinedCount, handleError } from './util';
+
+export default class Db {
+  private client: SupabaseClient<Database>;
+
+  constructor(client: SupabaseClient<Database>) {
+    this.client = client;
+  }
+
+  // Currently getting all communities. In the future, we'll also need to be
+  // able to get only the communities for a given user.
+  async getCommunities(): Promise<(Community & { collaboratorCount: number })[]> {
+    const { data, error } = await this.client
+      .from('communities')
+      .select('*, collaborators(count)');
+
+    handleError(error);
+
+    return data.map((d) => ({
+      id: d.id,
+      name: d.name,
+      description: d.description ?? '',
+      collaboratorCount: getJoinedCount(d.collaborators),
+    }));
+  }
+
+  async getCommunity(id: string): Promise<Community & {
+    campaignCount: number
+    taskCount: number
+    collaboratorCount: number
+    annotations: Annotation[]
+  }> {
+    if (!validate(id)) {
+      throw new DbNotFoundError();
+    }
+
+    const { data, error } = await this.client
+      .from('communities')
+      .select('*, campaigns(tasks(count)), collaborators(count), annotations(*)')
+      .eq('id', id)
+      .limit(1)
+      .single();
+
+    handleError(error);
+
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description ?? '',
+      campaignCount: data.campaigns.length,
+      taskCount: data.campaigns
+        .map((c) => getJoinedCount(c.tasks))
+        .reduce((sum, count) => sum + count, 0),
+      collaboratorCount: getJoinedCount(data.collaborators),
+      annotations: data.annotations.map((a) => ({
+        id: a.id,
+        name: a.name,
+        description: a.description ?? '',
+        type: a.type,
+        geometry: a.geo as Geometry,
+      })),
+    };
+  }
+
+  async getCampaigns(communityId: string): Promise<Campaign[]> {
+    if (!validate(communityId)) {
+      throw new DbNotFoundError();
+    }
+
+    const { data, error } = await this.client
+      .from('campaigns')
+      .select('*')
+      .eq('communityid', communityId);
+
+    handleError(error);
+
+    return data.map((d) => ({
+      id: d.id,
+      name: d.name,
+      description: d.description ?? '',
+      communityId: d.communityid,
+    }));
+  }
+
+  async getCampaign(campaignId: string): Promise<Campaign & {
+    tasks: Task[],
+    annotations: Annotation[],
+  }> {
+    if (!validate(campaignId)) {
+      throw new DbNotFoundError();
+    }
+
+    const { data, error } = await this.client
+      .from('campaigns')
+      .select('*, tasks(*), campaignannotations(annotations(*))')
+      .eq('id', campaignId)
+      .limit(1)
+      .single();
+
+    handleError(error);
+
+    return {
+      id: data.id,
+      name: data.name,
+      description: data.description ?? '',
+      communityId: data.communityid,
+      tasks: data.tasks.map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description ?? '',
+        priority: t.priority,
+        status: t.status,
+      })),
+      annotations: data.campaignannotations.map((ca) => {
+        const a = ca.annotations;
+        if (!a) {
+          throw new DbError('expected an annotation matching campaign annotation');
+        }
+
+        return {
+          id: a.id,
+          name: a.name,
+          description: a.description ?? '',
+          type: a.type,
+          geometry: a.geo as Geometry,
+        };
+      }),
+    };
+  }
+
+  async getCommunityName(id: string): Promise<string> {
+    if (!validate(id)) {
+      throw new DbNotFoundError();
+    }
+
+    const { data, error } = await this.client
+      .from('communities')
+      .select('name')
+      .eq('id', id)
+      .limit(1)
+      .single();
+
+    handleError(error);
+
+    return data.name;
+  }
+
+  async getCampaignName(id: string): Promise<string> {
+    if (!validate(id)) {
+      throw new DbNotFoundError();
+    }
+
+    const { data, error } = await this.client
+      .from('campaigns')
+      .select('name')
+      .eq('id', id)
+      .limit(1)
+      .single();
+
+    handleError(error);
+
+    return data.name;
+  }
+}

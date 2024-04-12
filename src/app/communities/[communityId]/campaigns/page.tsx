@@ -1,4 +1,4 @@
-import getDb from '@/db/mockDB';
+import { newDb } from '@/db/server';
 import { withDbNotFound404 } from '@/lib/util';
 import Link from 'next/link';
 
@@ -9,7 +9,8 @@ type Props = {
 };
 
 export default async function Campaigns({ params }: Props) {
-  const campaigns = await withDbNotFound404(() => getDb().getCampaigns(params.communityId));
+  const db = newDb();
+  const campaigns = await withDbNotFound404(db.getCampaigns(params.communityId));
 
   return (
     <>

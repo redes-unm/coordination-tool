@@ -1,5 +1,7 @@
+import 'server-only';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { Database } from '@/db/types.generated';
 import { throwErr } from '../util';
 
 export function createClient() {
@@ -7,7 +9,7 @@ export function createClient() {
   const url = process.env['NEXT_PUBLIC_SUPABASE_URL'] ?? throwErr('missing supabase url');
   const anonKey = process.env['NEXT_PUBLIC_SUPABASE_ANON_KEY'] ?? throwErr('missing supabase anon key');
 
-  return createServerClient(url, anonKey, {
+  return createServerClient<Database>(url, anonKey, {
     cookies: {
       get(name: string) {
         return cookieStore.get(name)?.value;
