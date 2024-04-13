@@ -1,68 +1,62 @@
-import { Annotation, annotationTypeDisplayNames, assertAnnotationType } from '@/types';
+import { Annotation } from '@/types';
 import { useEffect, useRef, useState } from 'react';
+import AnnotationEditForm from './AnnotationEditForm';
+import AnnotationDisplay from './AnnotationDisplay';
 
 type Props = {
   annotation: Annotation
-  onSave?: ((a: Annotation) => void) | undefined
-  onDelete?: (() => void) | undefined
+  editing?: boolean | undefined
+  onSave?: ((a: Annotation) => Promise<void>) | undefined
+  onDelete?: ((id: string) => Promise<void>) | undefined
 };
 
 export default function PopupContents({
-  annotation: initialAnnotation,
+  annotation,
   onSave,
   onDelete,
+  editing: initialEditing = false,
 }: Props) {
-  const form = useRef<HTMLFormElement>(null);
   const firstInput = useRef<HTMLInputElement>(null);
-  const [annotation, setAnnotation] = useState(initialAnnotation);
+  const [editing, setEditing] = useState(initialEditing);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => firstInput.current?.focus(), []);
 
-  const nameInputId = `${annotation.id}-name-input`;
-  const typeSelectId = `${annotation.id}-type-select`;
-
-  return (
+  return editing && onSave ? (
+    <AnnotationEditForm
+      annotation={annotation}
+      onSave={async (a) => {
+        await onSave(a);
+        setEditing(false);
+      }}
+      onCancel={() => setEditing(false)}
+    />
+  ) : (
     <>
-      {
-        onSave ? (
-          <form ref={form} onSubmit={(e) => e.preventDefault()}>
-            <div>
-              <label htmlFor={nameInputId}>
-                Name
-                <input
-                  id={nameInputId}
-                  type="text"
-                  value={annotation.name}
-                  onChange={(e) => setAnnotation((a) => ({ ...a, name: e.target.value }))}
-                  required
-                  ref={firstInput}
-                />
-              </label>
-              <label htmlFor={typeSelectId}>
-                Type
-                <select
-                  id={typeSelectId}
-                  onChange={(e) => setAnnotation((a) => {
-                    assertAnnotationType(e.target.value);
-                    return { ...a, type: e.target.value };
-                  })}
-                >
-                  { Object.entries(annotationTypeDisplayNames).map(([type, name]) => (
-                    <option value={type} key={type}>{name}</option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <button type="submit" onClick={() => form.current?.reportValidity() && onSave(annotation)}>Save</button>
-          </form>
-        ) : (
-          <div>
-            <strong>{annotation.name}</strong>
-            <div>{`(${annotationTypeDisplayNames[annotation.type]})`}</div>
-          </div>
-        )
-      }
-      {onDelete && <button type="button" onClick={onDelete}>Delete</button>}
+      <AnnotationDisplay annotation={annotation} />
+      <div>{error}</div>
+      { onSave && <button type="button" onClick={() => setEditing(true)}>Edit</button> }
+      { onDelete && (
+        <button
+          type="button"
+          onClick={async () => {
+            setLoading(true);
+            setError('');
+
+            try {
+              await onDelete(annotation.id);
+            } catch (e: unknown) {
+              setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
+            }
+
+            setLoading(false);
+          }}
+          disabled={loading}
+        >
+          {loading ? 'Deleting...' : 'Delete'}
+        </button>
+      )}
     </>
   );
 }

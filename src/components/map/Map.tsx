@@ -33,8 +33,9 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
 
 type Props = {
   annotations: Annotation[],
-  onAdd?: (a: Annotation) => void
-  onDelete?: (a: Annotation) => void
+  onAdd: (a: Annotation) => Promise<void>
+  onUpdate: (a: Annotation) => Promise<void>
+  onDelete: (id: string) => Promise<void>
   initialLngLat?: [number, number]
   initialZoom?: number
 };
@@ -46,18 +47,26 @@ export default function Map({
   annotations,
   initialLngLat = defaultLngLat,
   initialZoom = defaultZoom,
-  onAdd = undefined,
-  onDelete = undefined,
+  onAdd,
+  onDelete,
+  onUpdate,
 }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
-  const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | undefined>();
   const [newAnnotation, setNewAnnotation] = useState<Annotation | undefined>();
 
-  const selectedAnnotation = useMemo(
-    () => annotations.find((a) => a.id === selectedId),
-    [annotations, selectedId],
-  );
+  // update the selected annotation when the annotations change
+  useEffect(() => {
+    setSelectedAnnotation((old) => old && annotations.find((a) => a.id === old.id));
+  }, [annotations]);
+
+  // clear the new annotation when the selected annotation is cleared
+  useEffect(() => {
+    if (!selectedAnnotation) {
+      setNewAnnotation(undefined);
+    }
+  }, [selectedAnnotation]);
 
   // create map
   useEffect(() => {
@@ -85,52 +94,48 @@ export default function Map({
     map,
     useMemo(() => {
       const features = annotations.map(annotationToFeature);
-      if (newAnnotation) {
+      if (newAnnotation && !features.find((f) => f.id === newAnnotation.id)) {
         features.push(annotationToFeature(newAnnotation));
       }
       return features;
     }, [annotations, newAnnotation]),
     useCallback((f) => {
-      setSelectedId(f && `${f.id ?? throwErr('feature selected without id')}`);
-    }, []),
-    useCallback((f) => {
-      setNewAnnotation({
-        id: `${f.id ?? throwErr('feature created without id')}`,
-        name: '',
+      setSelectedAnnotation(f && (
+        f.id === newAnnotation?.id
+          ? newAnnotation
+          : annotations.find((a) => a.id === f.id)
+      ));
+    }, [annotations, newAnnotation]),
+    useCallback(async (f) => {
+      const id = `${f.id ?? throwErr('feature created without id')}`;
+      const annotation: Annotation = {
+        id,
+        name: `${f.geometry.type} created ${new Date().toISOString()}`,
         description: '',
         type: 'infra',
         geometry: f.geometry,
-      });
-    }, []),
+      };
+
+      setNewAnnotation(annotation);
+      await onAdd(annotation);
+    }, [onAdd]),
   );
 
   // show a popup for the selected annotation
   usePopup(map, selectedAnnotation, {
-    delete: useMemo(
-      () => onDelete && selectedAnnotation && (() => onDelete(selectedAnnotation)),
-      [onDelete, selectedAnnotation],
-    ),
-  });
-
-  // show a popup for a new annotation
-  usePopup(map, newAnnotation, {
-    save: useCallback((a: Annotation) => {
-      onAdd?.(a);
-      setNewAnnotation(undefined);
-    }, [onAdd]),
-    close: useCallback(() => setNewAnnotation(undefined), []),
-  }, useMemo(() => ({ closeOnClick: false }), []));
+    save: onUpdate,
+    delete: onDelete,
+    close: useCallback(() => setSelectedAnnotation(undefined), []),
+  }, !!newAnnotation);
 
   return (
     <div className={styles['container']}>
       <div ref={mapContainer} className={styles['mapbox-container']} />
-      { onAdd && !newAnnotation && (
-        <AddAnnotationControl
-          className={styles['add-control']}
-          mode={drawMode}
-          onModeChange={setDrawMode}
-        />
-      )}
+      <AddAnnotationControl
+        className={styles['add-control']}
+        mode={drawMode}
+        onModeChange={setDrawMode}
+      />
     </div>
   );
 }

@@ -78,7 +78,10 @@ export default async function Community({ params }: Props) {
         </div>
       </div>
       <div className={styles['map-pane']}>
-        <CommunityMap initialAnnotations={community.annotations} />
+        <CommunityMap
+          initialAnnotations={community.annotations}
+          communityId={community.id}
+        />
       </div>
     </div>
   );

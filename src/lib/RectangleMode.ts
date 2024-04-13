@@ -85,7 +85,7 @@ const RectangleMode: DrawCustomMode<State> & {
     ) {
       this.updateUIClasses({ mouse: 'pointer' });
       state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-      this.changeMode('simple_select', { featuresId: state.rectangle.id });
+      this.changeMode('simple_select', { featureIds: [state.rectangle.id] });
     }
     // on first click, save clicked point coords as starting for  rectangle
     const startPoint = [e.lngLat.lng, e.lngLat.lat];

@@ -4,8 +4,7 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Feature } from 'geojson';
 import mapboxgl from 'mapbox-gl';
 import {
-  Dispatch,
-  RefObject, SetStateAction, useEffect, useRef, useState,
+  RefObject, useCallback, useEffect, useRef, useState,
 } from 'react';
 
 export default function useDraw(
@@ -13,7 +12,7 @@ export default function useDraw(
   features: Feature[],
   onSelect: (f?: Feature) => void,
   onCreate: (f: Feature) => void,
-): [Mode, Dispatch<SetStateAction<Mode>>] {
+): [Mode, (m: Mode) => void] {
   const draw = useRef<MapboxDraw | null>(null);
   const [mode, setMode] = useState<Mode>('simple_select');
 
@@ -31,8 +30,7 @@ export default function useDraw(
     return () => { draw.current = null; };
   }, [map]);
 
-  // keep mode in sync with state
-  useEffect(() => { draw.current?.changeMode(mode as string); }, [mode]);
+  // keep mode state in sync with draw mode
   useEffect(() => {
     function handleDrawModeChange(e: MapboxDraw.DrawModeChangeEvent) {
       assertMode(e.mode);
@@ -74,5 +72,11 @@ export default function useDraw(
     });
   }, [features]);
 
-  return [mode, setMode];
+  return [
+    mode,
+    useCallback((m: Mode) => {
+      draw.current?.changeMode(m as string);
+      setMode(m);
+    }, []),
+  ];
 }

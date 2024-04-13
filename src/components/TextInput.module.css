@@ -7,6 +7,11 @@
   column-gap: 0.5rem;
 }
 
+.label.above {
+  flex-flow: column nowrap;
+  align-items: start;
+}
+
 .input {
   border: 0.0625rem solid #000;
   border-radius: 0.25rem;
@@ -15,4 +20,8 @@
   font-size: inherit;
   padding: 0.25rem 0.3125rem;
   max-width: 15rem;
+}
+
+.label.above .input {
+  max-width: 100%;
 }
