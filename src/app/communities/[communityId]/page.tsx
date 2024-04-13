@@ -30,7 +30,7 @@ export default async function Community({ params }: Props) {
             </span>
             <span>&bull;</span>
             <Link href={`/communities/${community.id}/collaborators`}>
-              {`${community.collaboratorCount} collaborator${community.collaboratorCount > 1 ? 's' : ''}`}
+              {`${community.collaboratorCount} collaborator${community.collaboratorCount === 1 ? '' : 's'}`}
             </Link>
           </div>
           <div className={styles['description']}>
