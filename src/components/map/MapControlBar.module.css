@@ -1,5 +1,5 @@
 .bar {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: flex-end;
+  justify-content: space-between;
 }
