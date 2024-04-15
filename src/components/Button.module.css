@@ -24,3 +24,7 @@
   background: #a51d2d;
   color: #ffffff;
 }
+
+.btn .icon {
+  margin-inline-end: 0.625rem;
+}

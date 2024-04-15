@@ -16,6 +16,7 @@ import strftime from 'strftime';
 import useMapControl from '@/hooks/useMapControl';
 import styles from './Map.module.css';
 import ModeControl from './ModeControl';
+import MapControlBar from './MapControlBar';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiamNveDk5IiwiYSI6ImNscTE1c2xlcjA1cXoybHBnMDk1cmgyODAifQ.2UrggqzuuxrtqoaCilNlbQ';
 
@@ -82,6 +83,7 @@ export default function Map({
       style: 'mapbox://styles/mapbox/streets-v12',
       center: initialLngLat,
       zoom: initialZoom,
+      preserveDrawingBuffer: true,
     });
 
     map.current = mapboxMap;
@@ -140,6 +142,7 @@ export default function Map({
 
   return (
     <div className={styles['container']}>
+      <MapControlBar mapRef={mapContainer} />
       <div ref={mapContainer} className={styles['mapbox-container']} />
     </div>
   );
