@@ -1,0 +1,10 @@
+.btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.error {
+  margin-block: 0.5rem;
+}

@@ -1,5 +1,6 @@
 'use client';
 
+import './map.css';
 import React, {
   useRef, useEffect, useState, useMemo, useCallback,
 } from 'react';
@@ -11,6 +12,7 @@ import { throwErr } from '@/lib/util';
 import usePopup from '@/hooks/usePopup';
 import useDraw from '@/hooks/useDraw';
 import { Annotation } from '@/types';
+import strftime from 'strftime';
 import styles from './Map.module.css';
 import AddAnnotationControl from './AddAnnotationControl';
 
@@ -110,7 +112,7 @@ export default function Map({
       const id = `${f.id ?? throwErr('feature created without id')}`;
       const annotation: Annotation = {
         id,
-        name: `${f.geometry.type} created ${new Date().toISOString()}`,
+        name: `${f.geometry.type} created ${strftime('%m-%d-%Y@%H:%M:%S')}`,
         description: '',
         type: 'infra',
         geometry: f.geometry,

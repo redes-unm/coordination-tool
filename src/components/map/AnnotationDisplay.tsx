@@ -1,4 +1,5 @@
 import { Annotation, annotationTypeDisplayNames } from '@/types';
+import styles from './AnnotationDisplay.module.css';
 
 type Props = {
   annotation: Annotation
@@ -6,10 +7,10 @@ type Props = {
 
 export default function AnnotationDisplay({ annotation }: Props) {
   return (
-    <div>
+    <div className={styles['container']}>
       <strong>{annotation.name}</strong>
-      <div>{`(${annotationTypeDisplayNames[annotation.type]})`}</div>
-      <div>
+      <div>{`Type: ${annotationTypeDisplayNames[annotation.type]}`}</div>
+      <div className={styles['description']}>
         {
           annotation.description.split('\n')
             .filter((s) => !!s.trim())

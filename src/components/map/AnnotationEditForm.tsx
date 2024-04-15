@@ -4,7 +4,10 @@ import {
 import {
   useCallback, useEffect, useRef, useState,
 } from 'react';
+import btnStyles from '@/components/Button.module.css';
 import TextInput from '../TextInput';
+import styles from './AnnotationEditForm.module.css';
+import SelectMenu from '../SelectMenu';
 
 type Props = {
   annotation: Annotation
@@ -18,7 +21,6 @@ export default function AnnotationEditForm({
   onCancel,
 }: Props) {
   const firstInput = useRef<{ focus:() => void }>(null);
-  const typeSelectId = `${annotation.id}-type-select`;
   const [name, setName] = useState(annotation.name);
   const [description, setDescription] = useState(annotation.description);
   const [type, setType] = useState(annotation.type);
@@ -47,7 +49,7 @@ export default function AnnotationEditForm({
 
   return (
     <form action={handleSubmit}>
-      <div>
+      <div className={styles['inputs']}>
         <TextInput
           ref={firstInput}
           label="Name"
@@ -55,6 +57,18 @@ export default function AnnotationEditForm({
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          labelAbove
+        />
+
+        <SelectMenu
+          options={Object.entries(annotationTypeDisplayNames)}
+          id={`${annotation.id}-type-menu`}
+          value={type}
+          onValueChange={(t) => {
+            assertAnnotationType(t);
+            setType(t);
+          }}
+          label="Type"
           labelAbove
         />
 
@@ -66,28 +80,20 @@ export default function AnnotationEditForm({
           multiLine
           labelAbove
         />
-
-        <label htmlFor={typeSelectId}>
-          Type
-          <select
-            id={typeSelectId}
-            value={type}
-            onChange={(e) => {
-              assertAnnotationType(e.target.value);
-              setType(e.target.value);
-            }}
-          >
-            { Object.entries(annotationTypeDisplayNames).map(([t, n]) => (
-              <option value={t} key={t}>{n}</option>
-            ))}
-          </select>
-        </label>
       </div>
-      <div>{error}</div>
-      <button type="submit" disabled={loading}>
-        { loading ? 'Saving...' : 'Save' }
-      </button>
-      <button type="button" onClick={onCancel}>Cancel</button>
+      {error && <div className={`error ${styles['error']}`}>{error}</div>}
+      <div className={styles['btns']}>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`${btnStyles['btn']} ${btnStyles['solid']}`}
+        >
+          { loading ? 'Saving...' : 'Save' }
+        </button>
+        <button type="button" onClick={onCancel} className={btnStyles['btn']}>
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }

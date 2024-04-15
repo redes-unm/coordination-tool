@@ -1,5 +1,7 @@
 import { Annotation } from '@/types';
 import { useEffect, useRef, useState } from 'react';
+import btnStyles from '@/components/Button.module.css';
+import styles from './PopupContents.module.css';
 import AnnotationEditForm from './AnnotationEditForm';
 import AnnotationDisplay from './AnnotationDisplay';
 
@@ -35,28 +37,39 @@ export default function PopupContents({
   ) : (
     <>
       <AnnotationDisplay annotation={annotation} />
-      <div>{error}</div>
-      { onSave && <button type="button" onClick={() => setEditing(true)}>Edit</button> }
-      { onDelete && (
-        <button
-          type="button"
-          onClick={async () => {
-            setLoading(true);
-            setError('');
+      {error && <div className={`error ${styles['error']}`}>{error}</div>}
+      <div className={styles['btns']}>
+        { onSave && (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className={btnStyles['btn']}
+          >
+            Edit
+          </button>
+        )}
+        { onDelete && (
+          <button
+            type="button"
+            onClick={async () => {
+              setLoading(true);
+              setError('');
 
-            try {
-              await onDelete(annotation.id);
-            } catch (e: unknown) {
-              setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
-            }
+              try {
+                await onDelete(annotation.id);
+              } catch (e: unknown) {
+                setError(e instanceof Error ? e.message : 'An unexpected error occurred.');
+              }
 
-            setLoading(false);
-          }}
-          disabled={loading}
-        >
-          {loading ? 'Deleting...' : 'Delete'}
-        </button>
-      )}
+              setLoading(false);
+            }}
+            disabled={loading}
+            className={`${btnStyles['btn']} ${btnStyles['danger']}`}
+          >
+            {loading ? 'Deleting...' : 'Delete'}
+          </button>
+        )}
+      </div>
     </>
   );
 }
