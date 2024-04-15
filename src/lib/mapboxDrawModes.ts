@@ -15,11 +15,11 @@ export default modes;
 export type Mode = keyof typeof modes;
 
 export const modeDisplayNames: { [k in Mode]: string } = {
-  simple_select: 'Simple select',
-  draw_polygon: 'Polygon',
-  draw_point: 'Point',
-  draw_line_string: 'Line',
-  draw_rectangle: 'Rectangle',
+  simple_select: 'Select',
+  draw_polygon: 'Draw polygon',
+  draw_point: 'Draw point',
+  draw_line_string: 'Draw line',
+  draw_rectangle: 'Draw rectangle',
 };
 
 export function assertMode(m: string): asserts m is Mode {

@@ -19,6 +19,7 @@
     "@radix-ui/react-select": "^2.0.0",
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.41.1",
+    "@svgr/webpack": "^8.1.0",
     "@turf/center": "^6.5.0",
     "@turf/simplify": "^6.5.0",
     "client-only": "^0.0.1",

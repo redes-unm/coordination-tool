@@ -13,8 +13,9 @@ import usePopup from '@/hooks/usePopup';
 import useDraw from '@/hooks/useDraw';
 import { Annotation } from '@/types';
 import strftime from 'strftime';
+import useMapControl from '@/hooks/useMapControl';
 import styles from './Map.module.css';
-import AddAnnotationControl from './AddAnnotationControl';
+import ModeControl from './ModeControl';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiamNveDk5IiwiYSI6ImNscTE1c2xlcjA1cXoybHBnMDk1cmgyODAifQ.2UrggqzuuxrtqoaCilNlbQ';
 
@@ -130,14 +131,16 @@ export default function Map({
     close: useCallback(() => setSelectedAnnotation(undefined), []),
   }, !!newAnnotation);
 
+  useMapControl(
+    map,
+    'top-left',
+    ModeControl,
+    useMemo(() => ({ mode: drawMode, onModeChange: setDrawMode }), [drawMode, setDrawMode]),
+  );
+
   return (
     <div className={styles['container']}>
       <div ref={mapContainer} className={styles['mapbox-container']} />
-      <AddAnnotationControl
-        className={styles['add-control']}
-        mode={drawMode}
-        onModeChange={setDrawMode}
-      />
     </div>
   );
 }
