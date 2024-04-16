@@ -15,6 +15,8 @@ type Props = {
   onSubmit: (prevState: string | null, data: FormData) => Promise<string | null>
 };
 
+const prod = process.env.NODE_ENV === 'production';
+
 export default function LoginSignup({
   redirectPath,
   signup = false,
@@ -45,13 +47,15 @@ export default function LoginSignup({
         />
       </form>
 
-      <div>
-        { signup ? 'Already have an account? ' : 'Don\'t have an account? ' }
-        <Link href={`/auth/${signup ? 'login' : 'signup'}?redirect=${encodeURIComponent(redirectPath)}`}>
-          { signup ? 'Log in' : 'Sign up' }
-        </Link>
-        .
-      </div>
+      { !prod && (
+        <div>
+          { signup ? 'Already have an account? ' : 'Don\'t have an account? ' }
+          <Link href={`/auth/${signup ? 'login' : 'signup'}?redirect=${encodeURIComponent(redirectPath)}`}>
+            { signup ? 'Log in' : 'Sign up' }
+          </Link>
+          .
+        </div>
+      )}
     </div>
   );
 }

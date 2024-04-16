@@ -7,7 +7,13 @@ type Props = {
   searchParams: { [key: string]: string }
 };
 
+const prod = process.env.NODE_ENV === 'production';
+
 export default function Signup({ searchParams }: Props) {
+  if (prod) {
+    return 'Signups are currently disabled.';
+  }
+
   const redirectPath = searchParams['redirect'] ?? '/';
 
   const handleSubmit = async (_prevState: string | null, data: FormData) => {
