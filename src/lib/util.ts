@@ -1,4 +1,4 @@
-import { NotFoundError } from '@/db/errors';
+import { DbNotFoundError } from '@/db/errors';
 import { notFound } from 'next/navigation';
 
 // for when you want to throw an error in an expression
@@ -9,11 +9,11 @@ export function throwErr(e: string | Error): never {
   throw e;
 }
 
-export async function withDbNotFound404<T>(f: () => Promise<T>): Promise<T> {
+export async function withDbNotFound404<T>(f: Promise<T> | (() => Promise<T>)): Promise<T> {
   try {
-    return await f();
+    return await (typeof f === 'function' ? f() : f);
   } catch (e) {
-    if (e instanceof NotFoundError) {
+    if (e instanceof DbNotFoundError) {
       notFound();
     }
 

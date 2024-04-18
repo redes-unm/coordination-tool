@@ -1,5 +1,13 @@
 /* eslint-disable max-classes-per-file */
 
-export class NotFoundError extends Error {}
-export class DuplicateKeyError extends Error {}
-export class InternalError extends Error {}
+export class DbError extends Error {
+  constructor(message?: string) {
+    super(message ?? 'DB Error');
+  }
+}
+
+export class DbNotFoundError extends DbError {
+  constructor(message?: string) {
+    super(message ?? 'DB Not Found Error');
+  }
+}

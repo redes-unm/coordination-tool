@@ -1,11 +1,4 @@
-.menu-btn {
-  font-weight: 500;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.menu-btn, .menu-content {
+.menu-content {
   border: 0.0625rem solid #000;
   border-radius: 0.25rem;
   background: #fff;
@@ -14,13 +7,7 @@
   box-shadow: 0 0.125rem 0.125rem 0 #37425433;
 }
 
-.menu-btn.solid {
-  border-color: #505d73;
-  background: #505d73;
-  color: #ebedef;
-}
-
-.menu-btn, .menu-item {
+.menu-item {
   padding: 0.25rem 0.3125rem;
 }
 

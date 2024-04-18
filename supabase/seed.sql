@@ -1,0 +1,122 @@
+insert into communities (name, description) values
+    ('Georgia Tech', 'Measurement efforts for Georgia Tech''s campus and the surrounding area'),
+    ('Emory', 'Measurement efforts for Emory''s campus and the surrounding area');
+
+insert into campaigns (name, description, communityId, defaultForCommunity)
+    select 'Default', 'Default campaign for Emory''s measurement efforts', id, true
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, communityId, defaultForCommunity)
+    select 'Measure campus', 'Take measurements all over campus', id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, communityId, defaultForCommunity)
+    select 'Measure Home Park', null, id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, communityId, defaultForCommunity)
+    select 'Measure', 'Default campaign for Emory''s measurement efforts', id, true
+    from communities where name = 'Emory';
+
+insert into annotations (name, description, type, visible, communityId, geo)
+    select 'Klaus', 'Advanced computing building', 'infra', true, id,
+        ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [-84.3963, 33.7772] }')
+    from communities where name = 'Georgia Tech';
+
+insert into annotations (name, description, type, visible, communityId, geo)
+    select 'CoC', 'College of computing building', 'infra', true, id,
+        ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [-84.3972, 33.7773] }')
+    from communities where name = 'Georgia Tech';
+
+insert into annotations (name, description, type, visible, communityId, geo)
+    select 'main campus', null, 'region', false, id,
+        ST_GeomFromGeoJSON('{
+            "type": "Polygon",
+            "coordinates": [[
+                [-84.40721130335966, 33.78146868021399],
+                [-84.39179443631156, 33.781410567041206],
+                [-84.39078062872775, 33.771617934347674],
+                [-84.39885613051518, 33.77141451467952],
+                [-84.40004473250934, 33.770978613764214],
+                [-84.40245689538126, 33.77301279906288],
+                [-84.40556823589634, 33.77420422802362],
+                [-84.40682675565535, 33.775802460364275],
+                [-84.40584790695397, 33.777284430982164],
+                [-84.4064072490692, 33.77818522412362],
+                [-84.40714138559542, 33.779434695701255],
+                [-84.40721130335966, 33.78146868021399]
+            ]]
+        }')
+    from communities where name = 'Georgia Tech';
+
+insert into annotations (name, description, type, visible, communityId, geo)
+    select 'Tech Square', null, 'region', true, id,
+        ST_GeomFromGeoJSON('{
+            "type": "Polygon",
+            "coordinates": [[
+                [-84.39042545928058, 33.77893750425781],
+                [-84.38294442480331, 33.77893750425781],
+                [-84.38294442480331, 33.774610477507025],
+                [-84.39042545928058, 33.774610477507025],
+                [-84.39042545928058, 33.77893750425781]
+            ]]
+        }')
+    from communities where name = 'Georgia Tech';
+
+insert into annotations (name, description, type, visible, communityId, geo)
+    select 'Home Park park', 'a park in Home Park', 'poi', true, id,
+        ST_GeomFromGeoJSON('{"type": "Point", "coordinates": [-84.39990549471283, 33.78242533958185]}')
+    from communities where name = 'Georgia Tech';
+
+insert into campaignAnnotations (campaignId, annotationId)
+    select campaigns.id, annotations.id
+    from annotations
+    cross join (select id from campaigns where name = 'Default') as campaigns;
+
+insert into campaignAnnotations (campaignId, annotationId)
+    select campaigns.id, annotations.id
+    from annotations
+    cross join (select id from campaigns where name = 'Measure campus') as campaigns
+    where name in ('Klaus', 'CoC', 'main campus', 'Tech Square');
+
+insert into campaignAnnotations (campaignId, annotationId)
+    select campaigns.id, annotations.id
+    from annotations
+    cross join (select id from campaigns where name = 'Measure Home Park') as campaigns
+    where name = 'Home Park park';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'recruit students to measure', 'We need 10-20 people.', 'high', 'in progress', id
+    from campaigns where name = 'Measure campus';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'plan measurement areas', 'Pick 5-10 initial spots.', 'high', 'done', id
+    from campaigns where name = 'Measure campus';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'measure around Klaus building', null, 'medium', 'todo', id
+    from campaigns where name = 'Measure campus';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'measure around CoC building', null, 'low', 'todo', id
+    from campaigns where name = 'Measure campus';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'measure around TSRB', 'Get all sides, including the courtyard area.', 'medium', 'done', id
+    from campaigns where name = 'Measure campus';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'measure around Coda', null, 'medium', 'in progress', id
+    from campaigns where name = 'Measure campus';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'determine houses for measurements', null, 'high', 'in progress', id
+    from campaigns where name = 'Measure Home Park';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'obtain permission to measure at selected houses', 'Be sure to get permission in writing.', 'high', 'todo', id
+    from campaigns where name = 'Measure Home Park';
+
+insert into tasks (name, description, priority, status, campaignId)
+    select 'plan measurement campaigns', null, 'high', 'in progress', id
+    from campaigns where name = 'Default';

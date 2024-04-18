@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import './fonts.css';
 import React from 'react';
+import Page from '@/components/Page';
 
 export const metadata: Metadata = {
   title: 'CellWatch Community Coordination Tool',
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <div id="body-content">
-          {children}
+          <Page>
+            {children}
+          </Page>
         </div>
       </body>
     </html>
