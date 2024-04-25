@@ -22,6 +22,7 @@ export default async function Campaign({ params }: Props) {
             <div>{t.name}</div>
             <div>{t.status}</div>
             <div>{t.priority}</div>
+            <div>{t.date ? t.date.toLocaleDateString() : 'no date'}</div>
           </li>
         ))}
       </ul>

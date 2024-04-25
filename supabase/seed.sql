@@ -85,38 +85,38 @@ insert into campaignAnnotations (campaignId, annotationId)
     cross join (select id from campaigns where name = 'Measure Home Park') as campaigns
     where name = 'Home Park park';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'recruit students to measure', 'We need 10-20 people.', 'high', 'in progress', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'recruit students to measure', 'We need 10-20 people.', 'high', 'in progress', '2024-06-01', id
     from campaigns where name = 'Measure campus';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'plan measurement areas', 'Pick 5-10 initial spots.', 'high', 'done', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'plan measurement areas', 'Pick 5-10 initial spots.', 'high', 'done', '2024-04-01', id
     from campaigns where name = 'Measure campus';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'measure around Klaus building', null, 'medium', 'todo', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'measure around Klaus building', null, 'medium', 'todo', '2024-12-01', id
     from campaigns where name = 'Measure campus';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'measure around CoC building', null, 'low', 'todo', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'measure around CoC building', null, 'low', 'todo', '2024-12-01', id
     from campaigns where name = 'Measure campus';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'measure around TSRB', 'Get all sides, including the courtyard area.', 'medium', 'done', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'measure around TSRB', 'Get all sides, including the courtyard area.', 'medium', 'done', '2024-12-01', id
     from campaigns where name = 'Measure campus';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'measure around Coda', null, 'medium', 'in progress', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'measure around Coda', null, 'medium', 'in progress', null, id
     from campaigns where name = 'Measure campus';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'determine houses for measurements', null, 'high', 'in progress', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'determine houses for measurements', null, 'high', 'in progress', null, id
     from campaigns where name = 'Measure Home Park';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'obtain permission to measure at selected houses', 'Be sure to get permission in writing.', 'high', 'todo', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'obtain permission to measure at selected houses', 'Be sure to get permission in writing.', 'high', 'todo', null, id
     from campaigns where name = 'Measure Home Park';
 
-insert into tasks (name, description, priority, status, campaignId)
-    select 'plan measurement campaigns', null, 'high', 'in progress', id
+insert into tasks (name, description, priority, status, dueDate, campaignId)
+    select 'plan measurement campaigns', null, 'high', 'in progress', '2024-06-01', id
     from campaigns where name = 'Default';

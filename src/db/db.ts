@@ -118,6 +118,7 @@ export default class Db {
         description: t.description ?? '',
         priority: t.priority,
         status: t.status,
+        date: t.duedate ? new Date(t.duedate) : null,
       })),
       annotations: data.campaignannotations.map((ca) => {
         const a = ca.annotations;

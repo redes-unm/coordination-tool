@@ -43,4 +43,5 @@ export type Task = {
   description: string
   priority: 'low' | 'medium' | 'high'
   status: 'todo' | 'in progress' | 'done'
+  date: Date | null
 };
