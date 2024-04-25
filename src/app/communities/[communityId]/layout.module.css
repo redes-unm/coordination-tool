@@ -1,0 +1,22 @@
+.panes {
+  display: flex;
+  gap: 2.375rem;
+  height: 100%;
+}
+
+.content-pane {
+  width: 50%;
+  max-width: 32rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 100%;
+  gap: 1rem;
+}
+
+.map-pane {
+  height: 100%;
+  width: 50%;
+  flex-grow: 2;
+}
