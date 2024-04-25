@@ -102,7 +102,7 @@ insert into tasks (name, description, priority, status, dueDate, campaignId)
     from campaigns where name = 'Measure campus';
 
 insert into tasks (name, description, priority, status, dueDate, campaignId)
-    select 'measure around TSRB', 'Get all sides, including the courtyard area.', 'medium', 'done', '2024-12-01', id
+    select 'measure around TSRB', 'Get all sides, including the courtyard area.', 'medium', 'done', '2025-03-01', id
     from campaigns where name = 'Measure campus';
 
 insert into tasks (name, description, priority, status, dueDate, campaignId)
