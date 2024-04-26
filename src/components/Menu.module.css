@@ -43,6 +43,10 @@
   padding-inline-start: 1.8215rem;
 }
 
+.select .menu-item[data-state="unchecked"] {
+  padding-inline-start: 0.3125rem;
+}
+
 .menu-item .item-check {
   margin-inline-end: 0.5rem;
 }
