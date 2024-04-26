@@ -119,6 +119,7 @@ export default class Db {
         priority: t.priority,
         status: t.status,
         date: t.duedate ? new Date(t.duedate) : null,
+        campaignId: t.campaignid,
       })),
       annotations: data.campaignannotations.map((ca) => {
         const a = ca.annotations;
@@ -169,6 +170,35 @@ export default class Db {
     handleError(error);
 
     return data.name;
+  }
+
+  async getCommunityTasks(id: string): Promise<Task[]> {
+    if (!validate(id)) {
+      throw new DbNotFoundError();
+    }
+
+    const { data, error } = await this.client
+      .from('communities')
+      .select('campaigns(tasks(*))')
+      .eq('id', id)
+      .limit(1)
+      .single();
+
+    handleError(error);
+
+    return data.campaigns.reduce<Task[]>((allTasks, campaign) => {
+      allTasks.push(...campaign.tasks.map((t) => ({
+        id: t.id,
+        name: t.name,
+        description: t.description ?? '',
+        priority: t.priority,
+        status: t.status,
+        date: t.duedate ? new Date(t.duedate) : null,
+        campaignId: t.campaignid,
+      })));
+
+      return allTasks;
+    }, []);
   }
 
   async insertAnnotation(a: Annotation, communityId: string) {

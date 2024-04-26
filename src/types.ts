@@ -37,11 +37,39 @@ export function assertAnnotationType(t: string): asserts t is AnnotationType {
   }
 }
 
+export const taskStatusDisplayNames = {
+  todo: 'Not started',
+  'in progress': 'In progress',
+  done: 'Completed',
+};
+
+export type TaskStatus = keyof typeof taskStatusDisplayNames;
+
+export function assertTaskStatus(s: string): asserts s is TaskStatus {
+  if (!(s in taskStatusDisplayNames)) {
+    throw new Error(`expected task status, got ${s}`);
+  }
+}
+
+export const taskPriorityDisplayNames = {
+  low: 'Low priority',
+  medium: 'Normal priority',
+  high: 'High priority',
+};
+
+export type TaskPriority = keyof typeof taskPriorityDisplayNames;
+
+export function assertTaskPriority(p: string): asserts p is TaskPriority {
+  if (!(p in taskPriorityDisplayNames)) {
+    throw new Error(`expected task priority, got ${p}`);
+  }
+}
 export type Task = {
   id: string
   name: string
   description: string
-  priority: 'low' | 'medium' | 'high'
-  status: 'todo' | 'in progress' | 'done'
+  priority: TaskPriority
+  status: TaskStatus
   date: Date | null
+  campaignId: string
 };

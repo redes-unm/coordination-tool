@@ -64,3 +64,9 @@
   border-bottom: 0.0125rem solid #0008;
   margin: 0.25rem;
 }
+
+.menu-label {
+  color: #000b;
+  font-size: 0.875rem;
+  margin: 0.25rem 0.375rem 0;
+}

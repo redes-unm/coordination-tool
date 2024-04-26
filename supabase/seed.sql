@@ -118,5 +118,5 @@ insert into tasks (name, description, priority, status, dueDate, campaignId)
     from campaigns where name = 'Measure Home Park';
 
 insert into tasks (name, description, priority, status, dueDate, campaignId)
-    select 'plan measurement campaigns', null, 'high', 'in progress', '2024-06-01', id
+    select 'plan measurement campaigns', null, 'high', 'in progress', '2024-04-01', id
     from campaigns where name = 'Default';

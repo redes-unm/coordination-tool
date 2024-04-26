@@ -1,4 +1,4 @@
-import { Task } from '@/types';
+import { Task, taskPriorityDisplayNames, taskStatusDisplayNames } from '@/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck, faCircleCheck, faCircleHalfStroke, faExclamation,
@@ -9,24 +9,39 @@ import styles from './TaskCard.module.css';
 
 type Props = {
   task: Task
+  className?: string | undefined
 };
 
-export default function TaskCard({ task }: Props) {
-  const date = useMemo(
-    () => (task.date
-      ? task.date.getFullYear() === (new Date().getFullYear())
-        ? task.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-        : task.date.toLocaleDateString(undefined, {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        })
-      : 'No Date'),
-    [task.date],
-  );
+export default function TaskCard({ task, className }: Props) {
+  const date = useMemo(() => {
+    if (!task.date) {
+      return 'No Date';
+    }
+
+    return task.date.getFullYear() === (new Date().getFullYear())
+      ? task.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+      : task.date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+  }, [task.date]);
+
+  const statusIcon = useMemo(() => {
+    switch (task.status) {
+      case 'done':
+        return faCircleCheck;
+      case 'in progress':
+        return faCircleHalfStroke;
+      case 'todo':
+        return faCircle;
+      default:
+        return faCircle;
+    }
+  }, [task.status]);
 
   return (
-    <div className={styles['card']}>
+    <div className={`${styles['card']} ${className ?? ''}`}>
       <div className={styles['completion-indicator']}>
         {task.status === 'done' && <FontAwesomeIcon icon={faCheck} />}
       </div>
@@ -43,28 +58,16 @@ export default function TaskCard({ task }: Props) {
           <div className={styles['status']}>
             <FontAwesomeIcon
               className={styles['icon'] ?? ''}
-              icon={
-                task.status === 'done' ? faCircleCheck
-                  : task.status === 'in progress' ? faCircleHalfStroke
-                    : faCircle
-              }
+              icon={statusIcon}
             />
-            {
-              task.status === 'done' ? 'Completed'
-                : task.status === 'in progress' ? 'In progress'
-                  : 'Not started'
-            }
+            { taskStatusDisplayNames[task.status] }
           </div>
           <div className={styles['priority']}>
             <div className={styles['icon']}>
               {task.priority !== 'low' && <FontAwesomeIcon icon={faExclamation} />}
               {task.priority === 'high' && <FontAwesomeIcon icon={faExclamation} />}
             </div>
-            {
-              task.priority === 'low' ? 'Low piority'
-                : task.priority === 'high' ? 'High priority'
-                  : 'Normal priority'
-            }
+            {taskPriorityDisplayNames[task.priority]}
           </div>
         </div>
       </div>

@@ -24,6 +24,7 @@
     "@turf/center": "^6.5.0",
     "@turf/simplify": "^6.5.0",
     "client-only": "^0.0.1",
+    "debounce": "^2.0.0",
     "file-saver": "^2.0.5",
     "geojson": "^0.5.0",
     "html-to-image": "^1.11.11",
