@@ -1,9 +1,12 @@
-import styles from './page.module.css';
+import { isLoggedIn } from '@/lib/auth/server';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-  return (
-    <main className={styles['main']}>
-      TODO!
-    </main>
-  );
+export default async function Home() {
+  const loggedIn = await isLoggedIn();
+
+  if (loggedIn) {
+    redirect('/communities');
+  } else {
+    redirect('/auth/login');
+  }
 }

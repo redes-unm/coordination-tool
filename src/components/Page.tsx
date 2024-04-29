@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  useCallback, useMemo, useState,
+  useCallback, useEffect, useMemo, useState,
 } from 'react';
 import AuthContext from '@/contexts/AuthContext';
 import { isLoggedIn } from '@/lib/auth/client';
@@ -15,6 +15,7 @@ type Props = React.PropsWithChildren<{}>;
 export default function Page({ children }: Props) {
   const [loggedIn, setLoggedIn] = useState(false);
   const recheckLoggedIn = useCallback(async () => setLoggedIn(await isLoggedIn()), []);
+  useEffect(() => { recheckLoggedIn(); }, [recheckLoggedIn]);
 
   return (
     <div className={styles['page']}>
