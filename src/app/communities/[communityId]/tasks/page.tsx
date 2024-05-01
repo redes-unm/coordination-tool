@@ -17,7 +17,11 @@ export default function Tasks() {
         Tasks
       </h2>
       <Suspense fallback="Loading...">
-        <TaskList community={community} className={styles['task-list']} />
+        <TaskList
+          community={community}
+          campaigns={community.campaigns}
+          className={styles['task-list']}
+        />
       </Suspense>
     </div>
   );

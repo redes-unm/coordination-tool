@@ -15,7 +15,7 @@ type ValueFilterDef<T extends object> = {
 }[keyof T];
 
 function valueFilterMatch<T extends object>(def: ValueFilterDef<T>, t: T): boolean {
-  return t[def.field] == def.value;
+  return t[def.field] === def.value;
 }
 
 type FunctionFilterDef<T> = { name: string, match: (t: T) => boolean };
@@ -60,7 +60,7 @@ export default function FilterMenu<T extends object>({
     [filters],
   );
 
-  useEffect(() => setAllEnabled(true), [filters]);
+  useEffect(() => setAllEnabled(true), [filters, setAllEnabled]);
 
   useEffect(() => {
     onFiltered(items.filter((item) => (
@@ -90,7 +90,10 @@ export default function FilterMenu<T extends object>({
           <Dropdown.Arrow className={menuStyles['menu-arrow']} />
 
           { filters.map((group, gi) => (
-            <Fragment key={gi}>
+            <Fragment
+              // eslint-disable-next-line react/no-array-index-key
+              key={gi}
+            >
               <Dropdown.Group>
                 { group.header && (
                   <Dropdown.Label className={menuStyles['menu-label']}>
@@ -100,13 +103,15 @@ export default function FilterMenu<T extends object>({
 
                 { group.defs.map((def, i) => (
                   <Dropdown.CheckboxItem
+                    // eslint-disable-next-line react/no-array-index-key
                     key={i}
                     className={menuStyles['menu-item']}
                     checked={getEnabled(gi, i)}
                     onCheckedChange={(checked) => setEnabled((old) => {
                       const n = [...old];
-                      const groupEnabled = n[gi] ??= [];
+                      const groupEnabled = n[gi] ?? [];
                       groupEnabled[i] = checked;
+                      n[gi] = groupEnabled;
                       return n;
                     })}
                     onSelect={(e) => e.preventDefault()}

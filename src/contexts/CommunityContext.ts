@@ -2,7 +2,7 @@ import { Annotation, Community } from '@/types';
 import { createContext } from 'react';
 
 const CommunityContext = createContext<Community & {
-  campaignCount: number
+  campaigns: { id: string, name: string }[]
   taskCount: number
   collaboratorCount: number
   annotations: Annotation[]
@@ -10,7 +10,7 @@ const CommunityContext = createContext<Community & {
   id: '',
   name: '',
   description: '',
-  campaignCount: 0,
+  campaigns: [],
   taskCount: 0,
   collaboratorCount: 0,
   annotations: [],

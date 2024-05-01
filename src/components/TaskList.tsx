@@ -14,17 +14,18 @@ import TextInput from './TextInput';
 
 type Props = {
   community: Community
+  campaigns: { id: string, name: string }[]
   className?: string | undefined
 };
 
 export default function TaskList({
   community,
+  campaigns,
   className,
 }: Props) {
-  const [campaigns, tasks] = useAsyncResource(useCallback(() => {
-    const db = newDb();
-    return Promise.all([db.getCampaigns(community.id), db.getCommunityTasks(community.id)]);
-  }, [community.id])) ?? [[], []];
+  const tasks = useAsyncResource(
+    useCallback(() => newDb().getCommunityTasks(community.id), [community.id]),
+  ) ?? [];
 
   const [filteredTasks, setFilteredTasks] = useState(tasks);
   const [categories, setCategories] = useState<Category[]>([]);

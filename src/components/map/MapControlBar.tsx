@@ -5,27 +5,41 @@ import { RefObject, useCallback, useMemo } from 'react';
 import { toBlob } from 'html-to-image';
 import { saveAs } from 'file-saver';
 import { throwErr } from '@/lib/util';
-import { Annotation, annotationTypeDisplayNames, assertAnnotationType } from '@/types';
+import {
+  Annotation, AnnotationWithCampaigns, annotationTypeDisplayNames, assertAnnotationType,
+} from '@/types';
 import styles from './MapControlBar.module.css';
 import FilterMenu, { FilterGroupDef } from '../FilterMenu';
 
 type Props = {
   mapRef: RefObject<HTMLElement>
-  annotations: Annotation[]
+  annotations: AnnotationWithCampaigns[]
+  campaigns: { id: string, name: string }[]
   onAnnotationsFiltered: (filtered: Annotation[]) => void
 };
 
 export default function MapControlBar({
   mapRef,
   annotations,
+  campaigns,
   onAnnotationsFiltered,
 }: Props) {
-  const annotationFilters: FilterGroupDef<Annotation>[] = useMemo(() => [{
-    defs: Object.entries(annotationTypeDisplayNames).map(([type, name]) => {
-      assertAnnotationType(type);
-      return { name, field: 'type', value: type };
-    }),
-  }], []);
+  const annotationFilters: FilterGroupDef<AnnotationWithCampaigns>[] = useMemo(() => [
+    {
+      defs: Object.entries(annotationTypeDisplayNames).map(([type, name]) => {
+        assertAnnotationType(type);
+        return { name, field: 'type', value: type };
+      }),
+      header: 'By type',
+    },
+    {
+      defs: campaigns.map((c) => ({
+        name: c.name,
+        match: (a: AnnotationWithCampaigns) => a.campaignIds.includes(c.id),
+      })),
+      header: 'By campaign',
+    },
+  ], [campaigns]);
 
   const handleSaveViewClicked = useCallback(async () => {
     const blob = await toBlob(mapRef.current ?? throwErr('no map ref'), {

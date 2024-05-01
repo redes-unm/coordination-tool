@@ -11,7 +11,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { throwErr } from '@/lib/util';
 import usePopup from '@/hooks/usePopup';
 import useDraw from '@/hooks/useDraw';
-import { Annotation } from '@/types';
+import { Annotation, AnnotationWithCampaigns } from '@/types';
 import strftime from 'strftime';
 import useMapControl from '@/hooks/useMapControl';
 import styles from './Map.module.css';
@@ -36,7 +36,8 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
 }
 
 type Props = {
-  annotations: Annotation[],
+  annotations: AnnotationWithCampaigns[]
+  campaigns: { id: string, name: string }[]
   onAdd: (a: Annotation) => Promise<void>
   onUpdate: (a: Annotation) => Promise<void>
   onDelete: (id: string) => Promise<void>
@@ -49,6 +50,7 @@ const defaultZoom = 12;
 
 export default function Map({
   annotations: allAnnotations,
+  campaigns,
   initialLngLat = defaultLngLat,
   initialZoom = defaultZoom,
   onAdd,
@@ -145,6 +147,7 @@ export default function Map({
     <div className={styles['container']}>
       <MapControlBar
         annotations={allAnnotations}
+        campaigns={campaigns}
         onAnnotationsFiltered={setAnnotations}
         mapRef={mapContainer}
       />

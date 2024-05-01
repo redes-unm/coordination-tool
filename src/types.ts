@@ -31,6 +31,10 @@ export type Annotation = {
   geometry: Geometry
 };
 
+export type AnnotationWithCampaigns = Annotation & {
+  campaignIds: string[]
+};
+
 export function assertAnnotationType(t: string): asserts t is AnnotationType {
   if (!(t in annotationTypeDisplayNames)) {
     throw new Error(`expected annotation type, got ${t}`);
