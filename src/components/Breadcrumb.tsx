@@ -1,8 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { useSelectedLayoutSegments } from 'next/navigation';
-import { Suspense, useMemo } from 'react';
+import { usePathname } from 'next/navigation';
+import {
+  Suspense, useEffect, useMemo, useState,
+} from 'react';
 import { AsyncResource } from '@/lib/AsyncResource';
 import { newDb } from '@/db/client';
 import { ErrorBoundary } from 'react-error-boundary';
@@ -17,83 +19,56 @@ type Props = {
 };
 
 type Element = {
-  key: string
   text: string | AsyncResource<string>
-  href: string | null
+  href: string
 };
 
 export default function Breadcrumb({ className }: Props) {
-  const segments = useSelectedLayoutSegments();
+  const db = useMemo(() => newDb(), []);
+  const pathname = usePathname();
+  const [elements, setElements] = useState<Element[]>([]);
 
-  const show = useMemo(() => segments[0] === 'communities', [segments]);
+  useEffect(() => setElements((old) => {
+    const segments = pathname.substring(1).split('/');
+    const elems: Element[] = [];
+    let href = '';
 
-  const communityId = useMemo(
-    () => (segments[0] === 'communities' && segments[1]) || null,
-    [segments],
-  );
+    if (segments[0] !== 'communities') return elems;
+    href += `/${segments[0]}`;
+    elems.push({ text: 'Your Communities', href });
 
-  const campaignId = useMemo(
-    () => (segments[0] === 'communities' && segments[2] === 'campaigns' && segments[3]) || null,
-    [segments],
-  );
+    if (!segments[1]) return elems;
+    href += `/${segments[1]}`;
+    const communityId = segments[1];
+    elems.push({
+      // use old text if the id (embedded in href) hasn't changed to avoid
+      // re-fetching the community name on every navigation
+      text: old[1]?.href === href
+        ? old[1].text
+        : new AsyncResource(db.getCommunityName(communityId)),
+      href,
+    });
 
-  const communityName = useMemo(() => (
-    communityId
-      ? new AsyncResource(newDb().getCommunityName(communityId))
-      : null
-  ), [communityId]);
-
-  const campaignName = useMemo(() => (
-    campaignId
-      ? new AsyncResource(newDb().getCampaignName(campaignId))
-      : null
-  ), [campaignId]);
-
-  const elements = useMemo(() => {
-    if (!show) {
-      return [];
-    }
-
-    const elems: Element[] = [
-      {
-        key: 'root',
-        text: 'Your Communities',
-        href: communityId ? '/communities' : null,
-      },
-    ];
-
-    if (communityId && communityName) {
-      elems.push({
-        key: communityId,
-        text: communityName,
-        href: campaignId ? `/communities/${communityId}` : null,
-      });
-
-      if (campaignId && campaignName) {
-        elems.push({
-          key: campaignId,
-          text: campaignName,
-          href: null,
-        });
-      }
-    }
+    if (segments[2] !== 'tasks') return elems;
+    href += `/${segments[2]}`;
+    elems.push({ text: 'Tasks', href });
 
     return elems;
-  }, [show, communityId, communityName, campaignId, campaignName]);
+  }), [db, pathname]);
 
   return (
     <nav className={className}>
-      {elements.map(({ key, text, href }, i) => {
+      {elements.map(({ text, href }, i) => {
         const t = text instanceof AsyncResource
           ? <Suspense fallback="..."><AsyncText text={text} /></Suspense>
           : text;
 
         return (
-          <span key={key}>
+          <span key={href}>
             { i > 0 && <span className={styles['separator']}> &gt; </span> }
             <ErrorBoundary fallback={<span>[error]</span>}>
               <span className={styles['element']}>
-                { href ? <Link href={href}>{t}</Link> : t }
+                { i === elements.length - 1 ? t : <Link href={href}>{t}</Link> }
               </span>
             </ErrorBoundary>
           </span>
