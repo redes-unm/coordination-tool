@@ -14,7 +14,6 @@ import useDraw from '@/hooks/useDraw';
 import { Annotation } from '@/types';
 import strftime from 'strftime';
 import useMapControl from '@/hooks/useMapControl';
-import useAnnotationFilters from '@/hooks/useAnnotationFilters';
 import styles from './Map.module.css';
 import ModeControl from './ModeControl';
 import MapControlBar from './MapControlBar';
@@ -60,11 +59,7 @@ export default function Map({
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | undefined>();
   const [newAnnotation, setNewAnnotation] = useState<Annotation | undefined>();
-  const {
-    filteredAnnotations: annotations,
-    filters: annotationFilters,
-    setFilters: setAnnotationFilters,
-  } = useAnnotationFilters(allAnnotations);
+  const [annotations, setAnnotations] = useState<Annotation[]>([]);
 
   // update the selected annotation when the annotations change
   useEffect(() => {
@@ -149,8 +144,8 @@ export default function Map({
   return (
     <div className={styles['container']}>
       <MapControlBar
-        annotationFilters={annotationFilters}
-        onAnnotationFiltersChange={setAnnotationFilters}
+        annotations={allAnnotations}
+        onAnnotationsFiltered={setAnnotations}
         mapRef={mapContainer}
       />
       <div ref={mapContainer} className={styles['mapbox-container']} />
