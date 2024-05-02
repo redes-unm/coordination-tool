@@ -102,7 +102,7 @@ function sortItems<T>(items: T[], defs: SortDef<T>[], ascending: boolean): T[] {
 type Props<T> = {
   items: T[]
   sortDefs: SortDef<T>[]
-  fallbackSortDef?: SortDef<T>
+  fallbackSortDef?: SortDef<T> | undefined
   onSorted: (categories: Category<T>[]) => void
 };
 

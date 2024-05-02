@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import debounce from 'debounce';
 import TextInput from './TextInput';
 
-type SearchField<T extends object> = {
+export type SearchField<T extends object> = {
   [K in keyof T]: T[K] extends string ? K : never
 }[keyof T];
 

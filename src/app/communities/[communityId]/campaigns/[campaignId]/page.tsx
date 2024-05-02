@@ -18,7 +18,7 @@ export default async function Campaign({ params }: Props) {
     <>
       <h2>Campaign Overview</h2>
       <ul>
-        {campaign.tasks.map((t) => <TaskCard key={t.id} task={t} />)}
+        {campaign.tasks.map((t) => <TaskCard key={t.id} item={t} />)}
       </ul>
       <div>
         <Link href={`/communities/${params.communityId}/campaigns/${campaign.id}/annotations`}>

@@ -8,11 +8,11 @@ import { useMemo } from 'react';
 import styles from './TaskCard.module.css';
 
 type Props = {
-  task: Task
+  item: Task
   className?: string | undefined
 };
 
-export default function TaskCard({ task, className }: Props) {
+export default function TaskCard({ item: task, className }: Props) {
   const date = useMemo(() => {
     if (!task.date) {
       return 'No Date';
