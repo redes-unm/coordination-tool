@@ -1,10 +1,13 @@
+'use client';
+
 import { newDb } from '@/db/client';
 import { useAsyncResource } from '@/lib/AsyncResource';
 import {
-  Community, Task, assertTaskPriority, assertTaskStatus,
+  Task, assertTaskPriority, assertTaskStatus,
   taskPriorityDisplayNames, taskStatusDisplayNames,
 } from '@/types';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
+import CommunityContext from '@/contexts/CommunityContext';
 import TaskCard from './TaskCard';
 import { SortDef } from './SortMenu';
 import { SearchField } from './SearchBox';
@@ -12,16 +15,13 @@ import { FilterGroupDef } from './FilterMenu';
 import ItemList from './ItemList';
 
 type Props = {
-  community: Community
-  campaigns: { id: string, name: string }[]
   className?: string | undefined
 };
 
-export default function TaskList({
-  community,
-  campaigns,
-  className,
-}: Props) {
+export default function TaskList({ className }: Props) {
+  const community = useContext(CommunityContext);
+  const { campaigns } = community;
+
   const tasks = useAsyncResource(
     useCallback(() => newDb().getCommunityTasks(community.id), [community.id]),
   ) ?? [];

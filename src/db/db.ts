@@ -1,5 +1,5 @@
 import {
-  Annotation, AnnotationWithCampaigns, Campaign, Community, Task,
+  Annotation, AnnotationWithCampaigns, Campaign, CampaignWithCounts, Community, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
@@ -71,14 +71,14 @@ export default class Db {
     };
   }
 
-  async getCampaigns(communityId: string): Promise<Campaign[]> {
+  async getCampaigns(communityId: string): Promise<CampaignWithCounts[]> {
     if (!validate(communityId)) {
       throw new DbNotFoundError();
     }
 
     const { data, error } = await this.client
       .from('campaigns')
-      .select('*')
+      .select('*, tasks(count), campaignannotations(count)')
       .eq('communityid', communityId);
 
     handleError(error);
@@ -89,6 +89,8 @@ export default class Db {
       description: d.description ?? '',
       type: d.type,
       communityId: d.communityid,
+      annotationCount: getJoinedCount(d.campaignannotations),
+      taskCount: getJoinedCount(d.tasks),
     }));
   }
 

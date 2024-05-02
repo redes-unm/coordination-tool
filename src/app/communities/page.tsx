@@ -38,7 +38,7 @@ export default async function Communities() {
             }
           </div>
           <div className={styles['read-more']}>
-            <Link href={`/communities/${c.id}`}>Read More</Link>
+            <Link href={`/communities/${c.id}`}>Read more</Link>
           </div>
           <div className={styles['links']}>
             <Link href={`/communities/${c.id}/campaigns`}>

@@ -7,8 +7,8 @@ export type Community = {
 };
 
 export const campaignTypeDisplayNames = {
-  measurement: 'Measurement',
   education: 'Education',
+  measurement: 'Measurement',
   event: 'Event',
   other: 'Other',
 };
@@ -27,6 +27,11 @@ export type Campaign = {
   description: string
   type: CampaignType
   communityId: string
+};
+
+export type CampaignWithCounts = Campaign & {
+  annotationCount: number
+  taskCount: number
 };
 
 export const annotationTypeDisplayNames = {

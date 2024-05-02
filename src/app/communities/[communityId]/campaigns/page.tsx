@@ -1,27 +1,19 @@
-import { newDb } from '@/db/server';
-import { withDbNotFound404 } from '@/lib/util';
-import Link from 'next/link';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { Suspense } from 'react';
+import CampaignList from '@/components/CampaignList';
+import styles from './page.module.css';
 
-type Props = {
-  params: {
-    communityId: string
-  }
-};
-
-export default async function Campaigns({ params }: Props) {
-  const db = newDb();
-  const campaigns = await withDbNotFound404(db.getCampaigns(params.communityId));
-
+export default function Campaigns() {
   return (
-    <>
-      <h2>Community Campaigns</h2>
-      { campaigns.map((c) => (
-        <div key={c.id}>
-          <Link href={`/communities/${params.communityId}/campaigns/${c.id}`}>
-            {c.name}
-          </Link>
-        </div>
-      ))}
-    </>
+    <div className={styles['content']}>
+      <h2 className={styles['title']}>
+        <FontAwesomeIcon icon={faClipboard} />
+        Campaigns
+      </h2>
+      <Suspense fallback="Loading...">
+        <CampaignList className={styles['campaign-list']} />
+      </Suspense>
+    </div>
   );
 }

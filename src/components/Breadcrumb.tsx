@@ -49,9 +49,9 @@ export default function Breadcrumb({ className }: Props) {
       href,
     });
 
-    if (segments[2] !== 'tasks') return elems;
+    if (segments[2] !== 'tasks' && segments[2] !== 'campaigns') return elems;
     href += `/${segments[2]}`;
-    elems.push({ text: 'Tasks', href });
+    elems.push({ text: segments[2] === 'tasks' ? 'Tasks' : 'Campaigns', href });
 
     return elems;
   }), [db, pathname]);
