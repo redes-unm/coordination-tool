@@ -87,6 +87,7 @@ export default class Db {
       id: d.id,
       name: d.name,
       description: d.description ?? '',
+      type: d.type,
       communityId: d.communityid,
     }));
   }
@@ -112,6 +113,7 @@ export default class Db {
       id: data.id,
       name: data.name,
       description: data.description ?? '',
+      type: data.type,
       communityId: data.communityid,
       tasks: data.tasks.map((t) => ({
         id: t.id,

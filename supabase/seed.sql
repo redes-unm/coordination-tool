@@ -2,20 +2,20 @@ insert into communities (name, description) values
     ('Georgia Tech', 'Measurement efforts for Georgia Tech''s campus and the surrounding area'),
     ('Emory', 'Measurement efforts for Emory''s campus and the surrounding area');
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Default', 'Default campaign for Emory''s measurement efforts', id, true
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Default', 'Default campaign for Emory''s measurement efforts', 'other', id, true
     from communities where name = 'Georgia Tech';
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Measure campus', 'Take measurements all over campus', id, null
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Measure campus', 'Take measurements all over campus', 'measurement', id, null
     from communities where name = 'Georgia Tech';
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Measure Home Park', null, id, null
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Measure Home Park', null, 'event', id, null
     from communities where name = 'Georgia Tech';
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Measure', 'Default campaign for Emory''s measurement efforts', id, true
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Measure', 'Default campaign for Emory''s measurement efforts', 'education', id, true
     from communities where name = 'Emory';
 
 insert into annotations (name, description, type, visible, communityId, geo)

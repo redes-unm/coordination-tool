@@ -6,10 +6,26 @@ export type Community = {
   description: string
 };
 
+export const campaignTypeDisplayNames = {
+  measurement: 'Measurement',
+  education: 'Education',
+  event: 'Event',
+  other: 'Other',
+};
+
+export type CampaignType = keyof typeof campaignTypeDisplayNames;
+
+export function assertCampaignType(t: string): asserts t is CampaignType {
+  if (!(t in campaignTypeDisplayNames)) {
+    throw new Error(`expected campaign type, got ${t}`);
+  }
+}
+
 export type Campaign = {
   id: string
   name: string
   description: string
+  type: CampaignType
   communityId: string
 };
 

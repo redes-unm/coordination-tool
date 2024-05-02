@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix"
+    "lint:fix": "next lint --fix",
+    "gen-db-types": "supabase migration up && (echo '// DO NOT MODIFY. Types generated with `npm run gen-db-types`.' && supabase gen types typescript --local) >src/db/types.generated.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",

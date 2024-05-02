@@ -1,12 +1,11 @@
-// types generated with `npx supabase gen types typescript --local`
-
+// DO NOT MODIFY. Types generated with `npm run gen-db-types`.
 export type Json =
   | string
   | number
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export type Database = {
   graphql_public: {
@@ -43,7 +42,7 @@ export type Database = {
           geo: unknown
           id: string
           name: string
-          type: Database['public']['Enums']['annotationtype']
+          type: Database["public"]["Enums"]["annotationtype"]
           visible: boolean
         }
         Insert: {
@@ -52,7 +51,7 @@ export type Database = {
           geo: unknown
           id?: string
           name: string
-          type: Database['public']['Enums']['annotationtype']
+          type: Database["public"]["Enums"]["annotationtype"]
           visible: boolean
         }
         Update: {
@@ -61,16 +60,16 @@ export type Database = {
           geo?: unknown
           id?: string
           name?: string
-          type?: Database['public']['Enums']['annotationtype']
+          type?: Database["public"]["Enums"]["annotationtype"]
           visible?: boolean
         }
         Relationships: [
           {
-            foreignKeyName: 'annotations_communityid_fkey'
-            columns: ['communityid']
+            foreignKeyName: "annotations_communityid_fkey"
+            columns: ["communityid"]
             isOneToOne: false
-            referencedRelation: 'communities'
-            referencedColumns: ['id']
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -89,18 +88,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'campaignannotations_annotationid_fkey'
-            columns: ['annotationid']
+            foreignKeyName: "campaignannotations_annotationid_fkey"
+            columns: ["annotationid"]
             isOneToOne: false
-            referencedRelation: 'annotations'
-            referencedColumns: ['id']
+            referencedRelation: "annotations"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'campaignannotations_campaignid_fkey'
-            columns: ['campaignid']
+            foreignKeyName: "campaignannotations_campaignid_fkey"
+            columns: ["campaignid"]
             isOneToOne: false
-            referencedRelation: 'campaigns'
-            referencedColumns: ['id']
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -111,6 +110,7 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          type: Database["public"]["Enums"]["campaigntype"]
         }
         Insert: {
           communityid: string
@@ -118,6 +118,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          type: Database["public"]["Enums"]["campaigntype"]
         }
         Update: {
           communityid?: string
@@ -125,14 +126,15 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          type?: Database["public"]["Enums"]["campaigntype"]
         }
         Relationships: [
           {
-            foreignKeyName: 'campaigns_communityid_fkey'
-            columns: ['communityid']
+            foreignKeyName: "campaigns_communityid_fkey"
+            columns: ["communityid"]
             isOneToOne: false
-            referencedRelation: 'communities'
-            referencedColumns: ['id']
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -151,18 +153,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'collaborators_communityid_fkey'
-            columns: ['communityid']
+            foreignKeyName: "collaborators_communityid_fkey"
+            columns: ["communityid"]
             isOneToOne: false
-            referencedRelation: 'communities'
-            referencedColumns: ['id']
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'collaborators_userid_fkey'
-            columns: ['userid']
+            foreignKeyName: "collaborators_userid_fkey"
+            columns: ["userid"]
             isOneToOne: false
-            referencedRelation: 'users'
-            referencedColumns: ['id']
+            referencedRelation: "users"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -191,8 +193,8 @@ export type Database = {
           duedate: string | null
           id: string
           name: string
-          priority: Database['public']['Enums']['taskpriority']
-          status: Database['public']['Enums']['taskstatus']
+          priority: Database["public"]["Enums"]["taskpriority"]
+          status: Database["public"]["Enums"]["taskstatus"]
         }
         Insert: {
           campaignid: string
@@ -200,8 +202,8 @@ export type Database = {
           duedate?: string | null
           id?: string
           name: string
-          priority: Database['public']['Enums']['taskpriority']
-          status: Database['public']['Enums']['taskstatus']
+          priority: Database["public"]["Enums"]["taskpriority"]
+          status: Database["public"]["Enums"]["taskstatus"]
         }
         Update: {
           campaignid?: string
@@ -209,16 +211,16 @@ export type Database = {
           duedate?: string | null
           id?: string
           name?: string
-          priority?: Database['public']['Enums']['taskpriority']
-          status?: Database['public']['Enums']['taskstatus']
+          priority?: Database["public"]["Enums"]["taskpriority"]
+          status?: Database["public"]["Enums"]["taskstatus"]
         }
         Relationships: [
           {
-            foreignKeyName: 'tasks_campaignid_fkey'
-            columns: ['campaignid']
+            foreignKeyName: "tasks_campaignid_fkey"
+            columns: ["campaignid"]
             isOneToOne: false
-            referencedRelation: 'campaigns'
-            referencedColumns: ['id']
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -230,9 +232,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      annotationtype: 'infra' | 'equipment' | 'person' | 'poi' | 'region'
-      taskpriority: 'low' | 'medium' | 'high'
-      taskstatus: 'todo' | 'in progress' | 'done'
+      annotationtype: "infra" | "equipment" | "person" | "poi" | "region"
+      campaigntype: "measurement" | "education" | "event" | "other"
+      taskpriority: "low" | "medium" | "high"
+      taskstatus: "todo" | "in progress" | "done"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -342,11 +345,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'objects_bucketId_fkey'
-            columns: ['bucket_id']
+            foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
             isOneToOne: false
-            referencedRelation: 'buckets'
-            referencedColumns: ['id']
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -417,86 +420,87 @@ export type Database = {
       [_ in never]: never
     }
   }
-};
+}
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>];
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-  | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
-  | { schema: keyof Database },
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-    Database[PublicTableNameOrOptions['schema']]['Views'])
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-  Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
-    Row: infer R
-  }
-    ? R
-    : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
-  PublicSchema['Views'])
-    ? (PublicSchema['Tables'] &
-    PublicSchema['Views'])[PublicTableNameOrOptions] extends {
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
       ? R
       : never
-    : never;
+    : never
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-  | keyof PublicSchema['Tables']
-  | { schema: keyof Database },
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-    Insert: infer I
-  }
-    ? I
-    : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
       ? I
       : never
-    : never;
+    : never
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-  | keyof PublicSchema['Tables']
-  | { schema: keyof Database },
+    | keyof PublicSchema["Tables"]
+    | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-    Update: infer U
-  }
-    ? U
-    : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-    ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
       ? U
       : never
-    : never;
+    : never
 
 export type Enums<
   PublicEnumNameOrOptions extends
-  | keyof PublicSchema['Enums']
-  | { schema: keyof Database },
+    | keyof PublicSchema["Enums"]
+    | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-    ? PublicSchema['Enums'][PublicEnumNameOrOptions]
-    : never;
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
