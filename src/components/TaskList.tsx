@@ -9,8 +9,9 @@ import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import styles from './TaskList.module.css';
 import TaskCard from './TaskCard';
 import TaskFilter from './TaskFilter';
-import TaskSort, { Category } from './TaskSort';
+import TaskSort from './TaskSort';
 import TextInput from './TextInput';
+import { Category } from './SortMenu';
 
 type Props = {
   community: Community
@@ -28,7 +29,7 @@ export default function TaskList({
   ) ?? [];
 
   const [filteredTasks, setFilteredTasks] = useState(tasks);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category<Task>[]>([]);
   const [searchText, setSearchText] = useState('');
   const [searchedTasks, setSearchedTasks] = useState<Task[]>(tasks);
 
@@ -76,9 +77,9 @@ export default function TaskList({
       </div>
       <div className={styles['list']}>
         {
-          categories.map(({ name, tasks: catTasks }) => (
+          categories.map(({ name, items: catTasks }) => (
             <div className={styles['category']} key={name}>
-              <h3>{name}</h3>
+              {name && <h3>{name}</h3>}
               {catTasks.map((t) => <TaskCard task={t} key={t.id} className={styles['task']} />)}
             </div>
           ))
