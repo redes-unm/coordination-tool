@@ -4,11 +4,12 @@ import React, {
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Root, createRoot } from 'react-dom/client';
+import { v4 as uuid } from 'uuid';
 import styles from './TextInput.module.css';
 
 type BaseProps = {
   label: string
-  id: string
+  id?: string
   icon?: IconDefinition
   labelAbove?: boolean | undefined
   hideLabel?: boolean | undefined
@@ -27,7 +28,7 @@ type Props = SingleProps | MultiProps;
 
 function TextInput({
   label,
-  id,
+  id: propsId,
   icon,
   labelAbove = false,
   hideLabel = false,
@@ -38,6 +39,8 @@ function TextInput({
   const singleRef = useRef<HTMLInputElement>(null);
   const multiRef = useRef<HTMLTextAreaElement>(null);
   const iconRoot = useRef<Root | null>(null);
+  const [id, setId] = useState(propsId);
+  useEffect(() => setId(propsId ?? uuid()), [propsId]);
 
   useImperativeHandle(ref, () => ({
     focus: () => (multiLine ? multiRef : singleRef).current?.focus(),

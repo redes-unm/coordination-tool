@@ -1,17 +1,13 @@
-import debounce from 'debounce';
 import { newDb } from '@/db/client';
 import { useAsyncResource } from '@/lib/AsyncResource';
 import { Community, Task } from '@/types';
-import {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { useCallback, useMemo, useState } from 'react';
 import styles from './TaskList.module.css';
 import TaskCard from './TaskCard';
 import TaskFilter from './TaskFilter';
 import TaskSort from './TaskSort';
-import TextInput from './TextInput';
 import { Category } from './SortMenu';
+import SearchBox from './SearchBox';
 
 type Props = {
   community: Community
@@ -30,24 +26,7 @@ export default function TaskList({
 
   const [filteredTasks, setFilteredTasks] = useState(tasks);
   const [categories, setCategories] = useState<Category<Task>[]>([]);
-  const [searchText, setSearchText] = useState('');
   const [searchedTasks, setSearchedTasks] = useState<Task[]>(tasks);
-
-  const updateSearchedTasks = useMemo(() => debounce((
-    filtered: Task[],
-    text: string,
-  ) => {
-    const searched = filtered.filter((t) => (
-      t.name.toLowerCase().includes(text.toLowerCase())
-      || t.description.toLowerCase().includes(text.toLowerCase())
-    ));
-    setSearchedTasks(searched);
-  }, 300), []);
-
-  useEffect(
-    () => updateSearchedTasks(filteredTasks, searchText),
-    [filteredTasks, searchText, updateSearchedTasks],
-  );
 
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
@@ -65,14 +44,10 @@ export default function TaskList({
             onSorted={setCategories}
           />
         </div>
-        <TextInput
-          label="Search"
-          id="task-search"
-          placeholder="Search"
-          icon={faSearch}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          hideLabel
+        <SearchBox
+          items={filteredTasks}
+          searchFields={useMemo(() => ['name', 'description'], [])}
+          onSearched={setSearchedTasks}
         />
       </div>
       <div className={styles['list']}>
