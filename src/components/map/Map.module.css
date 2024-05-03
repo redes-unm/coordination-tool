@@ -25,3 +25,9 @@
   top: 0.5rem;
   left: 0.5rem;
 }
+
+.bar {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}

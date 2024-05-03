@@ -5,73 +5,32 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheck, faChevronDown, faChevronUp, faFilter,
 } from '@fortawesome/free-solid-svg-icons';
+import { Fragment, useMemo } from 'react';
 import {
-  Fragment,
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+  FilterEnabled, FilterNames, toggleAllEnabled, toggleSingleEnabled,
+} from '@/hooks/useFilter';
+import { throwErr } from '@/lib/util';
 
-type ValueFilterDef<T extends object> = {
-  [K in keyof T] : { name: string, field: K, value: T[K] }
-}[keyof T];
-
-function valueFilterMatch<T extends object>(def: ValueFilterDef<T>, t: T): boolean {
-  return t[def.field] === def.value;
-}
-
-type FunctionFilterDef<T> = { name: string, match: (t: T) => boolean };
-
-function functionFilterMatch<T>(def: FunctionFilterDef<T>, t: T): boolean {
-  return def.match(t);
-}
-
-export type FilterDef<T> = FunctionFilterDef<T> | (T extends object ? ValueFilterDef<T> : never);
-
-function filterMatch<T>(def: FilterDef<T>, t: T): boolean {
-  return 'match' in def ? functionFilterMatch(def, t) : valueFilterMatch(def, t);
-}
-
-export type FilterGroupDef<T> = {
-  defs: FilterDef<T>[]
-  header?: string
-};
-
-type Props<T> = {
-  items: T[]
-  filters: FilterGroupDef<T>[]
-  onFiltered: (items: T[]) => void
+type Props = {
+  names: FilterNames
+  enabled: FilterEnabled
+  onEnabledChange: (e: FilterEnabled) => void
   label?: string
 };
 
-export default function FilterMenu<T extends object>({
-  items,
-  filters,
-  onFiltered,
+export default function FilterMenu({
+  names,
+  enabled,
+  onEnabledChange,
   label = 'Filter',
-}: Props<T>) {
-  const [enabled, setEnabled] = useState<boolean[][]>([]);
+}: Props) {
+  const allEnabled = useMemo(() => (
+    Object.values(enabled).every((group) => Object.values(group).every((item) => item))
+  ), [enabled]);
 
-  const getEnabled = useCallback(
-    (groupIndex: number, index: number) => enabled[groupIndex]?.[index] ?? true,
-    [enabled],
-  );
-
-  const setAllEnabled = useCallback(
-    (value: boolean) => setEnabled(filters.map((g) => g.defs.map(() => value))),
-    [filters],
-  );
-
-  useEffect(() => setAllEnabled(true), [filters, setAllEnabled]);
-
-  useEffect(() => {
-    onFiltered(items.filter((item) => (
-      filters.every((group, gi) => (
-        group.defs.some((def, i) => getEnabled(gi, i) && filterMatch(def, item))
-      ))
-    )));
-  }, [onFiltered, filters, getEnabled, items]);
-
-  const allEnabled = useMemo(() => enabled.every((g) => g.every((f) => f)), [enabled]);
-  const allDisabled = useMemo(() => enabled.every((g) => g.every((f) => !f)), [enabled]);
+  const allDisabled = useMemo(() => (
+    Object.values(enabled).every((group) => Object.values(group).every((item) => !item))
+  ), [enabled]);
 
   return (
     <Dropdown.Root>
@@ -89,37 +48,29 @@ export default function FilterMenu<T extends object>({
         <Dropdown.Content className={menuStyles['menu-content']}>
           <Dropdown.Arrow className={menuStyles['menu-arrow']} />
 
-          { filters.map((group, gi) => (
-            <Fragment
-              // eslint-disable-next-line react/no-array-index-key
-              key={gi}
-            >
+          { Object.entries(names).map(([groupId, group]) => (
+            <Fragment key={groupId}>
               <Dropdown.Group>
-                { group.header && (
+                { group.name && (
                   <Dropdown.Label className={menuStyles['menu-label']}>
-                    {group.header}
+                    {group.name}
                   </Dropdown.Label>
                 )}
 
-                { group.defs.map((def, i) => (
+                { Object.entries(group.items).map(([itemId, itemName]) => (
                   <Dropdown.CheckboxItem
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={i}
+                    key={itemId}
                     className={menuStyles['menu-item']}
-                    checked={getEnabled(gi, i)}
-                    onCheckedChange={(checked) => setEnabled((old) => {
-                      const n = [...old];
-                      const groupEnabled = n[gi] ?? [];
-                      groupEnabled[i] = checked;
-                      n[gi] = groupEnabled;
-                      return n;
-                    })}
+                    checked={enabled[groupId]?.[itemId] ?? throwErr('missing enabled')}
+                    onCheckedChange={(checked) => onEnabledChange(
+                      toggleSingleEnabled(enabled, groupId, itemId, checked),
+                    )}
                     onSelect={(e) => e.preventDefault()}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
                       <FontAwesomeIcon icon={faCheck} />
                     </Dropdown.ItemIndicator>
-                    {def.name}
+                    {itemName}
                   </Dropdown.CheckboxItem>
                 ))}
               </Dropdown.Group>
@@ -132,7 +83,7 @@ export default function FilterMenu<T extends object>({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => setAllEnabled(true)}
+            onClick={() => onEnabledChange(toggleAllEnabled(enabled, true))}
             disabled={allEnabled}
           >
             Show all
@@ -140,7 +91,7 @@ export default function FilterMenu<T extends object>({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => setAllEnabled(false)}
+            onClick={() => onEnabledChange(toggleAllEnabled(enabled, false))}
             disabled={allDisabled}
           >
             Hide all

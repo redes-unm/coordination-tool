@@ -5,7 +5,7 @@ import { useAsyncResource } from '@/lib/AsyncResource';
 import { CampaignWithCounts, assertCampaignType, campaignTypeDisplayNames } from '@/types';
 import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
-import { FilterGroupDef } from './FilterMenu';
+import { Filter } from '@/hooks/useFilter';
 import { SortDef } from './SortMenu';
 import { SearchField } from './SearchBox';
 import ItemList from './ItemList';
@@ -21,15 +21,18 @@ export default function CampaignList({ className }: Props) {
     useCallback(() => newDb().getCampaigns(community.id), [community.id]),
   ) ?? [];
 
-  const filterDefs: FilterGroupDef<CampaignWithCounts>[] = useMemo(() => [
-    {
-      defs: Object.entries(campaignTypeDisplayNames).map(([type, name]) => {
+  const filter: Filter<CampaignWithCounts> = useMemo(() => ({
+    type: {
+      name: 'By type',
+      items: Object.entries(campaignTypeDisplayNames).reduce((items, [type, name]) => {
         assertCampaignType(type);
-        return { name, field: 'type', value: type };
-      }),
-      header: 'By type',
+        return {
+          ...items,
+          [type]: { name, field: 'type', value: type },
+        };
+      }, {}),
     },
-  ], []);
+  }), []);
 
   const sortDefs: SortDef<CampaignWithCounts>[] = useMemo(() => [
     {
@@ -53,7 +56,7 @@ export default function CampaignList({ className }: Props) {
     <ItemList
       items={campaigns}
       Item={CampaignCard}
-      filterDefs={filterDefs}
+      filter={filter}
       sortDefs={sortDefs}
       searchFields={searchFields}
       className={className}

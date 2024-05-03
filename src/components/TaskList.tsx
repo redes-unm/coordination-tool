@@ -8,10 +8,10 @@ import {
 } from '@/types';
 import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
+import { Filter } from '@/hooks/useFilter';
 import TaskCard from './TaskCard';
 import { SortDef } from './SortMenu';
 import { SearchField } from './SearchBox';
-import { FilterGroupDef } from './FilterMenu';
 import ItemList from './ItemList';
 
 type Props = {
@@ -26,26 +26,35 @@ export default function TaskList({ className }: Props) {
     useCallback(() => newDb().getCommunityTasks(community.id), [community.id]),
   ) ?? [];
 
-  const filterDefs: FilterGroupDef<Task>[] = useMemo(() => [
-    {
-      defs: Object.entries(taskPriorityDisplayNames).map(([priority, name]) => {
+  const filter: Filter<Task> = useMemo(() => ({
+    priority: {
+      name: 'By priority',
+      items: Object.entries(taskPriorityDisplayNames).reduce((items, [priority, name]) => {
         assertTaskPriority(priority);
-        return { name, field: 'priority', value: priority };
-      }),
-      header: 'By priority',
+        return {
+          ...items,
+          [priority]: { name, field: 'priority', value: priority },
+        };
+      }, {}),
     },
-    {
-      defs: Object.entries(taskStatusDisplayNames).map(([status, name]) => {
+    status: {
+      name: 'By status',
+      items: Object.entries(taskStatusDisplayNames).reduce((items, [status, name]) => {
         assertTaskStatus(status);
-        return { name, field: 'status', value: status };
-      }),
-      header: 'By priority',
+        return {
+          ...items,
+          [status]: { name, field: 'status', value: status },
+        };
+      }, {}),
     },
-    {
-      defs: campaigns.map((c) => ({ name: c.name, field: 'campaignId', value: c.id })),
-      header: 'By campaign',
+    campaign: {
+      name: 'By campaign',
+      items: campaigns.reduce((items, campaign) => ({
+        ...items,
+        [campaign.id]: { name: campaign.name, field: 'campaignId', value: campaign.id },
+      }), {}),
     },
-  ], [campaigns]);
+  }), [campaigns]);
 
   const sortDefs: SortDef<Task>[] = useMemo(() => [
     {
@@ -113,7 +122,7 @@ export default function TaskList({ className }: Props) {
     <ItemList
       items={tasks}
       Item={TaskCard}
-      filterDefs={filterDefs}
+      filter={filter}
       sortDefs={sortDefs}
       fallbackSortDef={fallbackSortDef}
       searchFields={searchFields}

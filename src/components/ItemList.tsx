@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import useFilter, { Filter } from '@/hooks/useFilter';
 import styles from './ItemList.module.css';
 import SortMenu, { Category, SortDef } from './SortMenu';
 import SearchBox, { SearchField } from './SearchBox';
-import FilterMenu, { FilterGroupDef } from './FilterMenu';
+import FilterMenu from './FilterMenu';
 
 type Props<T extends object> = {
   items: T[],
   Item: React.FC<{ item: T, className?: string | undefined }>,
-  filterDefs: FilterGroupDef<T>[]
+  filter: Filter<T>
   sortDefs: SortDef<T>[]
   fallbackSortDef?: SortDef<T>
   searchFields: SearchField<T>[]
@@ -17,24 +18,30 @@ type Props<T extends object> = {
 export default function ItemList<T extends object>({
   items,
   Item,
-  filterDefs,
+  filter,
   sortDefs,
   fallbackSortDef,
   searchFields,
   className,
 }: Props<T>) {
-  const [filteredItems, setFilteredItems] = useState(items);
   const [categories, setCategories] = useState<Category<T>[]>([]);
   const [searchedItems, setSearchedItems] = useState<T[]>(items);
+
+  const {
+    filtered,
+    filterNames,
+    filterEnabled,
+    setFilterEnabled,
+  } = useFilter(items, filter);
 
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
       <div className={styles['header']}>
         <div className={styles['menus']}>
           <FilterMenu
-            items={items}
-            filters={filterDefs}
-            onFiltered={setFilteredItems}
+            names={filterNames}
+            enabled={filterEnabled}
+            onEnabledChange={setFilterEnabled}
           />
 
           <SortMenu
@@ -45,7 +52,7 @@ export default function ItemList<T extends object>({
           />
         </div>
         <SearchBox
-          items={filteredItems}
+          items={filtered}
           searchFields={searchFields}
           onSearched={setSearchedItems}
         />
