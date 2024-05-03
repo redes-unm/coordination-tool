@@ -6,8 +6,8 @@ import { CampaignWithCounts, assertCampaignType, campaignTypeDisplayNames } from
 import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { Filter } from '@/hooks/useFilter';
+import { SearchField } from '@/hooks/useSearch';
 import { SortDef } from './SortMenu';
-import { SearchField } from './SearchBox';
 import ItemList from './ItemList';
 import CampaignCard from './CampaignCard';
 

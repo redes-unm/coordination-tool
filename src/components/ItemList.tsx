@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import useFilter, { Filter } from '@/hooks/useFilter';
+import useSearch, { SearchField } from '@/hooks/useSearch';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import styles from './ItemList.module.css';
 import SortMenu, { Category, SortDef } from './SortMenu';
-import SearchBox, { SearchField } from './SearchBox';
 import FilterMenu from './FilterMenu';
+import TextInput from './TextInput';
 
 type Props<T extends object> = {
   items: T[],
@@ -25,7 +27,6 @@ export default function ItemList<T extends object>({
   className,
 }: Props<T>) {
   const [categories, setCategories] = useState<Category<T>[]>([]);
-  const [searchedItems, setSearchedItems] = useState<T[]>(items);
 
   const {
     filtered,
@@ -33,6 +34,12 @@ export default function ItemList<T extends object>({
     filterEnabled,
     setFilterEnabled,
   } = useFilter(items, filter);
+
+  const {
+    searched,
+    searchText,
+    setSearchText,
+  } = useSearch(filtered, searchFields);
 
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
@@ -45,16 +52,19 @@ export default function ItemList<T extends object>({
           />
 
           <SortMenu
-            items={searchedItems}
+            items={searched}
             sortDefs={sortDefs}
             fallbackSortDef={fallbackSortDef}
             onSorted={setCategories}
           />
         </div>
-        <SearchBox
-          items={filtered}
-          searchFields={searchFields}
-          onSearched={setSearchedItems}
+        <TextInput
+          label="Search"
+          placeholder="Search"
+          icon={faSearch}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          hideLabel
         />
       </div>
       <div className={styles['list']}>

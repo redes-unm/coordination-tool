@@ -9,9 +9,9 @@ import {
 import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { Filter } from '@/hooks/useFilter';
+import { SearchField } from '@/hooks/useSearch';
 import TaskCard from './TaskCard';
 import { SortDef } from './SortMenu';
-import { SearchField } from './SearchBox';
 import ItemList from './ItemList';
 
 type Props = {
