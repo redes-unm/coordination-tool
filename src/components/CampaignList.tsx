@@ -7,7 +7,7 @@ import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
-import { SortDef } from './SortMenu';
+import { SortCriteria } from '@/hooks/useSort';
 import ItemList from './ItemList';
 import CampaignCard from './CampaignCard';
 
@@ -34,13 +34,13 @@ export default function CampaignList({ className }: Props) {
     },
   }), []);
 
-  const sortDefs: SortDef<CampaignWithCounts>[] = useMemo(() => [
-    {
-      key: 'Name',
+  const sortCriteria: SortCriteria<CampaignWithCounts> = useMemo(() => ({
+    name: {
+      name: 'Name',
       field: 'name',
     },
-    {
-      key: 'Type',
+    type: {
+      name: 'Type',
       field: 'type',
       categoryDefs: Object.entries(campaignTypeDisplayNames)
         .map(([type, name]) => {
@@ -48,7 +48,7 @@ export default function CampaignList({ className }: Props) {
           return { name, field: 'type', value: type };
         }),
     },
-  ], []);
+  }), []);
 
   const searchFields: SearchField<CampaignWithCounts>[] = useMemo(() => ['name', 'description'], []);
 
@@ -57,7 +57,7 @@ export default function CampaignList({ className }: Props) {
       items={campaigns}
       Item={CampaignCard}
       filter={filter}
-      sortDefs={sortDefs}
+      sortCriteria={sortCriteria}
       searchFields={searchFields}
       className={className}
     />

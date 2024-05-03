@@ -10,8 +10,8 @@ import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
+import { SortCriteria, SortCriterion } from '@/hooks/useSort';
 import TaskCard from './TaskCard';
-import { SortDef } from './SortMenu';
 import ItemList from './ItemList';
 
 type Props = {
@@ -56,9 +56,9 @@ export default function TaskList({ className }: Props) {
     },
   }), [campaigns]);
 
-  const sortDefs: SortDef<Task>[] = useMemo(() => [
-    {
-      key: 'Date',
+  const sortCriteria: SortCriteria<Task> = useMemo(() => ({
+    date: {
+      name: 'Date',
       sort: (a: Task, b: Task) => {
         const aTime = a.date?.getTime() ?? Infinity;
         const bTime = b.date?.getTime() ?? Infinity;
@@ -86,8 +86,8 @@ export default function TaskList({ className }: Props) {
         },
       ],
     },
-    {
-      key: 'Priority',
+    priority: {
+      name: 'Priority',
       field: 'priority',
       order: ['low', 'medium', 'high'],
       categoryDefs: Object.entries(taskPriorityDisplayNames).map(([priority, name]) => {
@@ -95,8 +95,8 @@ export default function TaskList({ className }: Props) {
         return { name, field: 'priority', value: priority };
       }),
     },
-    {
-      key: 'Status',
+    status: {
+      name: 'Status',
       field: 'status',
       order: ['todo', 'in progress', 'done'],
       categoryDefs: Object.entries(taskStatusDisplayNames).map(([status, name]) => {
@@ -104,15 +104,15 @@ export default function TaskList({ className }: Props) {
         return { name, field: 'status', value: status };
       }),
     },
-    {
-      key: 'Campaign',
+    campaign: {
+      name: 'Campaign',
       field: 'campaignId',
       categoryDefs: campaigns.map((c) => ({ name: c.name, field: 'campaignId', value: c.id })),
     },
-  ], [campaigns]);
+  }), [campaigns]);
 
-  const fallbackSortDef: SortDef<Task> = useMemo(() => ({
-    key: 'Name',
+  const fallbackSortCriterion: SortCriterion<Task> = useMemo(() => ({
+    name: 'Name',
     field: 'name',
   }), []);
 
@@ -123,8 +123,8 @@ export default function TaskList({ className }: Props) {
       items={tasks}
       Item={TaskCard}
       filter={filter}
-      sortDefs={sortDefs}
-      fallbackSortDef={fallbackSortDef}
+      sortCriteria={sortCriteria}
+      fallbackSortCriterion={fallbackSortCriterion}
       searchFields={searchFields}
       className={className}
     />

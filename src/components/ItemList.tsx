@@ -1,9 +1,9 @@
-import { useState } from 'react';
 import useFilter, { Filter } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
 import styles from './ItemList.module.css';
-import SortMenu, { Category, SortDef } from './SortMenu';
+import SortMenu from './SortMenu';
 import FilterMenu from './FilterMenu';
 import TextInput from './TextInput';
 
@@ -11,8 +11,8 @@ type Props<T extends object> = {
   items: T[],
   Item: React.FC<{ item: T, className?: string | undefined }>,
   filter: Filter<T>
-  sortDefs: SortDef<T>[]
-  fallbackSortDef?: SortDef<T>
+  sortCriteria: SortCriteria<T>
+  fallbackSortCriterion?: SortCriterion<T>
   searchFields: SearchField<T>[]
   className?: string | undefined
 };
@@ -21,13 +21,11 @@ export default function ItemList<T extends object>({
   items,
   Item,
   filter,
-  sortDefs,
-  fallbackSortDef,
+  sortCriteria,
+  fallbackSortCriterion,
   searchFields,
   className,
 }: Props<T>) {
-  const [categories, setCategories] = useState<Category<T>[]>([]);
-
   const {
     filtered,
     filterNames,
@@ -41,6 +39,15 @@ export default function ItemList<T extends object>({
     setSearchText,
   } = useSearch(filtered, searchFields);
 
+  const {
+    sorted,
+    sortNames,
+    sortCriteriaOrder,
+    setSortCriteriaOrder,
+    sortDirection,
+    setSortDirection,
+  } = useSort(searched, sortCriteria, fallbackSortCriterion);
+
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
       <div className={styles['header']}>
@@ -52,10 +59,11 @@ export default function ItemList<T extends object>({
           />
 
           <SortMenu
-            items={searched}
-            sortDefs={sortDefs}
-            fallbackSortDef={fallbackSortDef}
-            onSorted={setCategories}
+            names={sortNames}
+            criteriaOrder={sortCriteriaOrder}
+            setCriteriaOrder={setSortCriteriaOrder}
+            direction={sortDirection}
+            setDirection={setSortDirection}
           />
         </div>
         <TextInput
@@ -69,7 +77,7 @@ export default function ItemList<T extends object>({
       </div>
       <div className={styles['list']}>
         {
-          categories.map(({ name, items: catItems }) => (
+          sorted.map(({ name, items: catItems }) => (
             <div className={styles['category']} key={name}>
               {name && <h3>{name}</h3>}
               {catItems.map((t, i) => (

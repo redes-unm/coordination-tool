@@ -8,8 +8,8 @@ export type Community = {
 
 export const campaignTypeDisplayNames = {
   education: 'Education',
-  measurement: 'Measurement',
   event: 'Event',
+  measurement: 'Measurement',
   other: 'Other',
 };
 
