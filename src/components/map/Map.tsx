@@ -1,5 +1,3 @@
-'use client';
-
 import './map.css';
 import React, {
   useRef, useEffect, useState, useMemo, useCallback,
@@ -11,9 +9,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { throwErr } from '@/lib/util';
 import usePopup from '@/hooks/usePopup';
 import useDraw from '@/hooks/useDraw';
-import {
-  Annotation, AnnotationWithCampaigns, annotationTypeDisplayNames, assertAnnotationType,
-} from '@/types';
+import { Annotation } from '@/types';
 import strftime from 'strftime';
 import useMapControl from '@/hooks/useMapControl';
 import saveAs from 'file-saver';
@@ -21,7 +17,7 @@ import { toBlob } from 'html-to-image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import btnStyles from '@/components/Button.module.css';
-import useFilter from '@/hooks/useFilter';
+import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import styles from './Map.module.css';
 import ModeControl from './ModeControl';
 import FilterMenu from '../FilterMenu';
@@ -44,8 +40,11 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
 }
 
 type Props = {
-  annotations: AnnotationWithCampaigns[]
-  campaigns: { id: string, name: string }[]
+  annotations: Annotation[]
+  filterNames: FilterNames
+  filterEnabled: FilterEnabled
+  onFilterEnabled: (e: FilterEnabled) => void
+  message?: string | undefined
   onAdd: (a: Annotation) => Promise<void>
   onUpdate: (a: Annotation) => Promise<void>
   onDelete: (id: string) => Promise<void>
@@ -57,8 +56,11 @@ const defaultLngLat: [number, number] = [-84.396, 33.777];
 const defaultZoom = 12;
 
 export default function Map({
-  annotations: allAnnotations,
-  campaigns,
+  annotations,
+  filterNames,
+  filterEnabled,
+  onFilterEnabled,
+  message,
   initialLngLat = defaultLngLat,
   initialZoom = defaultZoom,
   onAdd,
@@ -69,36 +71,6 @@ export default function Map({
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | undefined>();
   const [newAnnotation, setNewAnnotation] = useState<Annotation | undefined>();
-
-  const filter = useMemo(() => ({
-    type: {
-      name: 'By type',
-      items: Object.entries(annotationTypeDisplayNames).reduce((items, [type, name]) => {
-        assertAnnotationType(type);
-        return {
-          ...items,
-          [type]: { name, field: 'type', value: type },
-        };
-      }, {}),
-    },
-    campaign: {
-      name: 'By campaign',
-      items: campaigns.reduce((items, campaign) => ({
-        ...items,
-        [campaign.id]: {
-          name: campaign.name,
-          match: (a: AnnotationWithCampaigns) => a.campaignIds.includes(campaign.id),
-        },
-      }), {}),
-    },
-  }), [campaigns]);
-
-  const {
-    filtered: annotations,
-    filterNames,
-    filterEnabled,
-    setFilterEnabled,
-  } = useFilter(allAnnotations, filter);
 
   const handleSaveViewClicked = useCallback(async () => {
     const blob = await toBlob(mapContainer.current ?? throwErr('no map ref'), {
@@ -194,7 +166,7 @@ export default function Map({
         <FilterMenu
           names={filterNames}
           enabled={filterEnabled}
-          onEnabledChange={setFilterEnabled}
+          onEnabledChange={onFilterEnabled}
           label="Filter annotations"
         />
 
@@ -207,6 +179,7 @@ export default function Map({
           <span>Save map view</span>
         </button>
       </div>
+      <div className={styles['message']}>{message}</div>
       <div ref={mapContainer} className={styles['mapbox-container']} />
     </div>
   );

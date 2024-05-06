@@ -67,7 +67,7 @@ export default function useFilter<T>(things: T[], filter: Filter<T>): {
   filtered: T[]
   filterNames: FilterNames
   filterEnabled: FilterEnabled
-  setFilterEnabled: (e: FilterEnabled) => void
+  setFilterEnabled: (e: FilterEnabled | ((old: FilterEnabled) => FilterEnabled)) => void
 } {
   const [enabled, setEnabled] = useState<FilterEnabled>(() => makeEnabled(filter, {}));
 

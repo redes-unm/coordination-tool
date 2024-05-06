@@ -37,10 +37,10 @@ export default function CampaignCard({ item: campaign, className }: Props) {
           </Link>
         </div>
         <div className={styles['details']}>
-          <div className={styles['detail']}>
+          <Link href={`?campaign=${campaign.id}`} className={styles['detail']}>
             <FontAwesomeIcon icon={faPencilRuler} />
             {`${campaign.annotationCount} annotations`}
-          </div>
+          </Link>
           <div className={styles['detail']}>
             <FontAwesomeIcon icon={faListCheck} />
             {`${campaign.taskCount} tasks`}

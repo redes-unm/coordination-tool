@@ -7,7 +7,7 @@
   position: relative;
   display: flex;
   flex-flow: column nowrap;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .sidebar {
@@ -30,4 +30,8 @@
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
+}
+
+.message {
+  font-style: italic;
 }
