@@ -24,11 +24,19 @@
 }
 
 .header {
+  border-bottom: solid 0.0625rem #000c;
+}
+
+.header-controls {
   display: flex;
   justify-content: space-between;
   gap: 0.625rem;
   padding-bottom: 0.75rem;
-  border-bottom: solid 0.0625rem #000c;
+}
+
+.message {
+  padding-bottom: 0.5rem;
+  font-style: italic;
 }
 
 .menus {

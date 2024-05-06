@@ -5,7 +5,7 @@ import { useAsyncResource } from '@/lib/AsyncResource';
 import { CampaignWithCounts, assertCampaignType, campaignTypeDisplayNames } from '@/types';
 import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
-import { Filter } from '@/hooks/useFilter';
+import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria } from '@/hooks/useSort';
 import ItemList from './ItemList';
@@ -34,6 +34,13 @@ export default function CampaignList({ className }: Props) {
     },
   }), []);
 
+  const {
+    filtered,
+    filterNames,
+    filterEnabled,
+    setFilterEnabled,
+  } = useFilter(campaigns, filter);
+
   const sortCriteria: SortCriteria<CampaignWithCounts> = useMemo(() => ({
     name: {
       name: 'Name',
@@ -54,9 +61,11 @@ export default function CampaignList({ className }: Props) {
 
   return (
     <ItemList
-      items={campaigns}
+      items={filtered}
       Item={CampaignCard}
-      filter={filter}
+      filterNames={filterNames}
+      filterEnabled={filterEnabled}
+      onFilterEnabled={setFilterEnabled}
       sortCriteria={sortCriteria}
       searchFields={searchFields}
       className={className}

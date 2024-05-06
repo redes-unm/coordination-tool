@@ -8,9 +8,10 @@ import {
 } from '@/types';
 import { useCallback, useContext, useMemo } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
-import { Filter } from '@/hooks/useFilter';
+import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria, SortCriterion } from '@/hooks/useSort';
+import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
 import TaskCard from './TaskCard';
 import ItemList from './ItemList';
 
@@ -55,6 +56,15 @@ export default function TaskList({ className }: Props) {
       }), {}),
     },
   }), [campaigns]);
+
+  const {
+    filtered,
+    filterNames,
+    filterEnabled,
+    setFilterEnabled,
+  } = useFilter(tasks, filter);
+
+  const { message, handleFilterEnabled } = useAutoCampaignFilter(setFilterEnabled, campaigns);
 
   const sortCriteria: SortCriteria<Task> = useMemo(() => ({
     date: {
@@ -120,9 +130,12 @@ export default function TaskList({ className }: Props) {
 
   return (
     <ItemList
-      items={tasks}
+      items={filtered}
       Item={TaskCard}
-      filter={filter}
+      filterNames={filterNames}
+      filterEnabled={filterEnabled}
+      onFilterEnabled={handleFilterEnabled}
+      message={message}
       sortCriteria={sortCriteria}
       fallbackSortCriterion={fallbackSortCriterion}
       searchFields={searchFields}

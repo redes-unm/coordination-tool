@@ -41,10 +41,13 @@ export default function CampaignCard({ item: campaign, className }: Props) {
             <FontAwesomeIcon icon={faPencilRuler} />
             {`${campaign.annotationCount} annotations`}
           </Link>
-          <div className={styles['detail']}>
+          <Link
+            href={`/communities/${campaign.communityId}/tasks?campaign=${campaign.id}`}
+            className={styles['detail']}
+          >
             <FontAwesomeIcon icon={faListCheck} />
             {`${campaign.taskCount} tasks`}
-          </div>
+          </Link>
         </div>
       </div>
       <div className={styles['type']}>

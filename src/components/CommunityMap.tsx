@@ -1,14 +1,12 @@
 'use client';
 
-import {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Annotation, AnnotationWithCampaigns, annotationTypeDisplayNames, assertAnnotationType,
 } from '@/types';
 import { newDb } from '@/db/client';
-import useFilter, { FilterEnabled } from '@/hooks/useFilter';
-import { useSearchParams } from 'next/navigation';
+import useFilter from '@/hooks/useFilter';
+import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
 import Map from './map/Map';
 
 type Props = {
@@ -24,8 +22,6 @@ export default function CommunityMap({
 }: Props) {
   const db = useMemo(() => newDb(), []);
   const [annotations, setAnnotations] = useState(initialAnnotations);
-  const selectedCampaignId = useSearchParams().get('campaign');
-  const [message, setMessage] = useState('');
 
   const filter = useMemo(() => ({
     type: {
@@ -57,26 +53,7 @@ export default function CommunityMap({
     setFilterEnabled,
   } = useFilter(annotations, filter);
 
-  useEffect(() => {
-    const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId);
-    if (selectedCampaign) {
-      setMessage(`Filtered to campaign ${selectedCampaign.name}.`);
-      setFilterEnabled((old) => ({
-        ...old,
-        campaign: campaigns.reduce((enabled, campaign) => ({
-          ...enabled,
-          [campaign.id]: campaign.id === selectedCampaign.id,
-        }), {}),
-      }));
-    } else {
-      setMessage('');
-    }
-  }, [selectedCampaignId, setFilterEnabled, campaigns]);
-
-  const handleFilterEnabled = useCallback((e: FilterEnabled) => {
-    setMessage('');
-    setFilterEnabled(e);
-  }, [setFilterEnabled]);
+  const { message, handleFilterEnabled } = useAutoCampaignFilter(setFilterEnabled, campaigns);
 
   const handleAddAnnotation = useCallback(async (annotation: Annotation) => {
     await db.insertAnnotation(annotation, communityId);

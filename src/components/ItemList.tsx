@@ -1,4 +1,4 @@
-import useFilter, { Filter } from '@/hooks/useFilter';
+import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
@@ -10,34 +10,33 @@ import TextInput from './TextInput';
 type Props<T extends object> = {
   items: T[],
   Item: React.FC<{ item: T, className?: string | undefined }>,
-  filter: Filter<T>
+  filterNames: FilterNames
+  filterEnabled: FilterEnabled
+  onFilterEnabled: (e: FilterEnabled) => void
   sortCriteria: SortCriteria<T>
   fallbackSortCriterion?: SortCriterion<T>
   searchFields: SearchField<T>[]
+  message?: string | undefined
   className?: string | undefined
 };
 
 export default function ItemList<T extends object>({
   items,
   Item,
-  filter,
+  filterNames,
+  filterEnabled,
+  onFilterEnabled,
   sortCriteria,
   fallbackSortCriterion,
   searchFields,
+  message,
   className,
 }: Props<T>) {
-  const {
-    filtered,
-    filterNames,
-    filterEnabled,
-    setFilterEnabled,
-  } = useFilter(items, filter);
-
   const {
     searched,
     searchText,
     setSearchText,
-  } = useSearch(filtered, searchFields);
+  } = useSearch(items, searchFields);
 
   const {
     sorted,
@@ -51,29 +50,32 @@ export default function ItemList<T extends object>({
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
       <div className={styles['header']}>
-        <div className={styles['menus']}>
-          <FilterMenu
-            names={filterNames}
-            enabled={filterEnabled}
-            onEnabledChange={setFilterEnabled}
-          />
+        <div className={styles['header-controls']}>
+          <div className={styles['menus']}>
+            <FilterMenu
+              names={filterNames}
+              enabled={filterEnabled}
+              onEnabledChange={onFilterEnabled}
+            />
 
-          <SortMenu
-            names={sortNames}
-            criteriaOrder={sortCriteriaOrder}
-            setCriteriaOrder={setSortCriteriaOrder}
-            direction={sortDirection}
-            setDirection={setSortDirection}
+            <SortMenu
+              names={sortNames}
+              criteriaOrder={sortCriteriaOrder}
+              setCriteriaOrder={setSortCriteriaOrder}
+              direction={sortDirection}
+              setDirection={setSortDirection}
+            />
+          </div>
+          <TextInput
+            label="Search"
+            placeholder="Search"
+            icon={faSearch}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            hideLabel
           />
         </div>
-        <TextInput
-          label="Search"
-          placeholder="Search"
-          icon={faSearch}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          hideLabel
-        />
+        {message && <div className={styles['message']}>{message}</div>}
       </div>
       <div className={styles['list']}>
         {
