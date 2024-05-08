@@ -1,24 +1,7 @@
-.panes {
-  display: flex;
-  gap: 2.375rem;
-  height: 100%;
-}
-
 .title {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
-}
-
-.content-pane {
-  width: 50%;
-  max-width: 32rem;
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  max-height: 100%;
-  gap: 1rem;
 }
 
 .content {
@@ -99,10 +82,4 @@
 
 .link-count .count {
   font-size: 2rem;
-}
-
-.map-pane {
-  height: 100%;
-  width: 50%;
-  flex-grow: 2;
 }

@@ -1,0 +1,34 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.category h3 {
+  font-size: 1.125rem;
+  width: 100%;
+  border-bottom: solid 0.0625rem #0008;
+  padding-bottom: 0.5rem;
+  margin-bottom: -0.125rem;
+}
+
+.list {
+  height: 0;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.task {
+  margin-block: 0.625rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.625rem;
+}
+
+.menus {
+  display: flex;
+  gap: 0.625rem;
+}

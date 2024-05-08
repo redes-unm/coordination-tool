@@ -188,6 +188,7 @@ export type Database = {
         Row: {
           campaignid: string
           description: string | null
+          duedate: string | null
           id: string
           name: string
           priority: Database['public']['Enums']['taskpriority']
@@ -196,6 +197,7 @@ export type Database = {
         Insert: {
           campaignid: string
           description?: string | null
+          duedate?: string | null
           id?: string
           name: string
           priority: Database['public']['Enums']['taskpriority']
@@ -204,6 +206,7 @@ export type Database = {
         Update: {
           campaignid?: string
           description?: string | null
+          duedate?: string | null
           id?: string
           name?: string
           priority?: Database['public']['Enums']['taskpriority']

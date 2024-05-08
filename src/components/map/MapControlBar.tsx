@@ -75,6 +75,7 @@ export default function MapControlBar({
                   className={menuStyles['menu-item']}
                   checked={annotationFilters[type]}
                   onCheckedChange={(c) => handleAnnotationFilterCheckedChange(type, c)}
+                  onSelect={(e) => e.preventDefault()}
                 >
                   <Dropdown.ItemIndicator className={menuStyles['item-check']}>
                     <FontAwesomeIcon icon={faCheck} />

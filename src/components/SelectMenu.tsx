@@ -51,7 +51,7 @@ export default function SelectMenu({
         </Select.Trigger>
 
         <Select.Portal>
-          <Select.Content className={menuStyles['menu-content']}>
+          <Select.Content className={`${menuStyles['menu-content']} ${menuStyles['select']}`}>
             <Select.Viewport>
               { opts.map(([val, display]) => (
                 <Select.Item value={val} key={val} className={menuStyles['menu-item']}>

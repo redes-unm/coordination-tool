@@ -25,3 +25,18 @@
 .label.above .input {
   width: 100%;
 }
+
+.input.with-icon {
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  background-position: 0.25rem 0.3125rem;
+}
+
+.input::placeholder {
+  color: #000c;
+  opacity: 1;
+}
+
+.input.with-icon {
+  text-indent: 1.25rem;
+}

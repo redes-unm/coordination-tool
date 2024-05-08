@@ -43,6 +43,10 @@
   padding-inline-start: 1.8215rem;
 }
 
+.select .menu-item[data-state="unchecked"] {
+  padding-inline-start: 0.3125rem;
+}
+
 .menu-item .item-check {
   margin-inline-end: 0.5rem;
 }
@@ -59,4 +63,10 @@
   border: none;
   border-bottom: 0.0125rem solid #0008;
   margin: 0.25rem;
+}
+
+.menu-label {
+  color: #000b;
+  font-size: 0.875rem;
+  margin: 0.25rem 0.375rem 0;
 }
