@@ -5,6 +5,7 @@
   font-family: inherit;
   font-size: inherit;
   box-shadow: 0 0.125rem 0.125rem 0 #37425433;
+  z-index: 3; /* above map controls */
 }
 
 .menu-item {
@@ -31,8 +32,31 @@
 
 .menu-item {
   outline: none;
+  cursor: pointer;
 }
 
 .menu-item[data-highlighted] {
   background: #505d7333;
+}
+
+.menu-item[data-state="unchecked"] {
+  padding-inline-start: 1.8215rem;
+}
+
+.menu-item .item-check {
+  margin-inline-end: 0.5rem;
+}
+
+.menu-item .item-check svg {
+  width: 1rem;
+}
+
+.menu-item[data-disabled] {
+  color: #515d7388;
+}
+
+.separator hr {
+  border: none;
+  border-bottom: 0.0125rem solid #0008;
+  margin: 0.25rem;
 }

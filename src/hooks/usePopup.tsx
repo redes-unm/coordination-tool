@@ -7,8 +7,8 @@ import { RefObject, useEffect, useRef } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
 type EventHandlers = {
-  save?: ((a: Annotation) => void) | undefined,
-  delete?: (() => void) | undefined,
+  save?: ((a: Annotation) => Promise<void>) | undefined,
+  delete?: ((id: string) => Promise<void>) | undefined,
   close?: (() => void) | undefined,
 };
 
@@ -16,6 +16,7 @@ export default function usePopup(
   map: RefObject<mapboxgl.Map>,
   annotation: Annotation | undefined,
   handlers: EventHandlers,
+  editing?: boolean,
   options?: PopupOptions,
 ) {
   const root = useRef<Root | null>(null);
@@ -72,9 +73,10 @@ export default function usePopup(
     root.current.render(
       <PopupContents
         annotation={annotation}
+        editing={handlers.save && editing}
         onSave={handlers.save}
         onDelete={handlers.delete}
       />,
     );
-  }, [annotation, handlers.save, handlers.delete]);
+  }, [annotation, editing, handlers.save, handlers.delete]);
 }

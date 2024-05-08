@@ -1,10 +1,10 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import FreehandMode from './FreehandMode';
 import RectangleMode from './RectangleMode';
+import SelectMode from './SelectMode';
 
 const modes = {
-  simple_select: MapboxDraw.modes.simple_select,
-  direct_select: MapboxDraw.modes.direct_select,
+  simple_select: SelectMode,
   draw_polygon: FreehandMode,
   draw_point: MapboxDraw.modes.draw_point,
   draw_line_string: MapboxDraw.modes.draw_line_string,
@@ -15,12 +15,11 @@ export default modes;
 export type Mode = keyof typeof modes;
 
 export const modeDisplayNames: { [k in Mode]: string } = {
-  simple_select: 'Simple select',
-  direct_select: 'Direct select',
-  draw_polygon: 'Polygon',
-  draw_point: 'Point',
-  draw_line_string: 'Line',
-  draw_rectangle: 'Rectangle',
+  simple_select: 'Select',
+  draw_polygon: 'Draw polygon',
+  draw_point: 'Draw point',
+  draw_line_string: 'Draw line',
+  draw_rectangle: 'Draw rectangle',
 };
 
 export function assertMode(m: string): asserts m is Mode {

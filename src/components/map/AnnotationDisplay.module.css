@@ -1,0 +1,9 @@
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.5rem;
+}
+
+.description p:last-child {
+  margin-bottom: 0;
+}

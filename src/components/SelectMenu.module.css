@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: center;
+  row-gap: 0.125rem;
+  column-gap: 0.5rem;
+}
+
+.container.above {
+  flex-flow: column nowrap;
+  align-items: start;
+}
+
+.container.above .select {
+  width: 100%;
+}

@@ -10,8 +10,8 @@
 import MapboxDraw, {
   DrawCustomModeThis, DrawFeature, DrawPolygon, DrawCustomMode,
 } from '@mapbox/mapbox-gl-draw';
-import { Feature, GeoJSON, Geometry } from 'geojson';
 import { LngLat, Point } from 'mapbox-gl';
+import { assertGeoJSONFeature } from './util';
 
 type State = {
   startPoint?: Point
@@ -24,17 +24,6 @@ function assertDrawPolygon(f: DrawFeature): asserts f is DrawPolygon {
   }
 }
 
-function assertGeoJSONFeature(
-  g: GeoJSON,
-): asserts g is Feature<Geometry, { id?: string, active?: string }> {
-  if (g.type !== 'Feature') {
-    throw Error(`expected Feature, got ${g.type}`);
-  }
-
-  if (!g.properties || typeof g.properties !== 'object') {
-    throw Error('expected non-null properties');
-  }
-}
 const RectangleMode: DrawCustomMode<State> & {
   onPointerClick(
     this: DrawCustomModeThis & typeof RectangleMode,
@@ -96,7 +85,7 @@ const RectangleMode: DrawCustomMode<State> & {
     ) {
       this.updateUIClasses({ mouse: 'pointer' });
       state.endPoint = [e.lngLat.lng, e.lngLat.lat];
-      this.changeMode('simple_select', { featuresId: state.rectangle.id });
+      this.changeMode('simple_select', { featureIds: [state.rectangle.id] });
     }
     // on first click, save clicked point coords as starting for  rectangle
     const startPoint = [e.lngLat.lng, e.lngLat.lat];

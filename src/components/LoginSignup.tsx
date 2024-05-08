@@ -34,7 +34,7 @@ export default function LoginSignup({
         { signup ? 'Sign up' : 'Log in' }
       </h2>
       { error && (
-        <div className={styles['error']}>
+        <div className="error">
           {`Error: ${error}`}
         </div>
       )}

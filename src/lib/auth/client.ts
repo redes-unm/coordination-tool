@@ -13,10 +13,6 @@ export async function logOut() {
 
 export async function isLoggedIn() {
   const supabase = createClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error) {
-    throw error;
-  }
-
-  return !!data?.session;
+  const { data, error } = await supabase.auth.getUser();
+  return !error && !!data?.user;
 }

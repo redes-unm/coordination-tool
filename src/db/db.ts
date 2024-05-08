@@ -169,4 +169,45 @@ export default class Db {
 
     return data.name;
   }
+
+  async insertAnnotation(a: Annotation, communityId: string) {
+    const { error } = await this.client
+      .from('annotations')
+      .insert({
+        id: a.id,
+        name: a.name,
+        description: a.description,
+        geo: a.geometry,
+        type: a.type,
+        communityid: communityId,
+        visible: true,
+      });
+
+    handleError(error);
+  }
+
+  async upsertAnnotation(a: Annotation, communityId: string) {
+    const { error } = await this.client
+      .from('annotations')
+      .upsert({
+        id: a.id,
+        name: a.name,
+        description: a.description,
+        geo: a.geometry,
+        type: a.type,
+        communityid: communityId,
+        visible: true,
+      });
+
+    handleError(error);
+  }
+
+  async deleteAnnotation(id: string) {
+    const { error } = await this.client
+      .from('annotations')
+      .delete()
+      .eq('id', id);
+
+    handleError(error);
+  }
 }

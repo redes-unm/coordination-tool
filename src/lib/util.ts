@@ -1,5 +1,6 @@
 import { DbNotFoundError } from '@/db/errors';
 import { notFound } from 'next/navigation';
+import { GeoJSON, Feature, Geometry } from 'geojson';
 
 // for when you want to throw an error in an expression
 export function throwErr(e: string | Error): never {
@@ -27,4 +28,16 @@ export function toLngLat(a: number[]): [number, number] {
   }
 
   return [a[0], a[1]];
+}
+
+export function assertGeoJSONFeature(
+  g: GeoJSON,
+): asserts g is Feature<Geometry, { id?: string, active?: string }> {
+  if (g.type !== 'Feature') {
+    throw Error(`expected Feature, got ${g.type}`);
+  }
+
+  if (!g.properties || typeof g.properties !== 'object') {
+    throw Error('expected non-null properties');
+  }
 }

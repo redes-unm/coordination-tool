@@ -30,7 +30,7 @@ export default async function Community({ params }: Props) {
             </span>
             <span>&bull;</span>
             <Link href={`/communities/${community.id}/collaborators`}>
-              {`${community.collaboratorCount} collaborator${community.collaboratorCount > 1 ? 's' : ''}`}
+              {`${community.collaboratorCount} collaborator${community.collaboratorCount === 1 ? '' : 's'}`}
             </Link>
           </div>
           <div className={styles['description']}>
@@ -78,7 +78,10 @@ export default async function Community({ params }: Props) {
         </div>
       </div>
       <div className={styles['map-pane']}>
-        <CommunityMap initialAnnotations={community.annotations} />
+        <CommunityMap
+          initialAnnotations={community.annotations}
+          communityId={community.id}
+        />
       </div>
     </div>
   );

@@ -21,8 +21,5 @@ export async function logIn(email: string, password: string) {
 export async function isLoggedIn() {
   const supabase = createClient();
   const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    throw error;
-  }
-  return !!data?.user;
+  return !error && !!data?.user;
 }

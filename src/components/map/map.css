@@ -1,0 +1,13 @@
+/* styling for the mapbox classes */
+
+.mapboxgl-popup {
+  max-width: 20rem !important;
+  font-size: 1rem;
+  font-family: Roboto, sans-serif;
+}
+
+/* Hide the close button via CSS. Using the popup option {closeButton: false}
+ * breaks our current popup implementation. */
+.mapboxgl-popup-close-button {
+  display: none;
+}

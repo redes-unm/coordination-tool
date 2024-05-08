@@ -1,25 +1,67 @@
+import React, { useImperativeHandle, useRef } from 'react';
 import styles from './TextInput.module.css';
 
-type Props = React.InputHTMLAttributes<HTMLInputElement> & {
+type BaseProps = {
   label: string
   id: string
+  labelAbove?: boolean | undefined
   labelProps?: React.LabelHTMLAttributes<HTMLLabelElement>
 };
 
-export default function TextInput({
+type SingleProps = React.InputHTMLAttributes<HTMLInputElement> & BaseProps & {
+  multiLine?: false | undefined
+};
+
+type MultiProps = React.TextareaHTMLAttributes<HTMLTextAreaElement> & BaseProps & {
+  multiLine: true
+};
+
+type Props = SingleProps | MultiProps;
+
+function TextInput({
   label,
   id,
+  labelAbove = false,
+  multiLine = false,
   labelProps = {},
   ...inputProps
-}: Props) {
+}: Props, ref: React.ForwardedRef<{ focus: () => void }>) {
+  const singleRef = useRef<HTMLInputElement>(null);
+  const multiRef = useRef<HTMLTextAreaElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => (multiLine ? multiRef : singleRef).current?.focus(),
+  }), [multiLine]);
+
   return (
-    <>
-      {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <label className={styles['label']} htmlFor={id} {...labelProps}>
-        <span>{label}</span>
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <input className={styles['input']} id={id} {...inputProps} />
-      </label>
-    </>
+    <label
+      className={`${styles['label']} ${labelAbove ? styles['above'] : ''}`}
+      htmlFor={id}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...labelProps}
+    >
+      <span>{label}</span>
+      {
+          multiLine ? (
+            <textarea
+              ref={multiRef}
+              className={styles['input']}
+              id={id}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...(inputProps as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
+            />
+          ) : (
+            <input
+              ref={singleRef}
+              className={styles['input']}
+              id={id}
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              {...(inputProps as React.InputHTMLAttributes<HTMLInputElement>)}
+            />
+          )
+        }
+    </label>
   );
 }
+
+export default React.forwardRef(TextInput);
