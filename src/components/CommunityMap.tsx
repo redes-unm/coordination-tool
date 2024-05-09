@@ -42,7 +42,12 @@ export default function CommunityMap({
           name: campaign.name,
           match: (a: AnnotationWithCampaigns) => a.campaignIds.includes(campaign.id),
         },
-      }), {}),
+      }), {
+        none: {
+          name: 'No campaign',
+          match: (a: AnnotationWithCampaigns) => a.campaignIds.length === 0,
+        },
+      }),
     },
   }), [campaigns]);
 

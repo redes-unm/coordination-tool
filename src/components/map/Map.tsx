@@ -80,9 +80,10 @@ export default function Map({
     saveAs(blob, 'map-view.png');
   }, []);
 
-  // update the selected annotation when the annotations change
+  // update the selected annotation when the annotations change, but don't allow
+  // the selected annotation to be cleared as a result
   useEffect(() => {
-    setSelectedAnnotation((old) => old && annotations.find((a) => a.id === old.id));
+    setSelectedAnnotation((old) => annotations.find((a) => a.id === old?.id) ?? old);
   }, [annotations]);
 
   // clear the new annotation when the selected annotation is cleared
