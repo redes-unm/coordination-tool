@@ -1,5 +1,5 @@
 import {
-  Annotation, AnnotationWithCampaigns, Campaign, CampaignWithCounts, Community, Task,
+  Annotation, Campaign, CampaignWithCounts, Community, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
@@ -36,7 +36,7 @@ export default class Db {
     campaigns: { id: string, name: string }[],
     taskCount: number
     collaboratorCount: number
-    annotations: AnnotationWithCampaigns[]
+    annotations: Annotation[]
   }> {
     if (!validate(id)) {
       throw new DbNotFoundError();
@@ -138,6 +138,7 @@ export default class Db {
           description: a.description ?? '',
           type: a.type,
           geometry: a.geo as Geometry,
+          campaignIds: undefined,
         };
       }),
     };

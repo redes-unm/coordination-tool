@@ -50,10 +50,7 @@ export type Annotation = {
   description: string
   type: AnnotationType
   geometry: Geometry
-};
-
-export type AnnotationWithCampaigns = Annotation & {
-  campaignIds: string[]
+  campaignIds: string[] | undefined
 };
 
 export function assertAnnotationType(t: string): asserts t is AnnotationType {

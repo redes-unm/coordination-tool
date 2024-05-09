@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import {
-  Annotation, AnnotationWithCampaigns, annotationTypeDisplayNames, assertAnnotationType,
+  Annotation, annotationTypeDisplayNames, assertAnnotationType,
 } from '@/types';
 import { newDb } from '@/db/client';
 import useFilter from '@/hooks/useFilter';
@@ -10,7 +10,7 @@ import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
 import Map from './map/Map';
 
 type Props = {
-  initialAnnotations: AnnotationWithCampaigns[]
+  initialAnnotations: Annotation[]
   communityId: string
   campaigns: { id: string, name: string }[]
 };
@@ -40,12 +40,12 @@ export default function CommunityMap({
         ...items,
         [campaign.id]: {
           name: campaign.name,
-          match: (a: AnnotationWithCampaigns) => a.campaignIds.includes(campaign.id),
+          match: (a: Annotation) => !!a.campaignIds?.includes(campaign.id),
         },
       }), {
         none: {
           name: 'No campaign',
-          match: (a: AnnotationWithCampaigns) => a.campaignIds.length === 0,
+          match: (a: Annotation) => (a.campaignIds ?? []).length === 0,
         },
       }),
     },
@@ -62,15 +62,12 @@ export default function CommunityMap({
 
   const handleAddAnnotation = useCallback(async (annotation: Annotation) => {
     await db.insertAnnotation(annotation, communityId);
-    setAnnotations((old) => old.concat({ ...annotation, campaignIds: [] }));
+    setAnnotations((old) => old.concat(annotation));
   }, [db, communityId]);
 
   const handleUpdateAnnotation = useCallback(async (annotation: Annotation) => {
     await db.upsertAnnotation(annotation, communityId);
-    setAnnotations((old) => old.filter((a) => a.id !== annotation.id).concat({
-      ...annotation,
-      campaignIds: [],
-    }));
+    setAnnotations((old) => old.filter((a) => a.id !== annotation.id).concat(annotation));
   }, [db, communityId]);
 
   const handleDeleteAnnotation = useCallback(async (id: string) => {

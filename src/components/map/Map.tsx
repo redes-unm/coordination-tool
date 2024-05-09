@@ -35,6 +35,7 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
       name: a.name,
       description: a.description,
       type: a.type,
+      campaignIds: a.campaignIds,
     },
   };
 }
@@ -140,6 +141,7 @@ export default function Map({
         description: '',
         type: 'infra',
         geometry: f.geometry,
+        campaignIds: [],
       };
 
       setNewAnnotation(annotation);
