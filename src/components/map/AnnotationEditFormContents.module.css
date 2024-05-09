@@ -1,10 +1,3 @@
-.btns {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
 .inputs {
   display: flex;
   flex-flow: column nowrap;
@@ -14,8 +7,4 @@
 
 .inputs button {
   font-weight: normal;
-}
-
-.error {
-  margin-block: 0.5rem;
 }

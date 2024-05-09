@@ -1,16 +1,18 @@
-import PopupContents from '@/components/map/PopupContents';
+import EditableItemDisplay from '@/components/EditableItemDisplay';
+import AnnotationDisplay from '@/components/map/AnnotationDisplay';
+import AnnotationEditFormContents from '@/components/map/AnnotationEditFormContents';
 import { throwErr, toLngLat } from '@/lib/util';
 import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
-  RefObject, useEffect, useMemo, useRef,
+  RefObject, useCallback, useEffect, useRef,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
 type EventHandlers = {
-  save?: ((a: Annotation) => Promise<void>) | undefined,
-  delete?: ((id: string) => Promise<void>) | undefined,
+  save: ((a: Annotation) => Promise<void>),
+  delete: ((id: string) => Promise<void>),
   close?: (() => void) | undefined,
 };
 
@@ -61,10 +63,12 @@ export default function usePopup(
     return () => { p.off('close', handleClose); };
   }, [annotation?.id, closeHandler]);
 
-  const handleDelete = useMemo(() => deleteHandler && (async (id: string) => {
-    await deleteHandler(id);
+  const handleDelete = useCallback(async () => {
+    if (annotation?.id !== undefined) {
+      await deleteHandler(annotation.id);
+    }
     closeHandler?.();
-  }), [deleteHandler, closeHandler]);
+  }, [annotation?.id, deleteHandler, closeHandler]);
 
   // position and render the popup
   useEffect(() => {
@@ -81,11 +85,13 @@ export default function usePopup(
     }
 
     root.current.render(
-      <PopupContents
-        annotation={annotation}
-        editing={handlers.save && editing}
+      <EditableItemDisplay
+        item={annotation}
+        editing={editing}
         onSave={handlers.save}
         onDelete={handleDelete}
+        Display={AnnotationDisplay}
+        EditFormContents={AnnotationEditFormContents}
       />,
     );
   }, [annotation, editing, handlers.save, handleDelete]);
