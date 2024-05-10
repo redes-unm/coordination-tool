@@ -77,7 +77,7 @@ export default function TaskList({ className }: Props) {
         }
         return aTime < bTime ? -1 : 1;
       },
-      categoryDefs: [
+      categories: [
         {
           name: 'Overdue',
           match: (t: Task) => t.status !== 'done' && !!t.date && t.date < new Date(),
@@ -100,7 +100,7 @@ export default function TaskList({ className }: Props) {
       name: 'Priority',
       field: 'priority',
       order: ['low', 'medium', 'high'],
-      categoryDefs: Object.entries(taskPriorityDisplayNames).map(([priority, name]) => {
+      categories: Object.entries(taskPriorityDisplayNames).map(([priority, name]) => {
         assertTaskPriority(priority);
         return { name, field: 'priority', value: priority };
       }),
@@ -109,7 +109,7 @@ export default function TaskList({ className }: Props) {
       name: 'Status',
       field: 'status',
       order: ['todo', 'in progress', 'done'],
-      categoryDefs: Object.entries(taskStatusDisplayNames).map(([status, name]) => {
+      categories: Object.entries(taskStatusDisplayNames).map(([status, name]) => {
         assertTaskStatus(status);
         return { name, field: 'status', value: status };
       }),
@@ -117,7 +117,7 @@ export default function TaskList({ className }: Props) {
     campaign: {
       name: 'Campaign',
       field: 'campaignId',
-      categoryDefs: campaigns.map((c) => ({ name: c.name, field: 'campaignId', value: c.id })),
+      categories: campaigns.map((c) => ({ name: c.name, field: 'campaignId', value: c.id })),
     },
   }), [campaigns]);
 
