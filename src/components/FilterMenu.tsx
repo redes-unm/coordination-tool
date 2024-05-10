@@ -1,0 +1,103 @@
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import btnStyles from '@/components/Button.module.css';
+import menuStyles from '@/components/Menu.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheck, faChevronDown, faChevronUp, faFilter,
+} from '@fortawesome/free-solid-svg-icons';
+import { Fragment, useMemo } from 'react';
+import {
+  FilterEnabled, FilterNames, toggleAllEnabled, toggleSingleEnabled,
+} from '@/hooks/useFilter';
+import { throwErr } from '@/lib/util';
+
+type Props = {
+  names: FilterNames
+  enabled: FilterEnabled
+  onEnabledChange: (e: FilterEnabled) => void
+  label?: string
+};
+
+export default function FilterMenu({
+  names,
+  enabled,
+  onEnabledChange,
+  label = 'Filter',
+}: Props) {
+  const allEnabled = useMemo(() => (
+    Object.values(enabled).every((group) => Object.values(group).every((item) => item))
+  ), [enabled]);
+
+  const allDisabled = useMemo(() => (
+    Object.values(enabled).every((group) => Object.values(group).every((item) => !item))
+  ), [enabled]);
+
+  return (
+    <Dropdown.Root>
+      <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
+        <span>
+          <FontAwesomeIcon icon={faFilter} className={btnStyles['icon'] ?? ''} />
+          {label}
+        </span>
+        <span className={menuStyles['menu-icon']}>
+          <FontAwesomeIcon icon={faChevronDown} className={menuStyles['menu-icon-closed'] || ''} />
+          <FontAwesomeIcon icon={faChevronUp} className={menuStyles['menu-icon-open'] || ''} />
+        </span>
+      </Dropdown.Trigger>
+      <Dropdown.Portal>
+        <Dropdown.Content className={menuStyles['menu-content']}>
+          <Dropdown.Arrow className={menuStyles['menu-arrow']} />
+
+          { Object.entries(names).map(([groupId, group]) => (
+            <Fragment key={groupId}>
+              <Dropdown.Group>
+                { group.name && (
+                  <Dropdown.Label className={menuStyles['menu-label']}>
+                    {group.name}
+                  </Dropdown.Label>
+                )}
+
+                { Object.entries(group.items).map(([itemId, itemName]) => (
+                  <Dropdown.CheckboxItem
+                    key={itemId}
+                    className={menuStyles['menu-item']}
+                    checked={enabled[groupId]?.[itemId] ?? throwErr('missing enabled')}
+                    onCheckedChange={(checked) => onEnabledChange(
+                      toggleSingleEnabled(enabled, groupId, itemId, checked),
+                    )}
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    <Dropdown.ItemIndicator className={menuStyles['item-check']}>
+                      <FontAwesomeIcon icon={faCheck} />
+                    </Dropdown.ItemIndicator>
+                    {itemName}
+                  </Dropdown.CheckboxItem>
+                ))}
+              </Dropdown.Group>
+
+              <Dropdown.Separator className={menuStyles['separator']}>
+                <hr />
+              </Dropdown.Separator>
+            </Fragment>
+          ))}
+
+          <Dropdown.Item
+            className={menuStyles['menu-item']}
+            onClick={() => onEnabledChange(toggleAllEnabled(enabled, true))}
+            disabled={allEnabled}
+          >
+            Show all
+          </Dropdown.Item>
+
+          <Dropdown.Item
+            className={menuStyles['menu-item']}
+            onClick={() => onEnabledChange(toggleAllEnabled(enabled, false))}
+            disabled={allDisabled}
+          >
+            Hide all
+          </Dropdown.Item>
+        </Dropdown.Content>
+      </Dropdown.Portal>
+    </Dropdown.Root>
+  );
+}

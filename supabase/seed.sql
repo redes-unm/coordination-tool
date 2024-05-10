@@ -2,20 +2,40 @@ insert into communities (name, description) values
     ('Georgia Tech', 'Measurement efforts for Georgia Tech''s campus and the surrounding area'),
     ('Emory', 'Measurement efforts for Emory''s campus and the surrounding area');
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Default', 'Default campaign for Emory''s measurement efforts', id, true
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Default', 'Default campaign for Emory''s measurement efforts', 'other', id, true
     from communities where name = 'Georgia Tech';
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Measure campus', 'Take measurements all over campus', id, null
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Measure campus', 'Take measurements all over campus', 'measurement', id, null
     from communities where name = 'Georgia Tech';
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Measure Home Park', null, id, null
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Measure Home Park', null, 'event', id, null
     from communities where name = 'Georgia Tech';
 
-insert into campaigns (name, description, communityId, defaultForCommunity)
-    select 'Measure', 'Default campaign for Emory''s measurement efforts', id, true
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Yet another campaign 1', 'A long description that surely will not fit on a single line because it is definitely too long for that.', 'education', id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Yet another campaign 2', 'A long description that surely will not fit on a single line because it is definitely too long for that.', 'event', id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Yet another campaign 3', 'A long description that surely will not fit on a single line because it is definitely too long for that.', 'measurement', id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Yet another campaign 4', 'A long description that surely will not fit on a single line because it is definitely too long for that.', 'measurement', id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Yet another campaign 5', 'A long description that surely will not fit on a single line because it is definitely too long for that.', 'education', id, null
+    from communities where name = 'Georgia Tech';
+
+insert into campaigns (name, description, type, communityId, defaultForCommunity)
+    select 'Measure', 'Default campaign for Emory''s measurement efforts', 'education', id, true
     from communities where name = 'Emory';
 
 insert into annotations (name, description, type, visible, communityId, geo)

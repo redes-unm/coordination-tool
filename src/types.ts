@@ -6,11 +6,32 @@ export type Community = {
   description: string
 };
 
+export const campaignTypeDisplayNames = {
+  education: 'Education',
+  event: 'Event',
+  measurement: 'Measurement',
+  other: 'Other',
+};
+
+export type CampaignType = keyof typeof campaignTypeDisplayNames;
+
+export function assertCampaignType(t: string): asserts t is CampaignType {
+  if (!(t in campaignTypeDisplayNames)) {
+    throw new Error(`expected campaign type, got ${t}`);
+  }
+}
+
 export type Campaign = {
   id: string
   name: string
   description: string
+  type: CampaignType
   communityId: string
+};
+
+export type CampaignWithCounts = Campaign & {
+  annotationCount: number
+  taskCount: number
 };
 
 export const annotationTypeDisplayNames = {
@@ -29,6 +50,7 @@ export type Annotation = {
   description: string
   type: AnnotationType
   geometry: Geometry
+  campaignIds: string[] | undefined
 };
 
 export function assertAnnotationType(t: string): asserts t is AnnotationType {

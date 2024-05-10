@@ -3,7 +3,9 @@ import { throwErr, toLngLat } from '@/lib/util';
 import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
-import { RefObject, useEffect, useRef } from 'react';
+import {
+  RefObject, useEffect, useMemo, useRef,
+} from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
 type EventHandlers = {
@@ -38,8 +40,11 @@ export default function usePopup(
     };
   }, [annotation?.id, map, options]);
 
+  // the linter isn't smart enough to figure out the hook dependencies
+  const closeHandler = handlers.close;
+  const deleteHandler = handlers.delete;
+
   // register a close listener
-  const closeHandler = handlers.close; // because the linter isn't smart enough
   useEffect(() => {
     if (!popup.current) {
       return undefined;
@@ -55,6 +60,11 @@ export default function usePopup(
     p.on('close', handleClose);
     return () => { p.off('close', handleClose); };
   }, [annotation?.id, closeHandler]);
+
+  const handleDelete = useMemo(() => deleteHandler && (async (id: string) => {
+    await deleteHandler(id);
+    closeHandler?.();
+  }), [deleteHandler, closeHandler]);
 
   // position and render the popup
   useEffect(() => {
@@ -75,8 +85,8 @@ export default function usePopup(
         annotation={annotation}
         editing={handlers.save && editing}
         onSave={handlers.save}
-        onDelete={handlers.delete}
+        onDelete={handleDelete}
       />,
     );
-  }, [annotation, editing, handlers.save, handlers.delete]);
+  }, [annotation, editing, handlers.save, handleDelete]);
 }

@@ -1,88 +1,145 @@
-import debounce from 'debounce';
+'use client';
+
 import { newDb } from '@/db/client';
 import { useAsyncResource } from '@/lib/AsyncResource';
-import { Community, Task } from '@/types';
 import {
-  useCallback, useEffect, useMemo, useState,
-} from 'react';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import styles from './TaskList.module.css';
+  Task, assertTaskPriority, assertTaskStatus,
+  taskPriorityDisplayNames, taskStatusDisplayNames,
+} from '@/types';
+import { useCallback, useContext, useMemo } from 'react';
+import CommunityContext from '@/contexts/CommunityContext';
+import useFilter, { Filter } from '@/hooks/useFilter';
+import { SearchField } from '@/hooks/useSearch';
+import { SortCriteria, SortCriterion } from '@/hooks/useSort';
+import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
 import TaskCard from './TaskCard';
-import TaskFilter from './TaskFilter';
-import TaskSort, { Category } from './TaskSort';
-import TextInput from './TextInput';
+import ItemList from './ItemList';
 
 type Props = {
-  community: Community
   className?: string | undefined
 };
 
-export default function TaskList({
-  community,
-  className,
-}: Props) {
-  const [campaigns, tasks] = useAsyncResource(useCallback(() => {
-    const db = newDb();
-    return Promise.all([db.getCampaigns(community.id), db.getCommunityTasks(community.id)]);
-  }, [community.id])) ?? [[], []];
+export default function TaskList({ className }: Props) {
+  const community = useContext(CommunityContext);
+  const { campaigns } = community;
 
-  const [filteredTasks, setFilteredTasks] = useState(tasks);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [searchText, setSearchText] = useState('');
-  const [searchedTasks, setSearchedTasks] = useState<Task[]>(tasks);
+  const tasks = useAsyncResource(
+    useCallback(() => newDb().getCommunityTasks(community.id), [community.id]),
+  ) ?? [];
 
-  const updateSearchedTasks = useMemo(() => debounce((
-    filtered: Task[],
-    text: string,
-  ) => {
-    const searched = filtered.filter((t) => (
-      t.name.toLowerCase().includes(text.toLowerCase())
-      || t.description.toLowerCase().includes(text.toLowerCase())
-    ));
-    setSearchedTasks(searched);
-  }, 300), []);
+  const filter: Filter<Task> = useMemo(() => ({
+    priority: {
+      name: 'By priority',
+      items: Object.entries(taskPriorityDisplayNames).reduce((items, [priority, name]) => {
+        assertTaskPriority(priority);
+        return {
+          ...items,
+          [priority]: { name, field: 'priority', value: priority },
+        };
+      }, {}),
+    },
+    status: {
+      name: 'By status',
+      items: Object.entries(taskStatusDisplayNames).reduce((items, [status, name]) => {
+        assertTaskStatus(status);
+        return {
+          ...items,
+          [status]: { name, field: 'status', value: status },
+        };
+      }, {}),
+    },
+    campaign: {
+      name: 'By campaign',
+      items: campaigns.reduce((items, campaign) => ({
+        ...items,
+        [campaign.id]: { name: campaign.name, field: 'campaignId', value: campaign.id },
+      }), {}),
+    },
+  }), [campaigns]);
 
-  useEffect(
-    () => updateSearchedTasks(filteredTasks, searchText),
-    [filteredTasks, searchText, updateSearchedTasks],
-  );
+  const {
+    filtered,
+    filterNames,
+    filterEnabled,
+    setFilterEnabled,
+  } = useFilter(tasks, filter);
+
+  const { message, handleFilterEnabled } = useAutoCampaignFilter(setFilterEnabled, campaigns);
+
+  const sortCriteria: SortCriteria<Task> = useMemo(() => ({
+    date: {
+      name: 'Date',
+      sort: (a: Task, b: Task) => {
+        const aTime = a.date?.getTime() ?? Infinity;
+        const bTime = b.date?.getTime() ?? Infinity;
+        if (aTime === bTime) {
+          return 0;
+        }
+        return aTime < bTime ? -1 : 1;
+      },
+      categoryDefs: [
+        {
+          name: 'Overdue',
+          match: (t: Task) => t.status !== 'done' && !!t.date && t.date < new Date(),
+        },
+        {
+          name: 'Upcoming',
+          match: (t: Task) => t.status !== 'done' && !!t.date && t.date >= new Date(),
+        },
+        {
+          name: 'Unscheduled',
+          match: (t: Task) => t.status !== 'done' && !t.date,
+        },
+        {
+          name: 'Completed',
+          match: (t: Task) => t.status === 'done',
+        },
+      ],
+    },
+    priority: {
+      name: 'Priority',
+      field: 'priority',
+      order: ['low', 'medium', 'high'],
+      categoryDefs: Object.entries(taskPriorityDisplayNames).map(([priority, name]) => {
+        assertTaskPriority(priority);
+        return { name, field: 'priority', value: priority };
+      }),
+    },
+    status: {
+      name: 'Status',
+      field: 'status',
+      order: ['todo', 'in progress', 'done'],
+      categoryDefs: Object.entries(taskStatusDisplayNames).map(([status, name]) => {
+        assertTaskStatus(status);
+        return { name, field: 'status', value: status };
+      }),
+    },
+    campaign: {
+      name: 'Campaign',
+      field: 'campaignId',
+      categoryDefs: campaigns.map((c) => ({ name: c.name, field: 'campaignId', value: c.id })),
+    },
+  }), [campaigns]);
+
+  const fallbackSortCriterion: SortCriterion<Task> = useMemo(() => ({
+    name: 'Name',
+    field: 'name',
+  }), []);
+
+  const searchFields: SearchField<Task>[] = useMemo(() => ['name', 'description'], []);
 
   return (
-    <div className={`${styles['container']} ${className ?? ''}`}>
-      <div className={styles['header']}>
-        <div className={styles['menus']}>
-          <TaskFilter
-            tasks={tasks}
-            campaigns={campaigns}
-            onFiltered={setFilteredTasks}
-          />
-
-          <TaskSort
-            tasks={searchedTasks}
-            campaigns={campaigns}
-            onSorted={setCategories}
-          />
-        </div>
-        <TextInput
-          label="Search"
-          id="task-search"
-          placeholder="Search"
-          icon={faSearch}
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-          hideLabel
-        />
-      </div>
-      <div className={styles['list']}>
-        {
-          categories.map(({ name, tasks: catTasks }) => (
-            <div className={styles['category']} key={name}>
-              <h3>{name}</h3>
-              {catTasks.map((t) => <TaskCard task={t} key={t.id} className={styles['task']} />)}
-            </div>
-          ))
-        }
-      </div>
-    </div>
+    <ItemList
+      items={filtered}
+      Item={TaskCard}
+      filterNames={filterNames}
+      filterEnabled={filterEnabled}
+      onFilterEnabled={handleFilterEnabled}
+      message={message}
+      sortCriteria={sortCriteria}
+      fallbackSortCriterion={fallbackSortCriterion}
+      searchFields={searchFields}
+      className={className}
+    />
   );
 }

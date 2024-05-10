@@ -1,0 +1,22 @@
+.content {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.625rem;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.title {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.title svg {
+  height: 1.875rem;
+  width: 1.875rem;
+}
+
+.campaign-list {
+  height: 0;
+  flex-grow: 1;
+}

@@ -1,5 +1,5 @@
 import {
-  Annotation, Campaign, Community, Task,
+  Annotation, Campaign, CampaignWithCounts, Community, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
@@ -33,7 +33,7 @@ export default class Db {
   }
 
   async getCommunity(id: string): Promise<Community & {
-    campaignCount: number
+    campaigns: { id: string, name: string }[],
     taskCount: number
     collaboratorCount: number
     annotations: Annotation[]
@@ -44,7 +44,7 @@ export default class Db {
 
     const { data, error } = await this.client
       .from('communities')
-      .select('*, campaigns(tasks(count)), collaborators(count), annotations(*)')
+      .select('*, campaigns(id, name, tasks(count)), collaborators(count), annotations(*, campaignannotations(campaignid))')
       .eq('id', id)
       .limit(1)
       .single();
@@ -55,7 +55,7 @@ export default class Db {
       id: data.id,
       name: data.name,
       description: data.description ?? '',
-      campaignCount: data.campaigns.length,
+      campaigns: data.campaigns.map((c) => ({ id: c.id, name: c.name })),
       taskCount: data.campaigns
         .map((c) => getJoinedCount(c.tasks))
         .reduce((sum, count) => sum + count, 0),
@@ -66,18 +66,19 @@ export default class Db {
         description: a.description ?? '',
         type: a.type,
         geometry: a.geo as Geometry,
+        campaignIds: a.campaignannotations.map((ca) => ca.campaignid),
       })),
     };
   }
 
-  async getCampaigns(communityId: string): Promise<Campaign[]> {
+  async getCampaigns(communityId: string): Promise<CampaignWithCounts[]> {
     if (!validate(communityId)) {
       throw new DbNotFoundError();
     }
 
     const { data, error } = await this.client
       .from('campaigns')
-      .select('*')
+      .select('*, tasks(count), campaignannotations(count)')
       .eq('communityid', communityId);
 
     handleError(error);
@@ -86,7 +87,10 @@ export default class Db {
       id: d.id,
       name: d.name,
       description: d.description ?? '',
+      type: d.type,
       communityId: d.communityid,
+      annotationCount: getJoinedCount(d.campaignannotations),
+      taskCount: getJoinedCount(d.tasks),
     }));
   }
 
@@ -111,6 +115,7 @@ export default class Db {
       id: data.id,
       name: data.name,
       description: data.description ?? '',
+      type: data.type,
       communityId: data.communityid,
       tasks: data.tasks.map((t) => ({
         id: t.id,
@@ -133,6 +138,7 @@ export default class Db {
           description: a.description ?? '',
           type: a.type,
           geometry: a.geo as Geometry,
+          campaignIds: undefined,
         };
       }),
     };

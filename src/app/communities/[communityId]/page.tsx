@@ -45,7 +45,7 @@ export default function Community() {
             <FontAwesomeIcon icon={faClipboard} />
             <span className={styles['link-name']}>Campaigns</span>
             <span className={styles['link-count']}>
-              <span className={styles['count']}>{community.campaignCount}</span>
+              <span className={styles['count']}>{community.campaigns.length}</span>
               <span className={styles['count-label']}>open</span>
             </span>
           </div>

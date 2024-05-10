@@ -1,0 +1,99 @@
+import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
+import useSearch, { SearchField } from '@/hooks/useSearch';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
+import styles from './ItemList.module.css';
+import SortMenu from './SortMenu';
+import FilterMenu from './FilterMenu';
+import TextInput from './TextInput';
+
+type Props<T extends object> = {
+  items: T[],
+  Item: React.FC<{ item: T, className?: string | undefined }>,
+  filterNames: FilterNames
+  filterEnabled: FilterEnabled
+  onFilterEnabled: (e: FilterEnabled) => void
+  sortCriteria: SortCriteria<T>
+  fallbackSortCriterion?: SortCriterion<T>
+  searchFields: SearchField<T>[]
+  message?: string | undefined
+  className?: string | undefined
+};
+
+export default function ItemList<T extends object>({
+  items,
+  Item,
+  filterNames,
+  filterEnabled,
+  onFilterEnabled,
+  sortCriteria,
+  fallbackSortCriterion,
+  searchFields,
+  message,
+  className,
+}: Props<T>) {
+  const {
+    searched,
+    searchText,
+    setSearchText,
+  } = useSearch(items, searchFields);
+
+  const {
+    sorted,
+    sortNames,
+    sortCriteriaOrder,
+    setSortCriteriaOrder,
+    sortDirection,
+    setSortDirection,
+  } = useSort(searched, sortCriteria, fallbackSortCriterion);
+
+  return (
+    <div className={`${styles['container']} ${className ?? ''}`}>
+      <div className={styles['header']}>
+        <div className={styles['header-controls']}>
+          <div className={styles['menus']}>
+            <FilterMenu
+              names={filterNames}
+              enabled={filterEnabled}
+              onEnabledChange={onFilterEnabled}
+            />
+
+            <SortMenu
+              names={sortNames}
+              criteriaOrder={sortCriteriaOrder}
+              setCriteriaOrder={setSortCriteriaOrder}
+              direction={sortDirection}
+              setDirection={setSortDirection}
+            />
+          </div>
+          <TextInput
+            label="Search"
+            placeholder="Search"
+            icon={faSearch}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            hideLabel
+          />
+        </div>
+        {message && <div className={styles['message']}>{message}</div>}
+      </div>
+      <div className={styles['list']}>
+        {
+          sorted.map(({ name, items: catItems }) => (
+            <div className={styles['category']} key={name}>
+              {name && <h3>{name}</h3>}
+              {catItems.map((t, i) => (
+                <Item
+                  item={t}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={i}
+                  className={styles['item']}
+                />
+              ))}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  );
+}

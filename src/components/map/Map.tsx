@@ -1,5 +1,3 @@
-'use client';
-
 import './map.css';
 import React, {
   useRef, useEffect, useState, useMemo, useCallback,
@@ -14,10 +12,15 @@ import useDraw from '@/hooks/useDraw';
 import { Annotation } from '@/types';
 import strftime from 'strftime';
 import useMapControl from '@/hooks/useMapControl';
-import useAnnotationFilters from '@/hooks/useAnnotationFilters';
+import saveAs from 'file-saver';
+import { toBlob } from 'html-to-image';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import btnStyles from '@/components/Button.module.css';
+import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import styles from './Map.module.css';
 import ModeControl from './ModeControl';
-import MapControlBar from './MapControlBar';
+import FilterMenu from '../FilterMenu';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiamNveDk5IiwiYSI6ImNscTE1c2xlcjA1cXoybHBnMDk1cmgyODAifQ.2UrggqzuuxrtqoaCilNlbQ';
 
@@ -32,12 +35,17 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
       name: a.name,
       description: a.description,
       type: a.type,
+      campaignIds: a.campaignIds,
     },
   };
 }
 
 type Props = {
-  annotations: Annotation[],
+  annotations: Annotation[]
+  filterNames: FilterNames
+  filterEnabled: FilterEnabled
+  onFilterEnabled: (e: FilterEnabled) => void
+  message?: string | undefined
   onAdd: (a: Annotation) => Promise<void>
   onUpdate: (a: Annotation) => Promise<void>
   onDelete: (id: string) => Promise<void>
@@ -49,7 +57,11 @@ const defaultLngLat: [number, number] = [-84.396, 33.777];
 const defaultZoom = 12;
 
 export default function Map({
-  annotations: allAnnotations,
+  annotations,
+  filterNames,
+  filterEnabled,
+  onFilterEnabled,
+  message,
   initialLngLat = defaultLngLat,
   initialZoom = defaultZoom,
   onAdd,
@@ -60,15 +72,19 @@ export default function Map({
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | undefined>();
   const [newAnnotation, setNewAnnotation] = useState<Annotation | undefined>();
-  const {
-    filteredAnnotations: annotations,
-    filters: annotationFilters,
-    setFilters: setAnnotationFilters,
-  } = useAnnotationFilters(allAnnotations);
 
-  // update the selected annotation when the annotations change
+  const handleSaveViewClicked = useCallback(async () => {
+    const blob = await toBlob(mapContainer.current ?? throwErr('no map ref'), {
+      filter: (node) => !node.classList.contains('mapboxgl-ctrl'),
+    }) ?? throwErr('no blob created');
+
+    saveAs(blob, 'map-view.png');
+  }, []);
+
+  // update the selected annotation when the annotations change, but don't allow
+  // the selected annotation to be cleared as a result
   useEffect(() => {
-    setSelectedAnnotation((old) => old && annotations.find((a) => a.id === old.id));
+    setSelectedAnnotation((old) => annotations.find((a) => a.id === old?.id) ?? old);
   }, [annotations]);
 
   // clear the new annotation when the selected annotation is cleared
@@ -125,6 +141,7 @@ export default function Map({
         description: '',
         type: 'infra',
         geometry: f.geometry,
+        campaignIds: [],
       };
 
       setNewAnnotation(annotation);
@@ -148,11 +165,24 @@ export default function Map({
 
   return (
     <div className={styles['container']}>
-      <MapControlBar
-        annotationFilters={annotationFilters}
-        onAnnotationFiltersChange={setAnnotationFilters}
-        mapRef={mapContainer}
-      />
+      <div className={styles['bar']}>
+        <FilterMenu
+          names={filterNames}
+          enabled={filterEnabled}
+          onEnabledChange={onFilterEnabled}
+          label="Filter annotations"
+        />
+
+        <button
+          type="button"
+          className={btnStyles['btn']}
+          onClick={handleSaveViewClicked}
+        >
+          <FontAwesomeIcon icon={faDownload} className={btnStyles['icon'] ?? ''} />
+          <span>Save map view</span>
+        </button>
+      </div>
+      <div className={styles['message']}>{message}</div>
       <div ref={mapContainer} className={styles['mapbox-container']} />
     </div>
   );
