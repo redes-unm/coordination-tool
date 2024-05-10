@@ -52,8 +52,9 @@ a.detail {
 }
 
 .type {
-  border: solid 0.0625rem #000c;
+  border: solid 0.0625rem #505d73;
   border-radius: 0.25rem;
-  box-shadow: 0 0.125rem 0.125rem 0 #0003;
+  box-shadow: 0 0.125rem 0.125rem 0 #0002;
   padding: 0.5rem;
+  color: #505d73;
 }
