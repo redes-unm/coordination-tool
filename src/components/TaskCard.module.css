@@ -7,6 +7,15 @@
   box-shadow: 0.25rem 0.25rem 0.25rem 0 #0003;
 }
 
+a.card {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.card:hover {
+  background: #515d7310;
+}
+
 .completion-indicator {
   background: #505d7380;
   border-radius: 50%;

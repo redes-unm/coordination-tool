@@ -33,7 +33,7 @@ export default class Db {
   }
 
   async getCommunity(id: string): Promise<Community & {
-    campaigns: { id: string, name: string }[],
+    campaigns: { id: string, name: string, default: boolean }[],
     taskCount: number
     collaboratorCount: number
     annotations: Annotation[]
@@ -44,7 +44,7 @@ export default class Db {
 
     const { data, error } = await this.client
       .from('communities')
-      .select('*, campaigns(id, name, tasks(count)), collaborators(count), annotations(*, campaignannotations(campaignid))')
+      .select('*, campaigns(id, name, defaultforcommunity, tasks(count)), collaborators(count), annotations(*, campaignannotations(campaignid))')
       .eq('id', id)
       .limit(1)
       .single();
@@ -55,7 +55,11 @@ export default class Db {
       id: data.id,
       name: data.name,
       description: data.description ?? '',
-      campaigns: data.campaigns.map((c) => ({ id: c.id, name: c.name })),
+      campaigns: data.campaigns.map((c) => ({
+        id: c.id,
+        name: c.name,
+        default: !!c.defaultforcommunity,
+      })),
       taskCount: data.campaigns
         .map((c) => getJoinedCount(c.tasks))
         .reduce((sum, count) => sum + count, 0),
@@ -242,6 +246,48 @@ export default class Db {
   async deleteAnnotation(id: string) {
     const { error } = await this.client
       .from('annotations')
+      .delete()
+      .eq('id', id);
+
+    handleError(error);
+  }
+
+  async insertTask(t: Task) {
+    const { error } = await this.client
+      .from('tasks')
+      .insert({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        priority: t.priority,
+        status: t.status,
+        duedate: t.date?.toISOString() ?? null,
+        campaignid: t.campaignId,
+      });
+
+    handleError(error);
+  }
+
+  async updateTask(t: Task) {
+    const { error } = await this.client
+      .from('tasks')
+      .update({
+        id: t.id,
+        name: t.name,
+        description: t.description,
+        priority: t.priority,
+        status: t.status,
+        duedate: t.date?.toISOString() ?? null,
+        campaignid: t.campaignId,
+      })
+      .eq('id', t.id);
+
+    handleError(error);
+  }
+
+  async deleteTask(id: string) {
+    const { error } = await this.client
+      .from('tasks')
       .delete()
       .eq('id', id);
 

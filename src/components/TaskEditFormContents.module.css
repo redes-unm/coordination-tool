@@ -2,5 +2,4 @@
   display: flex;
   flex-flow: column nowrap;
   gap: 0.5rem;
-  min-width: 15rem;
 }

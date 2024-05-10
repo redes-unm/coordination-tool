@@ -1,31 +1,48 @@
 'use client';
 
 import { newDb } from '@/db/client';
-import { useAsyncResource } from '@/lib/AsyncResource';
 import {
   Task, assertTaskPriority, assertTaskStatus,
   taskPriorityDisplayNames, taskStatusDisplayNames,
 } from '@/types';
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback, useContext, useMemo, useState,
+} from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria, SortCriterion } from '@/hooks/useSort';
 import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
+import useSearchParam from '@/hooks/useSearchParam';
+import dynamic from 'next/dynamic';
+import { v4 as uuid } from 'uuid';
+import { throwErr } from '@/lib/util';
 import TaskCard from './TaskCard';
 import ItemList from './ItemList';
 
+// for some reason the task dialog has issues with server-side rendering
+const TaskDialog = dynamic(() => import('./TaskDialog'), { ssr: false });
+
 type Props = {
+  tasks: Task[]
   className?: string | undefined
 };
 
-export default function TaskList({ className }: Props) {
+export default function TaskList({
+  tasks: initialTasks,
+  className,
+}: Props) {
+  const db = useMemo(() => newDb(), []);
   const community = useContext(CommunityContext);
   const { campaigns } = community;
+  const [tasks, setTasks] = useState(initialTasks);
+  const [newTask, setNewTask] = useState<Task | null>(null);
+  const [openTaskId, setOpenTaskId] = useSearchParam('task');
 
-  const tasks = useAsyncResource(
-    useCallback(() => newDb().getCommunityTasks(community.id), [community.id]),
-  ) ?? [];
+  const openTask = useMemo(
+    () => newTask ?? tasks.find((t) => t.id === openTaskId),
+    [tasks, newTask, openTaskId],
+  );
 
   const filter: Filter<Task> = useMemo(() => ({
     priority: {
@@ -128,18 +145,58 @@ export default function TaskList({ className }: Props) {
 
   const searchFields: SearchField<Task>[] = useMemo(() => ['name', 'description'], []);
 
+  const handleNew = useCallback(() => setNewTask({
+    id: uuid(),
+    name: '',
+    description: '',
+    priority: 'medium',
+    status: 'todo',
+    date: null,
+    campaignId: campaigns.find((c) => c.default)?.id ?? throwErr('no default campaign!'),
+  }), [campaigns]);
+
+  const handleSaveTask = useCallback(async (task: Task) => {
+    if (newTask) {
+      await db.insertTask(task);
+      setNewTask(null);
+    } else {
+      await db.updateTask(task);
+    }
+    setTasks((old) => old.filter((t) => t.id !== task.id).concat(task));
+  }, [db, newTask]);
+
+  const handleDeleteTask = useCallback(async (id: string) => {
+    await db.deleteTask(id);
+    setTasks((old) => old.filter((t) => t.id !== id));
+  }, [db]);
+
   return (
-    <ItemList
-      items={filtered}
-      Item={TaskCard}
-      filterNames={filterNames}
-      filterEnabled={filterEnabled}
-      onFilterEnabled={handleFilterEnabled}
-      message={message}
-      sortCriteria={sortCriteria}
-      fallbackSortCriterion={fallbackSortCriterion}
-      searchFields={searchFields}
-      className={className}
-    />
+    <>
+      <ItemList
+        items={filtered}
+        Item={TaskCard}
+        filterNames={filterNames}
+        filterEnabled={filterEnabled}
+        onFilterEnabled={handleFilterEnabled}
+        message={message}
+        sortCriteria={sortCriteria}
+        fallbackSortCriterion={fallbackSortCriterion}
+        searchFields={searchFields}
+        onNew={handleNew}
+        className={className}
+      />
+      <TaskDialog
+        task={openTask}
+        editing={openTask === newTask}
+        title={openTask === newTask ? 'New task' : undefined}
+        closeOnCancel={openTask === newTask}
+        onClose={useCallback(() => {
+          setOpenTaskId(null);
+          setNewTask(null);
+        }, [setOpenTaskId])}
+        onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
+      />
+    </>
   );
 }

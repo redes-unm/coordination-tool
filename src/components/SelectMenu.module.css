@@ -15,3 +15,7 @@
 .container.above .select {
   width: 100%;
 }
+
+.select {
+  font-weight: normal;
+}

@@ -32,6 +32,10 @@
   gap: 0.875rem;
 }
 
+.menus button {
+  font-weight: 500;
+}
+
 .main {
   height: 0;
   flex-grow: 1;
