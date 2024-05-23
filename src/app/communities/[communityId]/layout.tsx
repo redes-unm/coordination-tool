@@ -22,6 +22,7 @@ export default async function CommunityLayout({
         <div className={styles['map-pane']}>
           <CommunityMap
             initialAnnotations={community.annotations}
+            initialLngLat={community.mapCenter}
             campaigns={community.campaigns}
             communityId={community.id}
           />

@@ -49,7 +49,7 @@ type Props = {
   onAdd: (a: Annotation) => Promise<void>
   onUpdate: (a: Annotation) => Promise<void>
   onDelete: (id: string) => Promise<void>
-  initialLngLat?: [number, number]
+  initialLngLat?: [number, number] | undefined
   initialZoom?: number
 };
 

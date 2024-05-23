@@ -11,12 +11,14 @@ import Map from './map/Map';
 
 type Props = {
   initialAnnotations: Annotation[]
+  initialLngLat: [number, number] | undefined
   communityId: string
   campaigns: { id: string, name: string }[]
 };
 
 export default function CommunityMap({
   initialAnnotations,
+  initialLngLat,
   communityId,
   campaigns,
 }: Props) {
@@ -85,6 +87,7 @@ export default function CommunityMap({
       onAdd={handleAddAnnotation}
       onUpdate={handleUpdateAnnotation}
       onDelete={handleDeleteAnnotation}
+      initialLngLat={initialLngLat}
     />
   );
 }
