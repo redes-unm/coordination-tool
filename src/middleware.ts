@@ -1,8 +1,16 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
-  return updateSession(request);
+  const { loggedIn, response } = await updateSession(request);
+  const { pathname } = request.nextUrl;
+
+  if (!loggedIn && pathname.split('/')[1] !== 'auth') {
+    const afterLogin = encodeURIComponent(request.url);
+    return NextResponse.redirect(new URL(`/auth/login?redirect=${afterLogin}`, request.url));
+  }
+
+  return response;
 }
 
 export const config = {
@@ -12,7 +20,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - fonts (font files)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|fonts).*)',
   ],
 };

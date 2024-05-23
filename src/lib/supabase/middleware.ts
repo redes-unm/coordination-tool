@@ -54,7 +54,10 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  const { data, error } = await supabase.auth.getUser();
 
-  return response;
+  return {
+    loggedIn: !error && !!data.user,
+    response,
+  };
 }

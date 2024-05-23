@@ -170,21 +170,32 @@ export type Database = {
       }
       communities: {
         Row: {
+          creatorid: string | null
           description: string | null
           id: string
           name: string
         }
         Insert: {
+          creatorid?: string | null
           description?: string | null
           id?: string
           name: string
         }
         Update: {
+          creatorid?: string | null
           description?: string | null
           id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "communities_creatorid_fkey"
+            columns: ["creatorid"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
