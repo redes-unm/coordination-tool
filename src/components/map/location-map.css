@@ -1,0 +1,9 @@
+/* styling for the mapbox classes */
+
+.location-picker .mapboxgl-canvas-container.mapboxgl-interactive {
+  cursor: crosshair;
+}
+
+.location-picker .mapboxgl-canvas-container.mapboxgl-interactive:active {
+  cursor: grabbing;
+}

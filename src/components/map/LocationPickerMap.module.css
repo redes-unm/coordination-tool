@@ -1,0 +1,8 @@
+.container, .mapbox-container {
+  height: 100%;
+  width: 100%;
+}
+
+.marker {
+  z-index: 1; /* above user location marker */
+}

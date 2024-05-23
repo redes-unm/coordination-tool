@@ -22,7 +22,7 @@ import styles from './Map.module.css';
 import ModeControl from './ModeControl';
 import FilterMenu from '../FilterMenu';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiamNveDk5IiwiYSI6ImNscTE1c2xlcjA1cXoybHBnMDk1cmgyODAifQ.2UrggqzuuxrtqoaCilNlbQ';
+mapboxgl.accessToken = process.env['NEXT_PUBLIC_MAPBOX_TOKEN'] ?? throwErr('no mapbox token!');
 
 type AnnotationFeature = Feature<Geometry, Omit<Annotation, 'geometry' | 'id'>>;
 
