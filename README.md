@@ -12,5 +12,6 @@ A web-based tool for community network measurement coordination.
    ```
    NEXT_PUBLIC_SUPABASE_URL=<api URL>
    NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+   ADMIN_ID=266b242a-8a65-458d-817a-6b00868ab275
    ```
 6. Run `npm run dev` to start the local development server; make sure it loads at <http://localhost:3000>.

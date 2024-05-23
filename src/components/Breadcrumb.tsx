@@ -39,6 +39,12 @@ export default function Breadcrumb({ className }: Props) {
 
     if (!segments[1]) return elems;
     href += `/${segments[1]}`;
+
+    if (segments[1] === 'add') {
+      elems.push({ text: 'Create a new community', href });
+      return elems;
+    }
+
     const communityId = segments[1];
     elems.push({
       // use old text if the id (embedded in href) hasn't changed to avoid

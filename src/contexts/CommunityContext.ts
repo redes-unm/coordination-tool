@@ -8,6 +8,7 @@ const CommunityContext = createContext<Community & {
   annotations: Annotation[]
 }>({
   id: '',
+  creatorId: '',
   name: '',
   description: '',
   campaigns: [],

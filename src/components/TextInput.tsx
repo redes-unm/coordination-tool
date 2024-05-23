@@ -13,6 +13,7 @@ type BaseProps = {
   icon?: IconDefinition
   labelAbove?: boolean | undefined
   hideLabel?: boolean | undefined
+  autoFocus?: boolean | undefined
   labelProps?: React.LabelHTMLAttributes<HTMLLabelElement>
 };
 
@@ -33,6 +34,7 @@ function TextInput({
   labelAbove = false,
   hideLabel = false,
   multiLine = false,
+  autoFocus = false,
   labelProps = {},
   ...inputProps
 }: Props, ref: React.ForwardedRef<{ focus: () => void }>) {
@@ -65,6 +67,12 @@ function TextInput({
 
     iconRoot.current.render(<FontAwesomeIcon icon={icon} />);
   }, [icon]);
+
+  useEffect(() => {
+    if (autoFocus) {
+      (multiLine ? multiRef : singleRef).current?.focus();
+    }
+  }, [autoFocus, multiLine]);
 
   return (
     <label

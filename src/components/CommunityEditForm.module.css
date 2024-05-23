@@ -1,0 +1,91 @@
+.form {
+  display: grid;
+  grid-template: auto / min-content 1fr;
+  gap: 1.5rem;
+}
+
+.form > .label {
+  font-weight: bold;
+}
+
+.buttons {
+  grid-column: 1 / span 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.visibility {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.5rem;
+}
+
+.visibility .value {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.visibility .value svg {
+  width: 1.25rem;
+}
+
+.commentary {
+  color: #333;
+  font-style: italic;
+}
+
+.description textarea {
+  height: 5rem;
+}
+
+.collaborators {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
+}
+
+.collaborator {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.collaborator .icon {
+  width: 1.25rem;
+}
+
+.collaborator .icon svg {
+  max-width: 100%;
+}
+
+.collaborator.edit {
+  margin-block: 0.5rem;
+}
+
+.collaborator.edit .inputs {
+  flex-grow: 1;
+  display: grid;
+  grid-template: auto / min-content 1fr;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.collaborators button {
+  flex-grow: 0;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.collaborators > button {
+  align-self: flex-start;
+}
+
+.location {
+  height: 25rem;
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 1rem;
+}

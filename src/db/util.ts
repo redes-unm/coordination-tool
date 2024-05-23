@@ -25,3 +25,20 @@ export function handleError(e: PostgrestError | null): asserts e is null {
       throw new DbError();
   }
 }
+
+export function decodePoint(p: unknown): [number, number] {
+  if (typeof p !== 'string' || !/^\(-?[0-9]+(\.[0-9]+)?,-?[0-9]+(\.[0-9]+)?\)$/.test(p)) {
+    throw Error(`invalid point: expected (x,y) got ${p}`);
+  }
+
+  const [x, y] = p.substring(1, p.length - 2).split(',').map(Number);
+  if (x === undefined || y === undefined) {
+    throw Error(`invalid point: expected (x,y) got ${p}`);
+  }
+
+  return [x, y];
+}
+
+export function encodePoint(p: [number, number]): string {
+  return `(${p[0]}, ${p[1]})`;
+}

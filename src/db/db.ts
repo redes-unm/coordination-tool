@@ -1,12 +1,14 @@
 import {
-  Annotation, Campaign, CampaignWithCounts, Community, Task,
+  Annotation, Campaign, CampaignWithCounts, Collaborator, Community, Profile, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
 import { validate } from 'uuid';
 import { Database } from './types.generated';
 import { DbError, DbNotFoundError } from './errors';
-import { getJoinedCount, handleError } from './util';
+import {
+  getJoinedCount, handleError, decodePoint, encodePoint,
+} from './util';
 
 export default class Db {
   private client: SupabaseClient<Database>;
@@ -26,6 +28,7 @@ export default class Db {
 
     return data.map((d) => ({
       id: d.id,
+      creatorId: d.creatorid,
       name: d.name,
       description: d.description ?? '',
       collaboratorCount: getJoinedCount(d.collaborators),
@@ -53,8 +56,10 @@ export default class Db {
 
     return {
       id: data.id,
+      creatorId: data.creatorid,
       name: data.name,
       description: data.description ?? '',
+      mapCenter: data.mapcenter ? decodePoint(data.mapcenter) : undefined,
       campaigns: data.campaigns.map((c) => ({
         id: c.id,
         name: c.name,
@@ -211,6 +216,29 @@ export default class Db {
     }, []);
   }
 
+  async insertCommunity(c: Community, collaborators: Collaborator[]) {
+    const { error } = await this.client
+      .rpc('createcommunity', {
+        community: {
+          id: c.id,
+          name: c.name,
+          description: c.description,
+          mapcenter: c.mapCenter && encodePoint(c.mapCenter),
+          creatorid: c.creatorId,
+        },
+        collabs: collaborators.map((collab) => ({
+          id: collab.id,
+          communityid: collab.communityId,
+          userid: collab.userId ?? null,
+          name: collab.name,
+          role: collab.role,
+          editable: collab.editable,
+        })),
+      });
+
+    handleError(error);
+  }
+
   async insertAnnotation(a: Annotation, communityId: string) {
     const { error } = await this.client
       .from('annotations')
@@ -290,6 +318,30 @@ export default class Db {
       .from('tasks')
       .delete()
       .eq('id', id);
+
+    handleError(error);
+  }
+
+  async getProfile(userId: string): Promise<Profile> {
+    const { data, error } = await this.client
+      .from('profiles')
+      .select('*')
+      .eq('userid', userId)
+      .limit(1)
+      .single();
+
+    handleError(error);
+
+    return { userId: data.userid, name: data.name };
+  }
+
+  async insertProfile(profile: Profile) {
+    const { error } = await this.client
+      .from('profiles')
+      .insert({
+        userid: profile.userId,
+        name: profile.name,
+      });
 
     handleError(error);
   }
