@@ -24,9 +24,9 @@ export default function Community() {
             <span>Private</span>
           </span>
           <span>&bull;</span>
-          <Link href={`/communities/${community.id}/collaborators`}>
+          <span>
             {`${community.collaboratorCount} collaborator${community.collaboratorCount === 1 ? '' : 's'}`}
-          </Link>
+          </span>
         </div>
         <div className={styles['description']}>
           {
