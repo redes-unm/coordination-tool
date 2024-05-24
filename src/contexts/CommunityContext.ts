@@ -1,20 +1,30 @@
-import { Annotation, Community } from '@/types';
+import { Annotation, Collaborator, Community } from '@/types';
 import { createContext } from 'react';
 
-const CommunityContext = createContext<Community & {
+export type CommunityPlus = Community & {
   campaigns: { id: string, name: string, default: boolean }[]
   taskCount: number
-  collaboratorCount: number
+  collaborators: Collaborator[]
   annotations: Annotation[]
-}>({
-  id: '',
-  creatorId: '',
-  name: '',
-  description: '',
-  campaigns: [],
-  taskCount: 0,
-  collaboratorCount: 0,
-  annotations: [],
+};
+
+type Data = {
+  community: CommunityPlus
+  onCommunityUpdated: (c: CommunityPlus) => void
+};
+
+const CommunityContext = createContext<Data>({
+  community: {
+    id: '',
+    creatorId: '',
+    name: '',
+    description: '',
+    campaigns: [],
+    taskCount: 0,
+    collaborators: [],
+    annotations: [],
+  },
+  onCommunityUpdated: () => {},
 });
 
 export default CommunityContext;

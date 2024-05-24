@@ -7,10 +7,14 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
+import btnStyles from '@/components/Button.module.css';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 export default function Community() {
-  const community = useContext(CommunityContext);
+  const { community } = useContext(CommunityContext);
+  const router = useRouter();
+  const collabCount = community.collaborators.length;
 
   return (
     <>
@@ -18,15 +22,26 @@ export default function Community() {
         <h2 className={styles['title']}>
           {`${community.name} - Community Overview`}
         </h2>
-        <div className={styles['details']}>
-          <span className={styles['details-publicity']}>
-            <FontAwesomeIcon icon={faUserLock} />
-            <span>Private</span>
-          </span>
-          <span>&bull;</span>
-          <span>
-            {`${community.collaboratorCount} collaborator${community.collaboratorCount === 1 ? '' : 's'}`}
-          </span>
+        <div className={styles['details-and-buttons']}>
+          <div className={styles['details']}>
+            <span className={styles['details-publicity']}>
+              <FontAwesomeIcon icon={faUserLock} />
+              <span>Private</span>
+            </span>
+            <span>&bull;</span>
+            <span>
+              {`${collabCount} collaborator${collabCount === 1 ? '' : 's'}`}
+            </span>
+          </div>
+          <div className={styles['buttons']}>
+            <button
+              type="button"
+              className={btnStyles['btn']}
+              onClick={() => router.push(`/communities/${community.id}/edit`)}
+            >
+              Edit
+            </button>
+          </div>
         </div>
         <div className={styles['description']}>
           {

@@ -38,7 +38,7 @@ export default class Db {
   async getCommunity(id: string): Promise<Community & {
     campaigns: { id: string, name: string, default: boolean }[],
     taskCount: number
-    collaboratorCount: number
+    collaborators: Collaborator[]
     annotations: Annotation[]
   }> {
     if (!validate(id)) {
@@ -47,7 +47,7 @@ export default class Db {
 
     const { data, error } = await this.client
       .from('communities')
-      .select('*, campaigns(id, name, defaultforcommunity, tasks(count)), collaborators(count), annotations(*, campaignannotations(campaignid))')
+      .select('*, campaigns(id, name, defaultforcommunity, tasks(count)), collaborators(*), annotations(*, campaignannotations(campaignid))')
       .eq('id', id)
       .limit(1)
       .single();
@@ -68,7 +68,14 @@ export default class Db {
       taskCount: data.campaigns
         .map((c) => getJoinedCount(c.tasks))
         .reduce((sum, count) => sum + count, 0),
-      collaboratorCount: getJoinedCount(data.collaborators),
+      collaborators: data.collaborators.map((c) => ({
+        id: c.id,
+        communityId: c.communityid,
+        userId: c.userid ?? undefined,
+        name: c.name,
+        role: c.role,
+        editable: c.editable,
+      })),
       annotations: data.annotations.map((a) => ({
         id: a.id,
         name: a.name,
@@ -235,6 +242,38 @@ export default class Db {
           editable: collab.editable,
         })),
       });
+
+    handleError(error);
+  }
+
+  async updateCommunity(c: Community, collaborators: Collaborator[]) {
+    const { error } = await this.client
+      .rpc('editcommunity', {
+        community: {
+          id: c.id,
+          name: c.name,
+          description: c.description,
+          mapcenter: c.mapCenter && encodePoint(c.mapCenter),
+          creatorid: c.creatorId,
+        },
+        collabs: collaborators.map((collab) => ({
+          id: collab.id,
+          communityid: collab.communityId,
+          userid: collab.userId ?? null,
+          name: collab.name,
+          role: collab.role,
+          editable: collab.editable,
+        })),
+      });
+
+    handleError(error);
+  }
+
+  async deleteCommunity(id: string) {
+    const { error } = await this.client
+      .from('communities')
+      .delete()
+      .eq('id', id);
 
     handleError(error);
   }

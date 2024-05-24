@@ -11,7 +11,13 @@
   flex-grow: 1;
 }
 
-.details {
+.details-and-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.details, .buttons {
   display: flex;
   align-items: center;
   gap: 0.625rem;

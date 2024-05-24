@@ -284,6 +284,20 @@ export type Database = {
           collabs: Database["public"]["Tables"]["collaborators"]["Row"][]
         }
         Returns: {
+          creatorid: string | null
+          description: string | null
+          id: string
+          mapcenter: unknown | null
+          name: string
+        }
+      }
+      editcommunity: {
+        Args: {
+          community: unknown
+          collabs: Database["public"]["Tables"]["collaborators"]["Row"][]
+        }
+        Returns: {
+          creatorid: string | null
           description: string | null
           id: string
           mapcenter: unknown | null

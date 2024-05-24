@@ -55,8 +55,14 @@ export default function Breadcrumb({ className }: Props) {
       href,
     });
 
-    if (segments[2] !== 'tasks' && segments[2] !== 'campaigns') return elems;
     href += `/${segments[2]}`;
+
+    if (segments[2] === 'edit') {
+      elems.push({ text: 'Edit community', href });
+      return elems;
+    }
+
+    if (segments[2] !== 'tasks' && segments[2] !== 'campaigns') return elems;
     elems.push({ text: segments[2] === 'tasks' ? 'Tasks' : 'Campaigns', href });
 
     return elems;

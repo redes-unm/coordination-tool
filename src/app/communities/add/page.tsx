@@ -1,7 +1,7 @@
-import CommunityEditForm from '@/components/CommunityEditForm';
 import { newDb } from '@/db/server';
 import { v4 as uuid } from 'uuid';
 import { getUser } from '@/lib/auth/server';
+import CommunityCreator from '@/components/CommunityCreator';
 import styles from './page.module.css';
 
 export default async function AddCommunity() {
@@ -28,13 +28,11 @@ export default async function AddCommunity() {
   return (
     <div className={styles['page']}>
       <h2>Create a new community</h2>
-      <CommunityEditForm
-        community={{
+      <CommunityCreator
+        initialCommunity={{
           id, name: '', description: '', creatorId: user.id,
         }}
-        collaborators={collaborators}
-        cancelPath="/communities"
-        savePath={`/communities/${id}`}
+        initialCollaborators={collaborators}
       />
     </div>
   );

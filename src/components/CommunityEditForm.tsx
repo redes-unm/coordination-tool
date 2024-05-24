@@ -1,5 +1,3 @@
-'use client';
-
 import { Collaborator, Community } from '@/types';
 import { useCallback, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,8 +8,6 @@ import { throwErr } from '@/lib/util';
 import { v4 as uuid } from 'uuid';
 import btnStyles from '@/components/Button.module.css';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
-import { newDb } from '@/db/client';
 import styles from './CommunityEditForm.module.css';
 import TextInput from './TextInput';
 
@@ -20,20 +16,22 @@ const LocationPickerMap = dynamic(() => import('./map/LocationPickerMap'), { ssr
 type Props = {
   community: Community
   collaborators: Collaborator[]
-  cancelPath: string
-  savePath: string
+  onCancel: () => void
+  onSave: (community: Community, collaborators: Collaborator[]) => Promise<void>
+  onDelete?: () => Promise<void>
 };
 
 export default function CommunityEditForm({
   community: initialCommunity,
   collaborators: initialCollaborators,
-  cancelPath,
-  savePath,
+  onCancel,
+  onSave,
+  onDelete,
 }: Props) {
-  const router = useRouter();
   const [community, setCommunity] = useState(initialCommunity);
   const [collaborators, setCollaborators] = useState(initialCollaborators);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const setCollaborator = useCallback((id: string, fields: Partial<Collaborator>) => {
     setCollaborators((old) => {
@@ -45,11 +43,20 @@ export default function CommunityEditForm({
     });
   }, []);
 
-  const handleSave = async () => {
+  const withLoading = useCallback(async (fn: () => Promise<void>) => {
     setLoading(true);
-    await newDb().insertCommunity(community, collaborators);
-    router.push(savePath);
-  };
+    try {
+      await fn();
+    } catch (e: unknown) {
+      setError(`Error: ${e instanceof Error ? e.message : e}`);
+    }
+    setLoading(false);
+  }, []);
+
+  const handleSave = useCallback(
+    async () => withLoading(() => onSave(community, collaborators)),
+    [withLoading, onSave, community, collaborators],
+  );
 
   return (
     <form className={styles['form']} action={handleSave}>
@@ -169,15 +176,28 @@ export default function CommunityEditForm({
         />
       </div>
 
+      { error && <div className={styles['error']}>{error}</div> }
+
       <div className={styles['buttons']}>
         <button
           type="button"
           className={btnStyles['btn']}
-          onClick={() => router.push(cancelPath)}
+          onClick={onCancel}
           disabled={loading}
         >
           Cancel
         </button>
+
+        { onDelete && (
+          <button
+            type="button"
+            className={`${btnStyles['btn']} ${btnStyles['danger']}`}
+            onClick={() => withLoading(onDelete)}
+            disabled={loading}
+          >
+            Delete
+          </button>
+        )}
 
         <button
           type="submit"

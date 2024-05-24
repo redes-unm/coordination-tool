@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function CampaignList({ className }: Props) {
-  const community = useContext(CommunityContext);
+  const { community } = useContext(CommunityContext);
   const campaigns = useAsyncResource(
     useCallback(() => newDb().getCampaigns(community.id), [community.id]),
   ) ?? [];

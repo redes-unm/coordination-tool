@@ -33,7 +33,7 @@ export default function TaskList({
   className,
 }: Props) {
   const db = useMemo(() => newDb(), []);
-  const community = useContext(CommunityContext);
+  const { community } = useContext(CommunityContext);
   const { campaigns } = community;
   const [tasks, setTasks] = useState(initialTasks);
   const [newTask, setNewTask] = useState<Task | null>(null);
