@@ -29,12 +29,7 @@ export default function CommunityLayout({
         <div className={styles['panes']}>
           <div className={styles['content-pane']}>{children}</div>
           <div className={styles['map-pane']}>
-            <CommunityMap
-              initialAnnotations={data.annotations}
-              initialLngLat={data.community.mapCenter}
-              campaigns={data.campaigns}
-              communityId={data.community.id}
-            />
+            <CommunityMap />
           </div>
         </div>
       ) : children }
