@@ -9,7 +9,7 @@ import {
   useCallback, useContext, useMemo, useState,
 } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
-import useFilter, { Filter } from '@/hooks/useFilter';
+import useFilter from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria, SortCriterion } from '@/hooks/useSort';
 import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
@@ -43,7 +43,7 @@ export default function TaskList({
     [tasks, newTask, openTaskId],
   );
 
-  const filter: Filter<Task> = useMemo(() => ({
+  const filter = useMemo(() => ({
     priority: {
       name: 'By priority',
       items: Object.entries(taskPriorityDisplayNames).reduce((items, [priority, name]) => {
@@ -80,7 +80,10 @@ export default function TaskList({
     setFilterEnabled,
   } = useFilter(tasks, filter);
 
-  const { message, handleFilterEnabled } = useAutoCampaignFilter(setFilterEnabled, campaigns);
+  const { message, handleFilterEnabled } = useAutoCampaignFilter(
+    setFilterEnabled,
+    filter.campaign,
+  );
 
   const sortCriteria: SortCriteria<Task> = useMemo(() => ({
     date: {

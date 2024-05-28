@@ -1,10 +1,10 @@
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import { FilterEnabled } from './useFilter';
+import { Filter, FilterEnabled } from './useFilter';
 
-export default function useAutoCampaignFilter(
+export default function useAutoCampaignFilter<T>(
   setFilterEnabled: (e: FilterEnabled | ((old: FilterEnabled) => FilterEnabled)) => void,
-  campaigns: { id: string, name: string }[],
+  campaignFilter: Filter<T>[string],
 ): {
     message: string
     handleFilterEnabled: (e: FilterEnabled) => void
@@ -13,20 +13,20 @@ export default function useAutoCampaignFilter(
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const selectedCampaign = campaigns.find((c) => c.id === selectedCampaignId);
+    const selectedCampaign = campaignFilter.items[selectedCampaignId ?? ''];
     if (selectedCampaign) {
       setMessage(`Filtered to campaign ${selectedCampaign.name}.`);
       setFilterEnabled((old) => ({
         ...old,
-        campaign: campaigns.reduce((enabled, campaign) => ({
+        campaign: Object.keys(campaignFilter.items).reduce((enabled, campaign) => ({
           ...enabled,
-          [campaign.id]: campaign.id === selectedCampaign.id,
+          [campaign]: campaign === selectedCampaignId,
         }), {}),
       }));
     } else {
       setMessage('');
     }
-  }, [selectedCampaignId, setFilterEnabled, campaigns]);
+  }, [selectedCampaignId, setFilterEnabled, campaignFilter]);
 
   const handleFilterEnabled = useCallback((e: FilterEnabled) => {
     setMessage('');

@@ -61,7 +61,10 @@ export default function CommunityMap() {
     setFilterEnabled,
   } = useFilter(annotations, filter);
 
-  const { message, handleFilterEnabled } = useAutoCampaignFilter(setFilterEnabled, campaigns);
+  const { message, handleFilterEnabled } = useAutoCampaignFilter(
+    setFilterEnabled,
+    filter.campaign,
+  );
 
   const handleAddAnnotation = useCallback(async (annotation: Annotation) => {
     await db.insertAnnotation(annotation, community.id);
