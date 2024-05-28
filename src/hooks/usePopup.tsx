@@ -6,7 +6,7 @@ import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
-  RefObject, useCallback, useEffect, useRef,
+  useCallback, useEffect, useRef,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
@@ -17,7 +17,7 @@ type EventHandlers = {
 };
 
 export default function usePopup(
-  map: RefObject<mapboxgl.Map>,
+  map: mapboxgl.Map | null | undefined,
   annotation: Annotation | undefined,
   handlers: EventHandlers,
   editing?: boolean,
@@ -28,11 +28,11 @@ export default function usePopup(
 
   // create a new popup when the annotation changes
   useEffect(() => {
-    if (!annotation?.id || !map.current) {
+    if (!annotation?.id || !map) {
       return undefined;
     }
 
-    const p = new Popup(options).addTo(map.current);
+    const p = new Popup(options).addTo(map);
     popup.current = p;
 
     return () => {

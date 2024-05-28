@@ -4,11 +4,11 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Feature } from 'geojson';
 import mapboxgl from 'mapbox-gl';
 import {
-  RefObject, useCallback, useEffect, useRef, useState,
+  useCallback, useEffect, useRef, useState,
 } from 'react';
 
 export default function useDraw(
-  map: RefObject<mapboxgl.Map>,
+  map: mapboxgl.Map | null | undefined,
   features: Feature[],
   onSelect: (f?: Feature) => void,
   onCreate: (f: Feature) => void,
@@ -18,14 +18,9 @@ export default function useDraw(
 
   // setup draw on map
   useEffect(() => {
-    const m = map.current;
-    if (!m) {
-      return undefined;
-    }
-
     const d = new MapboxDraw({ displayControlsDefault: false, modes });
     draw.current = d;
-    m.addControl(d);
+    map?.addControl(d);
 
     return () => { draw.current = null; };
   }, [map]);
@@ -37,9 +32,8 @@ export default function useDraw(
       setMode(e.mode);
     }
 
-    const m = map.current;
-    m?.on('draw.modechange', handleDrawModeChange);
-    return () => { m?.off('draw.modechange', handleDrawModeChange); };
+    map?.on('draw.modechange', handleDrawModeChange);
+    return () => { map?.off('draw.modechange', handleDrawModeChange); };
   }, [map]);
 
   // watch for selection changes
@@ -48,9 +42,8 @@ export default function useDraw(
       onSelect(e.features[0]);
     }
 
-    const m = map.current;
-    m?.on('draw.selectionchange', handleDrawSelectionChange);
-    return () => { m?.off('draw.selectionchange', handleDrawSelectionChange); };
+    map?.on('draw.selectionchange', handleDrawSelectionChange);
+    return () => { map?.off('draw.selectionchange', handleDrawSelectionChange); };
   }, [map, onSelect]);
 
   // watch for new features
@@ -59,18 +52,18 @@ export default function useDraw(
       onCreate(e.features[0] ?? throwErr('create fired with no features'));
     }
 
-    const m = map.current;
-    m?.on('draw.create', handleDrawCreate);
-    return () => { m?.off('draw.create', handleDrawCreate); };
+    map?.on('draw.create', handleDrawCreate);
+    return () => { map?.off('draw.create', handleDrawCreate); };
   }, [map, onCreate]);
 
   // keep features on map in sync with provided features
   useEffect(() => {
+    if (!map) return;
     draw.current?.set({
       type: 'FeatureCollection',
       features,
     });
-  }, [features]);
+  }, [map, features]);
 
   return [
     mode,
