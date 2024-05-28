@@ -12,9 +12,15 @@ import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
 
 export default function Community() {
-  const { community } = useContext(CommunityContext);
+  const {
+    community,
+    collaborators,
+    campaigns,
+    taskCount,
+    annotations,
+  } = useContext(CommunityContext);
   const router = useRouter();
-  const collabCount = community.collaborators.length;
+  const collabCount = collaborators.length;
 
   return (
     <>
@@ -60,7 +66,7 @@ export default function Community() {
             <FontAwesomeIcon icon={faClipboard} />
             <span className={styles['link-name']}>Campaigns</span>
             <span className={styles['link-count']}>
-              <span className={styles['count']}>{community.campaigns.length}</span>
+              <span className={styles['count']}>{campaigns.length}</span>
               <span className={styles['count-label']}>open</span>
             </span>
           </div>
@@ -70,7 +76,7 @@ export default function Community() {
             <FontAwesomeIcon icon={faListCheck} />
             <span className={styles['link-name']}>Tasks</span>
             <span className={styles['link-count']}>
-              <span className={styles['count']}>{community.taskCount}</span>
+              <span className={styles['count']}>{taskCount}</span>
               <span className={styles['count-label']}>pending</span>
             </span>
           </div>
@@ -80,7 +86,7 @@ export default function Community() {
             <FontAwesomeIcon icon={faPenRuler} />
             <span className={styles['link-name']}>Annotations</span>
             <span className={styles['link-count']}>
-              <span className={styles['count']}>{community.annotations.length}</span>
+              <span className={styles['count']}>{annotations.length}</span>
               <span className={styles['count-label']}>total</span>
             </span>
           </div>

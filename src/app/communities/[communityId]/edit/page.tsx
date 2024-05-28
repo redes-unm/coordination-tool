@@ -6,20 +6,29 @@ import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { Collaborator, Community } from '@/types';
+import BreadcrumbContext from '@/contexts/BreadcrumbContext';
 import styles from './page.module.css';
 
 export default function EditCommunity() {
   const router = useRouter();
-  const { community: communityPlus, onCommunityUpdated } = useContext(CommunityContext);
 
-  const handleSave = async (community: Community, collaborators: Collaborator[]) => {
-    await newDb().updateCommunity(community, collaborators);
-    onCommunityUpdated({ ...communityPlus, ...community, collaborators });
+  const {
+    community,
+    collaborators,
+    onCommunityDataUpdated,
+  } = useContext(CommunityContext);
+
+  const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
+
+  const handleSave = async (comm: Community, collabs: Collaborator[]) => {
+    await newDb().updateCommunity(comm, collabs);
+    onCommunityDataUpdated({ community: comm, collaborators: collabs });
+    updateBreadcrumb();
     router.push(`/communities/${community.id}`);
   };
 
   const handleDelete = async () => {
-    await newDb().deleteCommunity(communityPlus.id);
+    await newDb().deleteCommunity(community.id);
     router.push('/communities');
   };
 
@@ -28,14 +37,14 @@ export default function EditCommunity() {
       <h2>Edit community</h2>
       <CommunityEditForm
         community={{
-          id: communityPlus.id,
-          creatorId: communityPlus.creatorId,
-          name: communityPlus.name,
-          description: communityPlus.description,
-          mapCenter: communityPlus.mapCenter,
+          id: community.id,
+          creatorId: community.creatorId,
+          name: community.name,
+          description: community.description,
+          mapCenter: community.mapCenter,
         }}
-        collaborators={communityPlus.collaborators}
-        onCancel={() => router.push(`/communities/${communityPlus.id}`)}
+        collaborators={collaborators}
+        onCancel={() => router.push(`/communities/${community.id}`)}
         onSave={handleSave}
         onDelete={handleDelete}
       />

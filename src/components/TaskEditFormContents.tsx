@@ -17,7 +17,7 @@ function TaskEditFormContents({
   item: task,
   onChange,
 }: Props, ref: React.ForwardedRef<{ focus: () => void }>) {
-  const { community: { campaigns } } = useContext(CommunityContext);
+  const { campaigns } = useContext(CommunityContext);
 
   return (
     <div className={styles['inputs']}>

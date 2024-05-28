@@ -14,7 +14,7 @@ type Props = {
 };
 
 export default function TaskDisplay({ item: task }: Props) {
-  const { community: { campaigns } } = useContext(CommunityContext);
+  const { campaigns } = useContext(CommunityContext);
 
   const date = useMemo(() => {
     if (!task.date) {

@@ -35,7 +35,8 @@ export default class Db {
     }));
   }
 
-  async getCommunity(id: string): Promise<Community & {
+  async getCommunityData(id: string): Promise<{
+    community: Community,
     campaigns: { id: string, name: string, default: boolean }[],
     taskCount: number
     collaborators: Collaborator[]
@@ -55,11 +56,13 @@ export default class Db {
     handleError(error);
 
     return {
-      id: data.id,
-      creatorId: data.creatorid,
-      name: data.name,
-      description: data.description ?? '',
-      mapCenter: data.mapcenter ? decodePoint(data.mapcenter) : undefined,
+      community: {
+        id: data.id,
+        creatorId: data.creatorid,
+        name: data.name,
+        description: data.description ?? '',
+        mapCenter: data.mapcenter ? decodePoint(data.mapcenter) : undefined,
+      },
       campaigns: data.campaigns.map((c) => ({
         id: c.id,
         name: c.name,

@@ -2,12 +2,11 @@
 
 import CommunityMap from '@/components/CommunityMap';
 import { newDb } from '@/db/client';
-import CommunityProvider from '@/contexts/CommunityProvider';
 import { useSelectedLayoutSegment } from 'next/navigation';
 import { useAsyncResource } from '@/lib/AsyncResource';
-import { useCallback, useState } from 'react';
 import { withDbNotFound404 } from '@/lib/util';
-import { CommunityPlus } from '@/contexts/CommunityContext';
+import { CommunityProvider } from '@/contexts/CommunityContext';
+import { useCallback } from 'react';
 import styles from './layout.module.css';
 
 type Props = {
@@ -20,28 +19,21 @@ export default function CommunityLayout({
 }: React.PropsWithChildren<Props>) {
   const nextSegment = useSelectedLayoutSegment();
   const showMap = nextSegment !== 'edit';
-  const [communityPromise, setCommunityPromise] = useState<Promise<CommunityPlus>>(
-    () => withDbNotFound404(newDb().getCommunity(params.communityId)),
-  );
+  const data = useAsyncResource(useCallback(() => withDbNotFound404(
+    newDb().getCommunityData(params.communityId),
+  ), [params.communityId]));
 
-  const community = useAsyncResource(useCallback(() => communityPromise, [communityPromise]));
-
-  return community ? (
-    <CommunityProvider
-      value={{
-        community,
-        onCommunityUpdated: (c) => setCommunityPromise(Promise.resolve(c)),
-      }}
-    >
+  return data ? (
+    <CommunityProvider initialData={data}>
       { showMap ? (
         <div className={styles['panes']}>
           <div className={styles['content-pane']}>{children}</div>
           <div className={styles['map-pane']}>
             <CommunityMap
-              initialAnnotations={community.annotations}
-              initialLngLat={community.mapCenter}
-              campaigns={community.campaigns}
-              communityId={community.id}
+              initialAnnotations={data.annotations}
+              initialLngLat={data.community.mapCenter}
+              campaigns={data.campaigns}
+              communityId={data.community.id}
             />
           </div>
         </div>

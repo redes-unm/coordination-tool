@@ -8,6 +8,14 @@ export type Community = {
   mapCenter?: [number, number] | undefined
 };
 
+export type CommunityData = {
+  community: Community
+  campaigns: { id: string, name: string, default: boolean }[]
+  taskCount: number
+  collaborators: Collaborator[]
+  annotations: Annotation[]
+};
+
 export type Collaborator = {
   id: string
   communityId: string
