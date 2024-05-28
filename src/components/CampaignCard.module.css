@@ -10,6 +10,15 @@
   max-width: 100%;
 }
 
+a.card {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+.card:hover {
+  background: #515d7310;
+}
+
 .info {
   display: flex;
   flex-flow: column nowrap;

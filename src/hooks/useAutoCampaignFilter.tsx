@@ -9,7 +9,7 @@ export default function useAutoCampaignFilter<T>(
     message: string
     handleFilterEnabled: (e: FilterEnabled) => void
   } {
-  const selectedCampaignId = useSearchParams().get('campaign');
+  const selectedCampaignId = useSearchParams().get('campaignFilter');
   const [message, setMessage] = useState('');
 
   useEffect(() => {

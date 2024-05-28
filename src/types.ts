@@ -46,6 +46,7 @@ export type Campaign = {
   description: string
   type: CampaignType
   communityId: string
+  default: boolean
 };
 
 export type CampaignWithCounts = Campaign & {

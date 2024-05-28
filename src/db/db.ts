@@ -108,6 +108,7 @@ export default class Db {
       description: d.description ?? '',
       type: d.type,
       communityId: d.communityid,
+      default: !!d.defaultforcommunity,
       annotationCount: getJoinedCount(d.campaignannotations),
       taskCount: getJoinedCount(d.tasks),
     }));
@@ -136,6 +137,7 @@ export default class Db {
       description: data.description ?? '',
       type: data.type,
       communityId: data.communityid,
+      default: !!data.defaultforcommunity,
       tasks: data.tasks.map((t) => ({
         id: t.id,
         name: t.name,
@@ -161,6 +163,43 @@ export default class Db {
         };
       }),
     };
+  }
+
+  async insertCampaign(c: Campaign) {
+    const { error } = await this.client
+      .from('campaigns')
+      .insert({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        type: c.type,
+        communityid: c.communityId,
+      });
+
+    handleError(error);
+  }
+
+  async updateCampaign(c: Campaign) {
+    const { error } = await this.client
+      .from('campaigns')
+      .update({
+        id: c.id,
+        name: c.name,
+        description: c.description,
+        communityid: c.communityId,
+      })
+      .eq('id', c.id);
+
+    handleError(error);
+  }
+
+  async deleteCampaign(id: string) {
+    const { error } = await this.client
+      .from('campaigns')
+      .delete()
+      .eq('id', id);
+
+    handleError(error);
   }
 
   async getCommunityName(id: string): Promise<string> {
