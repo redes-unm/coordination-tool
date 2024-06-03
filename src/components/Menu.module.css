@@ -5,7 +5,7 @@
   font-family: inherit;
   font-size: inherit;
   box-shadow: 0 0.125rem 0.125rem 0 #37425433;
-  z-index: 3; /* above map controls */
+  z-index: 5; /* above map controls and dialogs */
 }
 
 .menu-item {

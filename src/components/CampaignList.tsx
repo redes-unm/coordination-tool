@@ -49,7 +49,7 @@ export default function CampaignList({ className }: Props) {
     type: {
       name: 'Type',
       field: 'type',
-      categoryDefs: Object.entries(campaignTypeDisplayNames)
+      categories: Object.entries(campaignTypeDisplayNames)
         .map(([type, name]) => {
           assertCampaignType(type);
           return { name, field: 'type', value: type };

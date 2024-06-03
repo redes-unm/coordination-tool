@@ -3,6 +3,8 @@
 import * as Select from '@radix-ui/react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { useEffect, useState } from 'react';
+import { v4 as uuid } from 'uuid';
 import menuStyles from './Menu.module.css';
 import btnStyles from './Button.module.css';
 import styles from './SelectMenu.module.css';
@@ -13,7 +15,7 @@ function isSimpleOptions(options: string[] | [string, string][]): options is str
 
 type Props = {
   options: string[] | [string, string][]
-  id: string
+  id?: string
   value: string
   onValueChange: (val: string) => void
   label: string
@@ -23,13 +25,16 @@ type Props = {
 
 export default function SelectMenu({
   options,
-  id,
+  id: propsId,
   value,
   onValueChange,
   label,
   labelAbove = false,
   hideLabel = false,
 }: Props) {
+  const [id, setId] = useState(propsId);
+  useEffect(() => setId(propsId ?? uuid()), [propsId]);
+
   const opts = isSimpleOptions(options)
     ? options.map<[string, string]>((o) => ([o, o]))
     : options;

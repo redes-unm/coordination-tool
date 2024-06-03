@@ -1,8 +1,10 @@
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './ItemList.module.css';
+import btnStyles from './Button.module.css';
 import SortMenu from './SortMenu';
 import FilterMenu from './FilterMenu';
 import TextInput from './TextInput';
@@ -16,6 +18,8 @@ type Props<T extends object> = {
   sortCriteria: SortCriteria<T>
   fallbackSortCriterion?: SortCriterion<T>
   searchFields: SearchField<T>[]
+  onNew?: () => void,
+  newLabel?: string
   message?: string | undefined
   className?: string | undefined
 };
@@ -29,6 +33,8 @@ export default function ItemList<T extends object>({
   sortCriteria,
   fallbackSortCriterion,
   searchFields,
+  onNew,
+  newLabel = 'New',
   message,
   className,
 }: Props<T>) {
@@ -66,6 +72,7 @@ export default function ItemList<T extends object>({
               setDirection={setSortDirection}
             />
           </div>
+
           <TextInput
             label="Search"
             placeholder="Search"
@@ -74,6 +81,17 @@ export default function ItemList<T extends object>({
             onChange={(e) => setSearchText(e.target.value)}
             hideLabel
           />
+
+          {onNew && (
+            <button
+              type="button"
+              onClick={onNew}
+              className={`${btnStyles['btn']} ${btnStyles['solid']}`}
+            >
+              <FontAwesomeIcon icon={faPlus} className={btnStyles['icon'] ?? ''} />
+              {newLabel}
+            </button>
+          )}
         </div>
         {message && <div className={styles['message']}>{message}</div>}
       </div>

@@ -2,10 +2,10 @@ import { Annotation, annotationTypeDisplayNames } from '@/types';
 import styles from './AnnotationDisplay.module.css';
 
 type Props = {
-  annotation: Annotation
+  item: Annotation
 };
 
-export default function AnnotationDisplay({ annotation }: Props) {
+export default function AnnotationDisplay({ item: annotation }: Props) {
   return (
     <div className={styles['container']}>
       <strong>{annotation.name}</strong>

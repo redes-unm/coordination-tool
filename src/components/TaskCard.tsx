@@ -5,6 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar, faCalendarDays, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { useMemo } from 'react';
+import Link from 'next/link';
 import styles from './TaskCard.module.css';
 
 type Props = {
@@ -19,11 +20,16 @@ export default function TaskCard({ item: task, className }: Props) {
     }
 
     return task.date.getFullYear() === (new Date().getFullYear())
-      ? task.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+      ? task.date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'utc',
+      })
       : task.date.toLocaleDateString(undefined, {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
+        timeZone: 'utc',
       });
   }, [task.date]);
 
@@ -41,7 +47,10 @@ export default function TaskCard({ item: task, className }: Props) {
   }, [task.status]);
 
   return (
-    <div className={`${styles['card']} ${className ?? ''}`}>
+    <Link
+      href={`?task=${task.id}`}
+      className={`${styles['card']} ${className ?? ''}`}
+    >
       <div className={styles['completion-indicator']}>
         {task.status === 'done' && <FontAwesomeIcon icon={faCheck} />}
       </div>
@@ -71,6 +80,6 @@ export default function TaskCard({ item: task, className }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

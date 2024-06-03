@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 2rem;
+}
+
+.details {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.75rem;
+}
+
+.detail {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.priority .icon {
+  display: flex;
+  justify-content: space-around;
+}
+
+.description {
+  width: 100%;
+  max-height: 25rem;
+  overflow: auto;
+}
