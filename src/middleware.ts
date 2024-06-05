@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   if (!loggedIn && pathname.split('/')[1] !== 'auth') {
     const url = new URL(request.url);
     const afterLogin = encodeURIComponent(`${url.pathname}${url.search}`);
-    console.log('redirecting to', afterLogin);
+    throw Error(`redirecting ${url} ${afterLogin} ${new URL(`/auth/login?redirect=${afterLogin}`, request.url)}`);
     return NextResponse.redirect(new URL(`/auth/login?redirect=${afterLogin}`, request.url));
   }
 
