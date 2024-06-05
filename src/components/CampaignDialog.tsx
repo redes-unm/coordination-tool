@@ -1,0 +1,62 @@
+import { useCallback } from 'react';
+import { CampaignWithCounts } from '@/types';
+import * as Dialog from '@radix-ui/react-dialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import styles from './CampaignDialog.module.css';
+import EditableItemDisplay from './EditableItemDisplay';
+import CampaignDisplay from './CampaignDisplay';
+import CampaignEditFormContents from './CampaignEditFormContents';
+
+type Props = {
+  campaign: CampaignWithCounts | undefined
+  editing: boolean
+  title?: string | undefined
+  closeOnCancel?: boolean
+  onClose: () => void
+  onSave: (c: CampaignWithCounts) => Promise<void>
+  onDelete: (id: string) => Promise<void>
+};
+
+export default function CampaignDialog({
+  campaign,
+  editing,
+  title,
+  closeOnCancel,
+  onSave,
+  onDelete,
+  onClose,
+}: Props) {
+  return (
+    <Dialog.Root
+      open={!!campaign}
+      onOpenChange={useCallback((open) => open || onClose(), [onClose])}
+    >
+      <Dialog.Portal>
+        <Dialog.Overlay className={styles['overlay']} />
+        <Dialog.Content className={styles['content']} aria-describedby={undefined}>
+          {campaign && (
+            <>
+              <Dialog.Title className={styles['title']}>
+                {title ?? `Campaign: ${campaign.name}`}
+              </Dialog.Title>
+              <EditableItemDisplay
+                item={campaign}
+                editing={editing}
+                onSave={onSave}
+                onDelete={() => onDelete(campaign.id)}
+                onCancel={closeOnCancel ? onClose : () => {}}
+                Display={CampaignDisplay}
+                EditFormContents={CampaignEditFormContents}
+              />
+              <Dialog.Close className={styles['close']}>
+                <FontAwesomeIcon icon={faClose} />
+                <span className="a11y-only">Close</span>
+              </Dialog.Close>
+            </>
+          )}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}

@@ -5,6 +5,7 @@ import {
 import { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
+import { faClipboard } from '@fortawesome/free-regular-svg-icons';
 import styles from './CampaignCard.module.css';
 
 type Props = {
@@ -22,27 +23,25 @@ export default function CampaignCard({ item: campaign, className }: Props) {
       case 'event':
         return faCalendarDays;
       default:
-        return null;
+        return faClipboard;
     }
   }, [campaign.type]);
 
   return (
-    <div className={`${styles['card']} ${className ?? ''}`}>
+    <Link
+      href={`?campaign=${campaign.id}`}
+      className={`${styles['card']} ${className ?? ''}`}
+    >
       <div className={styles['info']}>
         <div className={styles['name']}>{campaign.name}</div>
-        <div>
-          <div className={styles['description']}>{campaign.description}</div>
-          <Link href={`/communities/${campaign.communityId}/campaigns/${campaign.id}`}>
-            Read more
-          </Link>
-        </div>
+        <div className={styles['description']}>{campaign.description}</div>
         <div className={styles['details']}>
-          <Link href={`?campaign=${campaign.id}`} className={styles['detail']}>
+          <Link href={`?campaignFilter=${campaign.id}`} className={styles['detail']}>
             <FontAwesomeIcon icon={faPencilRuler} />
             {`${campaign.annotationCount} annotations`}
           </Link>
           <Link
-            href={`/communities/${campaign.communityId}/tasks?campaign=${campaign.id}`}
+            href={`/communities/${campaign.communityId}/tasks?campaignFilter=${campaign.id}`}
             className={styles['detail']}
           >
             <FontAwesomeIcon icon={faListCheck} />
@@ -54,6 +53,6 @@ export default function CampaignCard({ item: campaign, className }: Props) {
         {typeIcon && <FontAwesomeIcon icon={typeIcon} />}
         {campaignTypeDisplayNames[campaign.type]}
       </div>
-    </div>
+    </Link>
   );
 }
