@@ -5,6 +5,7 @@ import {
 } from 'react';
 import AuthContext from '@/contexts/AuthContext';
 import { isLoggedIn } from '@/lib/auth/client';
+import { BreadcrumbProvider } from '@/contexts/BreadcrumbContext';
 import AccountMenu from './AccountMenu';
 import Breadcrumb from './Breadcrumb';
 import LanguageMenu from './LanguageMenu';
@@ -25,15 +26,17 @@ export default function Page({ children }: Props) {
           reset: recheckLoggedIn,
         }), [loggedIn, recheckLoggedIn])}
       >
-        <header className={styles['header']}>
-          <h1 className={styles['title']}>Coordination Tool</h1>
-          <nav className={styles['menus']}>
-            <LanguageMenu />
-            <AccountMenu />
-          </nav>
-          <Breadcrumb className={styles['breadcrumb']} />
-        </header>
-        <main className={styles['main']}>{children}</main>
+        <BreadcrumbProvider>
+          <header className={styles['header']}>
+            <h1 className={styles['title']}>Coordination Tool</h1>
+            <nav className={styles['menus']}>
+              <LanguageMenu />
+              <AccountMenu />
+            </nav>
+            <Breadcrumb className={styles['breadcrumb']} />
+          </header>
+          <main className={styles['main']}>{children}</main>
+        </BreadcrumbProvider>
       </AuthContext.Provider>
     </div>
   );

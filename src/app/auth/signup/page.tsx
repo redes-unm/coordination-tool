@@ -19,14 +19,17 @@ export default function Signup({ searchParams }: Props) {
   const handleSubmit = async (_prevState: string | null, data: FormData) => {
     'use server';
 
+    const name = data.get('name');
     const email = data.get('email');
     const password = data.get('password');
-    if (typeof email !== 'string' || typeof password !== 'string') {
+    if (typeof name !== 'string'
+        || typeof email !== 'string'
+        || typeof password !== 'string') {
       return 'An unexpected error occurred';
     }
 
     try {
-      await signUp(email, password);
+      await signUp(name, email, password);
     } catch (e) {
       return e instanceof Error ? e.message : 'An unexpected error occurred';
     }

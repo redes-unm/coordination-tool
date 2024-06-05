@@ -1,12 +1,12 @@
 import { IControl } from 'mapbox-gl';
 import {
   FC,
-  RefObject, useEffect, useRef, useState,
+  useEffect, useRef, useState,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
 export default function useControl<P extends {}>(
-  map: RefObject<mapboxgl.Map>,
+  map: mapboxgl.Map | null | undefined,
   position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
   Component: FC<P>,
   props: P,
@@ -24,15 +24,14 @@ export default function useControl<P extends {}>(
       },
 
       onRemove() {
-        root.current?.unmount();
+        root.current = null;
         this.container?.parentNode?.removeChild(this.container);
         setContainer(undefined);
       },
     };
 
-    const m = map.current;
-    m?.addControl(control, position);
-    return () => { m?.removeControl(control); };
+    map?.addControl(control, position);
+    return () => { map?.removeControl(control); };
   }, [map, position]);
 
   useEffect(() => {

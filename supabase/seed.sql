@@ -1,6 +1,152 @@
-insert into communities (name, description) values
-    ('Georgia Tech', 'Measurement efforts for Georgia Tech''s campus and the surrounding area'),
-    ('Emory', 'Measurement efforts for Emory''s campus and the surrounding area');
+-- create test users and their identities
+-- source: https://gist.github.com/khattaksd/4e8f4c89f4e928a2ecaad56d4a17ecd1
+insert into auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) (
+    select
+        '00000000-0000-0000-0000-000000000000',
+        uuid_generate_v4(),
+        'authenticated',
+        'authenticated',
+        't' || (ROW_NUMBER() OVER ()) || '@example.com',
+        crypt('test123', gen_salt('bf')),
+        current_timestamp,
+        current_timestamp,
+        current_timestamp,
+        '{"provider":"email","providers":["email"]}',
+        '{}',
+        current_timestamp,
+        current_timestamp,
+        '',
+        '',
+        '',
+        ''
+    from
+        generate_series(1, 5)
+);
+
+insert into auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) values (
+    '00000000-0000-0000-0000-000000000000',
+    '266b242a-8a65-458d-817a-6b00868ab275',
+    'authenticated',
+    'authenticated',
+    'admin@example.com',
+    crypt('test123', gen_salt('bf')),
+    current_timestamp,
+    current_timestamp,
+    current_timestamp,
+    '{"provider":"email","providers":["email"]}',
+    '{}',
+    current_timestamp,
+    current_timestamp,
+    '',
+    '',
+    '',
+    ''
+);
+
+insert into auth.identities (
+    id,
+    user_id,
+    provider_id,
+    identity_data,
+    provider,
+    last_sign_in_at,
+    created_at,
+    updated_at
+) (
+    select
+        uuid_generate_v4 (),
+        id,
+        id,
+        format('{"sub":"%s","email":"%s"}', id::text, email)::jsonb,
+        'email',
+        current_timestamp,
+        current_timestamp,
+        current_timestamp
+    from
+        auth.users
+);
+
+insert into profiles (userId, name)
+    select id, 'Tester One' from auth.users where email = 't1@example.com';
+insert into profiles (userId, name)
+    select id, 'Tester Two' from auth.users where email = 't2@example.com';
+insert into profiles (userId, name)
+    select id, 'Tester Three' from auth.users where email = 't3@example.com';
+insert into profiles (userId, name)
+    select id, 'Tester Four' from auth.users where email = 't4@example.com';
+insert into profiles (userId, name)
+    select id, 'Tester Five' from auth.users where email = 't5@example.com';
+insert into profiles (userId, name)
+    select id, 'Dev Admin' from auth.users where email = 'admin@example.com';
+
+insert into communities (name, mapCenter, description, creatorId)
+    select
+        'Georgia Tech',
+        '(-84.396, 33.777)',
+        'Measurement efforts for Georgia Tech''s campus and the surrounding area',
+        id
+    from auth.users
+    where email = 't1@example.com';
+
+insert into communities (name, description, creatorId)
+    select
+        'Emory',
+        'Measurement efforts for Emory''s campus and the surrounding area',
+        id
+    from auth.users
+    where email = 't2@example.com';
+
+insert into collaborators (communityId, userId, role, name, editable)
+    select communities.id, users.id, 'creator', profiles.name, false
+    from auth.users
+        join profiles on users.id = profiles.userId
+        join communities on users.id = communities.creatorId;
+
+insert into collaborators (communityId, userId, role, name, editable)
+    select communities.id, users.id, 'admin', profiles.name, false
+    from auth.users
+        join profiles on users.id = profiles.userId
+        right outer join communities on true
+    where users.email = 'admin@example.com';
+
+insert into collaborators (communityId, role, name, editable)
+    select communities.id, 'helper', 'Amelia Bedelia', true from communities;
 
 insert into campaigns (name, description, type, communityId, defaultForCommunity)
     select 'Default', 'Default campaign for Emory''s measurement efforts', 'other', id, true

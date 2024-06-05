@@ -39,6 +39,7 @@ export default function LoginSignup({
         </div>
       )}
       <form className={styles['form']} action={action}>
+        {signup && <TextInput label="Name" id="name" name="name" type="text" required />}
         <TextInput label="Email" id="email" name="email" type="email" required />
         <TextInput label="Password" id="password" name="password" type="password" required />
         <SubmitButton

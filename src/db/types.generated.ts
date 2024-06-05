@@ -141,15 +141,27 @@ export type Database = {
       collaborators: {
         Row: {
           communityid: string
-          userid: string
+          editable: boolean
+          id: string
+          name: string
+          role: string
+          userid: string | null
         }
         Insert: {
           communityid: string
-          userid: string
+          editable: boolean
+          id?: string
+          name: string
+          role: string
+          userid?: string | null
         }
         Update: {
           communityid?: string
-          userid?: string
+          editable?: boolean
+          id?: string
+          name?: string
+          role?: string
+          userid?: string | null
         }
         Relationships: [
           {
@@ -170,21 +182,58 @@ export type Database = {
       }
       communities: {
         Row: {
+          creatorid: string | null
           description: string | null
           id: string
+          mapcenter: unknown | null
           name: string
         }
         Insert: {
+          creatorid?: string | null
           description?: string | null
           id?: string
+          mapcenter?: unknown | null
           name: string
         }
         Update: {
+          creatorid?: string | null
           description?: string | null
           id?: string
+          mapcenter?: unknown | null
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "communities_creatorid_fkey"
+            columns: ["creatorid"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          name: string
+          userid: string
+        }
+        Insert: {
+          name: string
+          userid: string
+        }
+        Update: {
+          name?: string
+          userid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_userid_fkey"
+            columns: ["userid"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -229,7 +278,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      createcommunity: {
+        Args: {
+          community: unknown
+          collabs: Database["public"]["Tables"]["collaborators"]["Row"][]
+        }
+        Returns: {
+          creatorid: string | null
+          description: string | null
+          id: string
+          mapcenter: unknown | null
+          name: string
+        }
+      }
+      editcommunity: {
+        Args: {
+          community: unknown
+          collabs: Database["public"]["Tables"]["collaborators"]["Row"][]
+        }
+        Returns: {
+          creatorid: string | null
+          description: string | null
+          id: string
+          mapcenter: unknown | null
+          name: string
+        }
+      }
     }
     Enums: {
       annotationtype: "infra" | "equipment" | "person" | "poi" | "region"

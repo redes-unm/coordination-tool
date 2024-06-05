@@ -22,7 +22,7 @@ import styles from './Map.module.css';
 import ModeControl from './ModeControl';
 import FilterMenu from '../FilterMenu';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiamNveDk5IiwiYSI6ImNscTE1c2xlcjA1cXoybHBnMDk1cmgyODAifQ.2UrggqzuuxrtqoaCilNlbQ';
+mapboxgl.accessToken = process.env['NEXT_PUBLIC_MAPBOX_TOKEN'] ?? throwErr('no mapbox token!');
 
 type AnnotationFeature = Feature<Geometry, Omit<Annotation, 'geometry' | 'id'>>;
 
@@ -49,7 +49,7 @@ type Props = {
   onAdd: (a: Annotation) => Promise<void>
   onUpdate: (a: Annotation) => Promise<void>
   onDelete: (id: string) => Promise<void>
-  initialLngLat?: [number, number]
+  initialLngLat?: [number, number] | undefined
   initialZoom?: number
 };
 
@@ -69,7 +69,7 @@ export default function Map({
   onUpdate,
 }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const [map, setMap] = useState<mapboxgl.Map>();
   const [selectedAnnotation, setSelectedAnnotation] = useState<Annotation | undefined>();
   const [newAnnotation, setNewAnnotation] = useState<Annotation | undefined>();
 
@@ -96,10 +96,6 @@ export default function Map({
 
   // create map
   useEffect(() => {
-    if (map.current) {
-      return () => {};
-    }
-
     const mapboxMap = new mapboxgl.Map({
       container: mapContainer.current ?? throwErr('no map container'),
       style: 'mapbox://styles/mapbox/streets-v12',
@@ -108,11 +104,11 @@ export default function Map({
       preserveDrawingBuffer: true,
     });
 
-    map.current = mapboxMap;
+    setMap(mapboxMap);
 
     return () => {
       mapboxMap.remove();
-      map.current = null;
+      setMap(undefined);
     };
   }, [initialLngLat, initialZoom]);
 

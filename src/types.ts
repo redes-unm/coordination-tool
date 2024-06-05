@@ -2,8 +2,27 @@ import { Geometry } from 'geojson';
 
 export type Community = {
   id: string
+  creatorId: string | null
   name: string
   description: string
+  mapCenter?: [number, number] | undefined
+};
+
+export type CommunityData = {
+  community: Community
+  campaigns: { id: string, name: string, default: boolean }[]
+  taskCount: number
+  collaborators: Collaborator[]
+  annotations: Annotation[]
+};
+
+export type Collaborator = {
+  id: string
+  communityId: string
+  userId?: string | undefined
+  name: string
+  role: string
+  editable: boolean
 };
 
 export const campaignTypeDisplayNames = {
@@ -94,4 +113,9 @@ export type Task = {
   status: TaskStatus
   date: Date | null
   campaignId: string
+};
+
+export type Profile = {
+  userId: string
+  name: string
 };

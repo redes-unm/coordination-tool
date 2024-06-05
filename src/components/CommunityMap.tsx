@@ -1,27 +1,30 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import {
+  useCallback, useContext, useMemo,
+} from 'react';
 import {
   Annotation, annotationTypeDisplayNames, assertAnnotationType,
 } from '@/types';
 import { newDb } from '@/db/client';
 import useFilter from '@/hooks/useFilter';
 import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
+import CommunityContext from '@/contexts/CommunityContext';
 import Map from './map/Map';
 
-type Props = {
-  initialAnnotations: Annotation[]
-  communityId: string
-  campaigns: { id: string, name: string }[]
-};
+export default function CommunityMap() {
+  const {
+    community,
+    campaigns,
+    annotations,
+    onCommunityDataUpdated,
+  } = useContext(CommunityContext);
 
-export default function CommunityMap({
-  initialAnnotations,
-  communityId,
-  campaigns,
-}: Props) {
+  const setAnnotations = useCallback((setter: (old: Annotation[]) => Annotation[]) => {
+    onCommunityDataUpdated({ annotations: setter(annotations) });
+  }, [annotations, onCommunityDataUpdated]);
+
   const db = useMemo(() => newDb(), []);
-  const [annotations, setAnnotations] = useState(initialAnnotations);
 
   const filter = useMemo(() => ({
     type: {
@@ -58,22 +61,25 @@ export default function CommunityMap({
     setFilterEnabled,
   } = useFilter(annotations, filter);
 
-  const { message, handleFilterEnabled } = useAutoCampaignFilter(setFilterEnabled, campaigns);
+  const { message, handleFilterEnabled } = useAutoCampaignFilter(
+    setFilterEnabled,
+    filter.campaign,
+  );
 
   const handleAddAnnotation = useCallback(async (annotation: Annotation) => {
-    await db.insertAnnotation(annotation, communityId);
+    await db.insertAnnotation(annotation, community.id);
     setAnnotations((old) => old.concat(annotation));
-  }, [db, communityId]);
+  }, [db, community.id, setAnnotations]);
 
   const handleUpdateAnnotation = useCallback(async (annotation: Annotation) => {
-    await db.upsertAnnotation(annotation, communityId);
+    await db.upsertAnnotation(annotation, community.id);
     setAnnotations((old) => old.filter((a) => a.id !== annotation.id).concat(annotation));
-  }, [db, communityId]);
+  }, [db, community.id, setAnnotations]);
 
   const handleDeleteAnnotation = useCallback(async (id: string) => {
     await db.deleteAnnotation(id);
     setAnnotations((old) => old.filter((a) => a.id !== id));
-  }, [db]);
+  }, [db, setAnnotations]);
 
   return (
     <Map
@@ -85,6 +91,7 @@ export default function CommunityMap({
       onAdd={handleAddAnnotation}
       onUpdate={handleUpdateAnnotation}
       onDelete={handleDeleteAnnotation}
+      initialLngLat={community.mapCenter}
     />
   );
 }

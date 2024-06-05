@@ -58,7 +58,12 @@ export default function ModeControl({
   return (
     <RadioGroup value={mode} onValueChange={onModeChange} className={styles['container']}>
       { modes.map((m) => (
-        <RadioGroupItem key={m} value={m} title={modeDisplayNames[m]}>
+        <RadioGroupItem
+          key={m}
+          value={m}
+          title={modeDisplayNames[m]}
+          className={styles['item']}
+        >
           <ModeIcon icon={icons[m]} label={modeDisplayNames[m]} />
         </RadioGroupItem>
       ))}
