@@ -3,7 +3,6 @@
 /node_modules
 /README.md
 /.next
-/.git
 /supabase/
 /.env*.local
 /build.sh

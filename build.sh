@@ -14,6 +14,7 @@ fi
 
 cd "$(dirname "$0")"
 
+
 docker build \
     --build-arg NEXT_PUBLIC_SUPABASE_URL="${NEXT_PUBLIC_SUPABASE_URL:?missing env var NEXT_PUBLIC_SUPABASE_URL}" \
     --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="${NEXT_PUBLIC_SUPABASE_ANON_KEY:?missing env var NEXT_PUBLIC_SUPABASE_ANON_KEY}" \

@@ -22,7 +22,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - fonts (font files)
+     * - version.txt
      */
-    '/((?!_next/static|_next/image|favicon.ico|fonts).*)',
+    '/((?!_next/static|_next/image|favicon.ico|fonts|version.txt).*)',
   ],
 };

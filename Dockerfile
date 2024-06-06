@@ -27,4 +27,6 @@ ENV PORT 8080
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1
 
+RUN echo "$(git rev-parse HEAD) $(date -Iseconds)" >public/version.txt
+
 CMD ["npm", "run", "start"]
