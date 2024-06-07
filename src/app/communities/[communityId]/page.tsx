@@ -7,6 +7,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
+import { useTracking } from 'react-tracking';
+import { Trackables } from '@/types';
+
 import btnStyles from '@/components/Button.module.css';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.css';
@@ -22,8 +25,25 @@ export default function Community() {
   const router = useRouter();
   const collabCount = collaborators.length;
 
+  const {
+    Track,
+    trackEvent,
+  } = useTracking<Trackables>({ page: `CommunityOverview-${community.id}` });
+
+  const trackClick = (element: string) => {
+    const timestamp = new Date().toISOString();
+    // console.log(`TESTING DATE ${timestamp}`);
+    // console.log(`*** Tracking event from element ${element} `);
+    trackEvent({ action: 'click', element, timestamp });
+  };
+
+  const editCommunity = () => {
+    trackClick('edit-community-button');
+    return router.push(`/communities/${community.id}/edit`);
+  };
+
   return (
-    <>
+    <Track>
       <div className={styles['content']}>
         <h2 className={styles['title']}>
           {`${community.name} - Community Overview`}
@@ -43,7 +63,8 @@ export default function Community() {
             <button
               type="button"
               className={btnStyles['btn']}
-              onClick={() => router.push(`/communities/${community.id}/edit`)}
+              // onClick={() => router.push(`/communities/${community.id}/edit`)}
+              onClick={editCommunity}
             >
               Edit
             </button>
@@ -92,6 +113,10 @@ export default function Community() {
           </div>
         </Link>
       </div>
-    </>
+    </Track>
   );
 }
+
+// export default track({
+//   page: 'CommunityOverviewPage',
+// })(Community);

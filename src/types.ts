@@ -120,3 +120,11 @@ export type Profile = {
   userId: string
   name: string
 };
+
+// interface definition for react-tracking hooks
+export interface Trackables {
+  action: string;
+  element: string;
+  page: string;
+  timestamp: string;
+}
