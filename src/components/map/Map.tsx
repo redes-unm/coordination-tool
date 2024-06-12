@@ -75,7 +75,7 @@ export default function Map({
 
   const handleSaveViewClicked = useCallback(async () => {
     const blob = await toBlob(mapContainer.current ?? throwErr('no map ref'), {
-      filter: (node) => !node.classList.contains('mapboxgl-ctrl'),
+      filter: (node) => !node.classList?.contains('mapboxgl-ctrl'),
     }) ?? throwErr('no blob created');
 
     saveAs(blob, 'map-view.png');
