@@ -1,17 +1,18 @@
+'use client';
+
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faClipboard, faListCheck, faPenRuler, faPlus, faUserLock,
 } from '@fortawesome/free-solid-svg-icons';
-import { newDb } from '@/db/server';
-import { withDbNotFound404 } from '@/lib/util';
+import { useContext } from 'react';
+import CommunityListContext from '@/contexts/CommunityListContext';
 import styles from './page.module.css';
 
 const descriptionMaxLength = 80;
 
-export default async function Communities() {
-  const db = newDb();
-  const communities = await withDbNotFound404(db.getCommunities());
+export default function Communities() {
+  const { communities } = useContext(CommunityListContext);
 
   return (
     <div className={styles['cards']}>

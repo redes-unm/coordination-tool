@@ -5,7 +5,8 @@ import { Collaborator, Community, Profile } from '@/types';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { v4 as uuid } from 'uuid';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
+import CommunityListContext from '@/contexts/CommunityListContext';
 
 type Props = {
   creator: Profile
@@ -17,6 +18,7 @@ export default function CommunityCreator({
   admin,
 }: Props) {
   const router = useRouter();
+  const { onCommunityUpdated } = useContext(CommunityListContext);
 
   const initialCommunity: Community = useMemo(() => ({
     id: uuid(),
@@ -44,6 +46,7 @@ export default function CommunityCreator({
 
   const handleSave = async (community: Community, collaborators: Collaborator[]) => {
     await newDb().insertCommunity(community, collaborators);
+    onCommunityUpdated({ ...community, collaboratorCount: collaborators.length });
     router.push(`/communities/${community.id}`);
   };
 
