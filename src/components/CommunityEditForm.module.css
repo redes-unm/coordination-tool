@@ -89,3 +89,8 @@
   flex-flow: column nowrap;
   gap: 1rem;
 }
+
+.error {
+  grid-column: 1 / span 2;
+  text-align: right;
+}

@@ -176,7 +176,7 @@ export default function CommunityEditForm({
         />
       </div>
 
-      { error && <div className={styles['error']}>{error}</div> }
+      { error && <div className={`error ${styles['error']}`}>{error}</div> }
 
       <div className={styles['buttons']}>
         <button
