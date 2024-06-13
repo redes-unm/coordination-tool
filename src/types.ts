@@ -11,7 +11,7 @@ export type Community = {
 export type CommunityData = {
   community: Community
   campaigns: { id: string, name: string, default: boolean }[]
-  taskCount: number
+  tasks: Task[]
   collaborators: Collaborator[]
   annotations: Annotation[]
 };

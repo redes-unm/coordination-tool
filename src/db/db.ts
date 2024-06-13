@@ -1,5 +1,5 @@
 import {
-  Annotation, Campaign, CampaignWithCounts, Collaborator, Community, Profile, Task,
+  Annotation, Campaign, CampaignWithCounts, Collaborator, Community, CommunityData, Profile, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
@@ -35,20 +35,14 @@ export default class Db {
     }));
   }
 
-  async getCommunityData(id: string): Promise<{
-    community: Community,
-    campaigns: { id: string, name: string, default: boolean }[],
-    taskCount: number
-    collaborators: Collaborator[]
-    annotations: Annotation[]
-  }> {
+  async getCommunityData(id: string): Promise<CommunityData> {
     if (!validate(id)) {
       throw new DbNotFoundError();
     }
 
     const { data, error } = await this.client
       .from('communities')
-      .select('*, campaigns(id, name, defaultforcommunity, tasks(count)), collaborators(*), annotations(*, campaignannotations(campaignid))')
+      .select('*, campaigns(id, name, defaultforcommunity, tasks(*)), collaborators(*), annotations(*, campaignannotations(campaignid))')
       .eq('id', id)
       .limit(1)
       .single();
@@ -68,9 +62,16 @@ export default class Db {
         name: c.name,
         default: !!c.defaultforcommunity,
       })),
-      taskCount: data.campaigns
-        .map((c) => getJoinedCount(c.tasks))
-        .reduce((sum, count) => sum + count, 0),
+      tasks: data.campaigns
+        .flatMap((c) => c.tasks.map((t) => ({
+          id: t.id,
+          campaignId: t.campaignid,
+          name: t.name,
+          description: t.description ?? '',
+          date: t.duedate ? new Date(t.duedate) : null,
+          priority: t.priority,
+          status: t.status,
+        }))),
       collaborators: data.collaborators.map((c) => ({
         id: c.id,
         communityId: c.communityid,

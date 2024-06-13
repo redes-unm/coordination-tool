@@ -24,17 +24,12 @@ import ItemList from './ItemList';
 const TaskDialog = dynamic(() => import('./TaskDialog'), { ssr: false });
 
 type Props = {
-  tasks: Task[]
   className?: string | undefined
 };
 
-export default function TaskList({
-  tasks: initialTasks,
-  className,
-}: Props) {
+export default function TaskList({ className }: Props) {
   const db = useMemo(() => newDb(), []);
-  const { campaigns } = useContext(CommunityContext);
-  const [tasks, setTasks] = useState(initialTasks);
+  const { campaigns, tasks, onCommunityDataUpdated } = useContext(CommunityContext);
   const [newTask, setNewTask] = useState<Task | null>(null);
   const [openTaskId, setOpenTaskId] = useSearchParam('task');
 
@@ -164,13 +159,14 @@ export default function TaskList({
     } else {
       await db.updateTask(task);
     }
-    setTasks((old) => old.filter((t) => t.id !== task.id).concat(task));
-  }, [db, newTask]);
+
+    onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== task.id).concat(task) });
+  }, [db, newTask, tasks, onCommunityDataUpdated]);
 
   const handleDeleteTask = useCallback(async (id: string) => {
     await db.deleteTask(id);
-    setTasks((old) => old.filter((t) => t.id !== id));
-  }, [db]);
+    onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== id) });
+  }, [db, tasks, onCommunityDataUpdated]);
 
   return (
     <>

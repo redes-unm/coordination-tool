@@ -17,7 +17,7 @@ export default function Community() {
     community,
     collaborators,
     campaigns,
-    taskCount,
+    tasks,
     annotations,
   } = useContext(CommunityContext);
   const router = useRouter();
@@ -77,7 +77,7 @@ export default function Community() {
             <FontAwesomeIcon icon={faListCheck} />
             <span className={styles['link-name']}>Tasks</span>
             <span className={styles['link-count']}>
-              <span className={styles['count']}>{taskCount}</span>
+              <span className={styles['count']}>{tasks.length}</span>
               <span className={styles['count-label']}>pending</span>
             </span>
           </div>
