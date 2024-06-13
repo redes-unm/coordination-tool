@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { CampaignWithCounts } from '@/types';
+import { Campaign } from '@/types';
 import * as Dialog from '@radix-ui/react-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
@@ -9,12 +9,12 @@ import CampaignDisplay from './CampaignDisplay';
 import CampaignEditFormContents from './CampaignEditFormContents';
 
 type Props = {
-  campaign: CampaignWithCounts | undefined
+  campaign: Campaign | undefined
   editing: boolean
   title?: string | undefined
   closeOnCancel?: boolean
   onClose: () => void
-  onSave: (c: CampaignWithCounts) => Promise<void>
+  onSave: (c: Campaign) => Promise<void>
   onDelete: (id: string) => Promise<void>
 };
 

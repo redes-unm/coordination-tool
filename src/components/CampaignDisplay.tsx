@@ -2,11 +2,11 @@ import { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSchoolFlag, faStopwatch } from '@fortawesome/free-solid-svg-icons';
 import { faCalendarDays, faClipboard } from '@fortawesome/free-regular-svg-icons';
-import { CampaignWithCounts, campaignTypeDisplayNames } from '@/types';
+import { Campaign, campaignTypeDisplayNames } from '@/types';
 import styles from './CampaignDisplay.module.css';
 
 type Props = {
-  item: CampaignWithCounts
+  item: Campaign
 };
 
 export default function CampaignDisplay({ item: campaign }: Props) {

@@ -1,11 +1,11 @@
 import {
-  Annotation, Campaign, CampaignWithCounts, Collaborator, Community, CommunityData, Profile, Task,
+  Annotation, Campaign, Collaborator, Community, CommunityData, Profile, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
 import { validate } from 'uuid';
 import { Database } from './types.generated';
-import { DbError, DbNotFoundError } from './errors';
+import { DbNotFoundError } from './errors';
 import {
   getJoinedCount, handleError, decodePoint, encodePoint,
 } from './util';
@@ -42,7 +42,7 @@ export default class Db {
 
     const { data, error } = await this.client
       .from('communities')
-      .select('*, campaigns(id, name, defaultforcommunity, tasks(*)), collaborators(*), annotations(*, campaignannotations(campaignid))')
+      .select('*, campaigns(*, tasks(*)), collaborators(*), annotations(*, campaignannotations(campaignid))')
       .eq('id', id)
       .limit(1)
       .single();
@@ -60,7 +60,10 @@ export default class Db {
       campaigns: data.campaigns.map((c) => ({
         id: c.id,
         name: c.name,
+        description: c.description ?? '',
         default: !!c.defaultforcommunity,
+        communityId: c.communityid,
+        type: c.type,
       })),
       tasks: data.campaigns
         .flatMap((c) => c.tasks.map((t) => ({
@@ -91,7 +94,7 @@ export default class Db {
     };
   }
 
-  async getCampaigns(communityId: string): Promise<CampaignWithCounts[]> {
+  async getCampaigns(communityId: string): Promise<Campaign[]> {
     if (!validate(communityId)) {
       throw new DbNotFoundError();
     }
@@ -113,57 +116,6 @@ export default class Db {
       annotationCount: getJoinedCount(d.campaignannotations),
       taskCount: getJoinedCount(d.tasks),
     }));
-  }
-
-  async getCampaign(campaignId: string): Promise<Campaign & {
-    tasks: Task[],
-    annotations: Annotation[],
-  }> {
-    if (!validate(campaignId)) {
-      throw new DbNotFoundError();
-    }
-
-    const { data, error } = await this.client
-      .from('campaigns')
-      .select('*, tasks(*), campaignannotations(annotations(*))')
-      .eq('id', campaignId)
-      .limit(1)
-      .single();
-
-    handleError(error);
-
-    return {
-      id: data.id,
-      name: data.name,
-      description: data.description ?? '',
-      type: data.type,
-      communityId: data.communityid,
-      default: !!data.defaultforcommunity,
-      tasks: data.tasks.map((t) => ({
-        id: t.id,
-        name: t.name,
-        description: t.description ?? '',
-        priority: t.priority,
-        status: t.status,
-        date: t.duedate ? new Date(t.duedate) : null,
-        campaignId: t.campaignid,
-      })),
-      annotations: data.campaignannotations.map((ca) => {
-        const a = ca.annotations;
-        if (!a) {
-          throw new DbError('expected an annotation matching campaign annotation');
-        }
-
-        return {
-          id: a.id,
-          name: a.name,
-          description: a.description ?? '',
-          type: a.type,
-          geometry: a.geo as Geometry,
-          campaignIds: undefined,
-        };
-      }),
-    };
   }
 
   async insertCampaign(c: Campaign) {

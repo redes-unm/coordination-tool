@@ -1,19 +1,32 @@
-import { CampaignWithCounts, campaignTypeDisplayNames } from '@/types';
+import { Campaign, campaignTypeDisplayNames } from '@/types';
 import {
   faCalendarDays, faListCheck, faPencilRuler, faSchoolFlag, faStopwatch,
 } from '@fortawesome/free-solid-svg-icons';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import { faClipboard } from '@fortawesome/free-regular-svg-icons';
+import CommunityContext from '@/contexts/CommunityContext';
 import styles from './CampaignCard.module.css';
 
 type Props = {
-  item: CampaignWithCounts,
+  item: Campaign,
   className?: string | undefined
 };
 
 export default function CampaignCard({ item: campaign, className }: Props) {
+  const { annotations, tasks } = useContext(CommunityContext);
+
+  const annotationCount = useMemo(
+    () => annotations.filter((a) => a.campaignIds.includes(campaign.id)).length,
+    [campaign.id, annotations],
+  );
+
+  const taskCount = useMemo(
+    () => tasks.filter((t) => t.campaignId === campaign.id).length,
+    [campaign.id, tasks],
+  );
+
   const typeIcon = useMemo(() => {
     switch (campaign.type) {
       case 'measurement':
@@ -38,14 +51,14 @@ export default function CampaignCard({ item: campaign, className }: Props) {
         <div className={styles['details']}>
           <Link href={`?campaignFilter=${campaign.id}`} className={styles['detail']}>
             <FontAwesomeIcon icon={faPencilRuler} />
-            {`${campaign.annotationCount} annotations`}
+            {`${annotationCount} annotations`}
           </Link>
           <Link
             href={`/communities/${campaign.communityId}/tasks?campaignFilter=${campaign.id}`}
             className={styles['detail']}
           >
             <FontAwesomeIcon icon={faListCheck} />
-            {`${campaign.taskCount} tasks`}
+            {`${taskCount} tasks`}
           </Link>
         </div>
       </div>

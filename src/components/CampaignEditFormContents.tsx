@@ -1,12 +1,12 @@
 import React from 'react';
-import { CampaignWithCounts, assertCampaignType, campaignTypeDisplayNames } from '@/types';
+import { Campaign, assertCampaignType, campaignTypeDisplayNames } from '@/types';
 import styles from './CampaignEditFormContents.module.css';
 import SelectMenu from './SelectMenu';
 import TextInput from './TextInput';
 
 type Props = {
-  item: CampaignWithCounts
-  onChange: (item: CampaignWithCounts) => void
+  item: Campaign
+  onChange: (item: Campaign) => void
 };
 
 function CampaignEditFormContents({

@@ -3,10 +3,10 @@
 import { v4 as uuid } from 'uuid';
 import { newDb } from '@/db/client';
 import {
-  CampaignWithCounts, assertCampaignType, campaignTypeDisplayNames,
+  Campaign, assertCampaignType, campaignTypeDisplayNames,
 } from '@/types';
 import {
-  useCallback, useContext, useEffect, useMemo, useState,
+  useCallback, useContext, useMemo, useState,
 } from 'react';
 import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
@@ -18,18 +18,13 @@ import CampaignCard from './CampaignCard';
 import CampaignDialog from './CampaignDialog';
 
 type Props = {
-  campaigns: CampaignWithCounts[]
   className?: string | undefined
 };
 
-export default function CampaignList({
-  campaigns: initialCampaigns,
-  className,
-}: Props) {
-  const { community, onCommunityDataUpdated } = useContext(CommunityContext);
+export default function CampaignList({ className }: Props) {
+  const { community, campaigns, onCommunityDataUpdated } = useContext(CommunityContext);
   const db = useMemo(() => newDb(), []);
-  const [campaigns, setCampaigns] = useState(initialCampaigns);
-  const [newCampaign, setNewCampaign] = useState<CampaignWithCounts | null>(null);
+  const [newCampaign, setNewCampaign] = useState<Campaign | null>(null);
   const [openCampaignId, setOpenCampaignId] = useSearchParam('campaign');
 
   const openCampaign = useMemo(
@@ -37,7 +32,7 @@ export default function CampaignList({
     [campaigns, newCampaign, openCampaignId],
   );
 
-  const filter: Filter<CampaignWithCounts> = useMemo(() => ({
+  const filter: Filter<Campaign> = useMemo(() => ({
     type: {
       name: 'By type',
       items: Object.entries(campaignTypeDisplayNames).reduce((items, [type, name]) => {
@@ -57,7 +52,7 @@ export default function CampaignList({
     setFilterEnabled,
   } = useFilter(campaigns, filter);
 
-  const sortCriteria: SortCriteria<CampaignWithCounts> = useMemo(() => ({
+  const sortCriteria: SortCriteria<Campaign> = useMemo(() => ({
     name: {
       name: 'Name',
       field: 'name',
@@ -73,7 +68,7 @@ export default function CampaignList({
     },
   }), []);
 
-  const searchFields: SearchField<CampaignWithCounts>[] = useMemo(() => ['name', 'description'], []);
+  const searchFields: SearchField<Campaign>[] = useMemo(() => ['name', 'description'], []);
 
   const handleNew = useCallback(() => setNewCampaign({
     id: uuid(),
@@ -82,11 +77,9 @@ export default function CampaignList({
     type: 'measurement',
     communityId: community.id,
     default: false,
-    taskCount: 0,
-    annotationCount: 0,
   }), [community.id]);
 
-  const handleSaveCampaign = useCallback(async (campaign: CampaignWithCounts) => {
+  const handleSaveCampaign = useCallback(async (campaign: Campaign) => {
     if (newCampaign) {
       await db.insertCampaign(campaign);
       setNewCampaign(null);
@@ -94,26 +87,16 @@ export default function CampaignList({
       await db.updateCampaign(campaign);
     }
 
-    setCampaigns((old) => {
-      const c = old.filter((t) => t.id !== campaign.id).concat(campaign);
-      onCommunityDataUpdated({ campaigns: c });
-      return c;
+    onCommunityDataUpdated({
+      campaigns: campaigns.filter((t) => t.id !== campaign.id).concat(campaign),
     });
-  }, [db, newCampaign, onCommunityDataUpdated]);
+  }, [db, newCampaign, onCommunityDataUpdated, campaigns]);
 
   const handleDeleteCampaign = useCallback(async (id: string) => {
     await db.deleteCampaign(id);
 
-    setCampaigns((old) => {
-      const c = old.filter((t) => t.id !== id);
-      onCommunityDataUpdated({ campaigns: c });
-      return c;
-    });
-  }, [db, onCommunityDataUpdated]);
-
-  useEffect(() => {
-    // onCommunityDataUpdated({ campaigns });
-  }, [campaigns, onCommunityDataUpdated]);
+    onCommunityDataUpdated({ campaigns: campaigns.filter((t) => t.id !== id) });
+  }, [db, onCommunityDataUpdated, campaigns]);
 
   return (
     <>
