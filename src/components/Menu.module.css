@@ -61,6 +61,7 @@
 
 .menu-item[data-disabled] {
   color: #515d7388;
+  cursor: unset;
 }
 
 .separator hr {

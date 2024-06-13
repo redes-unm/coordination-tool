@@ -15,7 +15,7 @@ import styles from './AccountMenu.module.css';
 export default function AccountMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const { loggedIn, reset } = useContext(AuthContext);
+  const { user, reset } = useContext(AuthContext);
 
   const handleLogOut = async () => {
     await logOut();
@@ -23,7 +23,7 @@ export default function AccountMenu() {
     reset();
   };
 
-  return loggedIn ? (
+  return user ? (
     <Dropdown.Root>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${btnStyles['solid']} ${menuStyles['menu-btn']}`}>
         <span>
@@ -40,7 +40,9 @@ export default function AccountMenu() {
       <Dropdown.Portal>
         <Dropdown.Content className={menuStyles['menu-content']}>
           <Dropdown.Arrow className={menuStyles['menu-arrow']} />
-          <Dropdown.Item className={menuStyles['menu-item']}>Settings</Dropdown.Item>
+          <Dropdown.Label className={menuStyles['menu-label']}>
+            {user.name ?? user.email ?? 'Unknown user'}
+          </Dropdown.Label>
           <Dropdown.Item className={menuStyles['menu-item']} onClick={handleLogOut}>Log out</Dropdown.Item>
         </Dropdown.Content>
       </Dropdown.Portal>

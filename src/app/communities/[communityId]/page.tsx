@@ -82,16 +82,14 @@ export default function Community() {
             </span>
           </div>
         </Link>
-        <Link href={`/communities/${community.id}/annotations`}>
-          <div className={styles['link']}>
-            <FontAwesomeIcon icon={faPenRuler} />
-            <span className={styles['link-name']}>Annotations</span>
-            <span className={styles['link-count']}>
-              <span className={styles['count']}>{annotations.length}</span>
-              <span className={styles['count-label']}>total</span>
-            </span>
-          </div>
-        </Link>
+        <div className={styles['link']}>
+          <FontAwesomeIcon icon={faPenRuler} />
+          <span className={styles['link-name']}>Annotations</span>
+          <span className={styles['link-count']}>
+            <span className={styles['count']}>{annotations.length}</span>
+            <span className={styles['count-label']}>total</span>
+          </span>
+        </div>
       </div>
     </>
   );

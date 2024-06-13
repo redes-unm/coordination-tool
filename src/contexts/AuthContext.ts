@@ -1,7 +1,13 @@
+import { User } from '@/lib/auth/client';
 import { createContext } from 'react';
 
-const AuthContext = createContext({
-  loggedIn: false,
+type Data = {
+  user: User | null,
+  reset: () => void
+};
+
+const AuthContext = createContext<Data>({
+  user: null,
   reset: () => {},
 });
 

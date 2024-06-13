@@ -46,7 +46,7 @@
   gap: 0.9375rem;
 }
 
-.links > a {
+.links > a, .links {
   color: #ebedef;
   text-decoration: none;
 }

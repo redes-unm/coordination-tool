@@ -28,9 +28,7 @@ export default function Communities() {
               <span>Private</span>
             </span>
             <span>&bull;</span>
-            <Link href={`/communities/${c.id}/collaborators`}>
-              {`${c.collaboratorCount} collaborator${c.collaboratorCount === 1 ? '' : 's'}`}
-            </Link>
+            {`${c.collaboratorCount} collaborator${c.collaboratorCount === 1 ? '' : 's'}`}
           </div>
           <div className={styles['description']}>
             { shorten(c.description, descriptionMaxLength) }
@@ -47,7 +45,7 @@ export default function Communities() {
               <FontAwesomeIcon icon={faListCheck} />
               <span className="a11y-only">Tasks</span>
             </Link>
-            <Link href={`/communities/${c.id}/annotations`}>
+            <Link href={`/communities/${c.id}`}>
               <FontAwesomeIcon icon={faPenRuler} />
               <span className="a11y-only">Annotations</span>
             </Link>
