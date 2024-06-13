@@ -49,7 +49,7 @@ export default function SortMenu({
               Sort by
             </Dropdown.Label>
             {
-                criteriaOrder.map((id) => (
+                Object.keys(names).map((id) => (
                   <Dropdown.RadioItem
                     key={id}
                     className={menuStyles['menu-item']}
