@@ -9,6 +9,7 @@ import { useContext } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import btnStyles from '@/components/Button.module.css';
 import { useRouter } from 'next/navigation';
+import { shorten } from '@/lib/util';
 import styles from './page.module.css';
 
 export default function Community() {
@@ -26,7 +27,7 @@ export default function Community() {
     <>
       <div className={styles['content']}>
         <h2 className={styles['title']}>
-          {`${community.name} - Community Overview`}
+          {`${shorten(community.name, 100)} - Community Overview`}
         </h2>
         <div className={styles['details-and-buttons']}>
           <div className={styles['details']}>

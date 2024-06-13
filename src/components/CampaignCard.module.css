@@ -29,6 +29,9 @@ a.card {
 
 .name {
   font-size: 1.125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .description {

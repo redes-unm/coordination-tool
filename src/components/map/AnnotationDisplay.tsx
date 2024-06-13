@@ -8,7 +8,7 @@ type Props = {
 export default function AnnotationDisplay({ item: annotation }: Props) {
   return (
     <div className={styles['container']}>
-      <strong>{annotation.name}</strong>
+      <strong className={styles['title']}>{annotation.name}</strong>
       <div>{`Type: ${annotationTypeDisplayNames[annotation.type]}`}</div>
       <div className={styles['description']}>
         {

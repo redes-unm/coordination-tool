@@ -2,6 +2,20 @@
   display: flex;
   flex-flow: column nowrap;
   gap: 0.5rem;
+  max-height: 20rem;
+}
+
+.title {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: max-content;
+  flex-shrink: 0;
+}
+
+.description {
+  overflow: auto;
 }
 
 .description p:last-child {

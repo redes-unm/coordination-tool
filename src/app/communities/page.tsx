@@ -7,6 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
 import CommunityListContext from '@/contexts/CommunityListContext';
+import { shorten } from '@/lib/util';
 import styles from './page.module.css';
 
 const descriptionMaxLength = 80;
@@ -32,11 +33,7 @@ export default function Communities() {
             </Link>
           </div>
           <div className={styles['description']}>
-            {
-              c.description.length <= descriptionMaxLength
-                ? c.description
-                : `${c.description.substring(0, descriptionMaxLength).trimEnd()}…`
-            }
+            { shorten(c.description, descriptionMaxLength) }
           </div>
           <div className={styles['read-more']}>
             <Link href={`/communities/${c.id}`}>Read more</Link>

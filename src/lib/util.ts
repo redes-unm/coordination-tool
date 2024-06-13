@@ -41,3 +41,9 @@ export function assertGeoJSONFeature(
     throw Error('expected non-null properties');
   }
 }
+
+export function shorten(s: string, maxLen: number): string {
+  return s.length <= maxLen
+    ? s
+    : `${s.substring(0, maxLen - 1).trimEnd()}…`;
+}
