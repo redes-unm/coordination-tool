@@ -188,6 +188,7 @@ export default class Db {
         name: c.name,
         description: c.description,
         communityid: c.communityId,
+        type: c.type,
       })
       .eq('id', c.id);
 
