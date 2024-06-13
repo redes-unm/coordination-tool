@@ -121,10 +121,10 @@ export type Profile = {
   name: string
 };
 
-// interface definition for react-tracking hooks
-export interface Trackables {
-  action: string;
+export type TrackStoreData = {
   element: string;
+  event: string;
   page: string;
   timestamp: string;
-}
+  // userId: string; // TODO do we need this and if so, how to obtain it?
+};

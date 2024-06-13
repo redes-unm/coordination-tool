@@ -7,8 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
-import { useTracking } from 'react-tracking';
-import { Trackables } from '@/types';
+import TrackingContext from '@/contexts/TrackingContext';
 
 import btnStyles from '@/components/Button.module.css';
 import { useRouter } from 'next/navigation';
@@ -25,16 +24,22 @@ export default function Community() {
   const router = useRouter();
   const collabCount = collaborators.length;
 
+  const page = `CommunityOverview-${community.id}`;
+
   const {
-    Track,
-    trackEvent,
-  } = useTracking<Trackables>({ page: `CommunityOverview-${community.id}` });
+    handleTracking,
+  } = useContext(TrackingContext);
 
   const trackClick = (element: string) => {
     const timestamp = new Date().toISOString();
     // console.log(`TESTING DATE ${timestamp}`);
-    // console.log(`*** Tracking event from element ${element} `);
-    trackEvent({ action: 'click', element, timestamp });
+    console.log(`** From Community page: tracking click for ${element} `);
+    handleTracking({
+      event: 'click',
+      element,
+      timestamp,
+      page,
+    });
   };
 
   const editCommunity = () => {
@@ -42,8 +47,12 @@ export default function Community() {
     return router.push(`/communities/${community.id}/edit`);
   };
 
+  const testClick = () => {
+    console.log('CLICKED A LINK BUTTON');
+  };
+
   return (
-    <Track>
+    <>
       <div className={styles['content']}>
         <h2 className={styles['title']}>
           {`${community.name} - Community Overview`}
@@ -82,7 +91,7 @@ export default function Community() {
       </div>
 
       <div className={styles['links']}>
-        <Link href={`/communities/${community.id}/campaigns`}>
+        <Link href={`/communities/${community.id}/campaigns`} onClick={testClick}>
           <div className={styles['link']}>
             <FontAwesomeIcon icon={faClipboard} />
             <span className={styles['link-name']}>Campaigns</span>
@@ -113,10 +122,6 @@ export default function Community() {
           </div>
         </Link>
       </div>
-    </Track>
+    </>
   );
 }
-
-// export default track({
-//   page: 'CommunityOverviewPage',
-// })(Community);

@@ -5,9 +5,9 @@ import { useContext, useEffect } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
-import { Collaborator, Community, Trackables } from '@/types';
+import { Collaborator, Community } from '@/types';
 import BreadcrumbContext from '@/contexts/BreadcrumbContext';
-import { useTracking } from 'react-tracking';
+import TrackingContext from '@/contexts/TrackingContext';
 
 import styles from './page.module.css';
 
@@ -21,26 +21,11 @@ export default function EditCommunity() {
   } = useContext(CommunityContext);
 
   const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
-
-  const {
-    getTrackingData,
-    // trackEvent
-  } = useTracking<Trackables>(
-    { page: `EditCommunity-${community.id}` },
-    {
-      dispatchOnMount: contextData => ({ // TODO test on mount
-        action: 'pageDataReady',
-        element: '', // TODO omit
-        page: `EditCommunity-${community.id}`,
-        timestamp: new Date().toISOString(),
-      }),
-    },
-  );
+  const { trackStore } = useContext(TrackingContext);
 
   useEffect(() => {
-    const dataTest = getTrackingData();
-    console.log(`tracking data action? ${dataTest}`);
-  }, [getTrackingData]);
+    console.log(`** From Community Edit Page\n**** Current store: ${trackStore}`);
+  }, [trackStore]);
 
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {
     await newDb().updateCommunity(comm, collabs);
