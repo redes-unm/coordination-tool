@@ -49,7 +49,9 @@ export default function useDraw(
   // watch for new features
   useEffect(() => {
     function handleDrawCreate(e: MapboxDraw.DrawCreateEvent) {
-      onCreate(e.features[0] ?? throwErr('create fired with no features'));
+      const feature = e.features[0] ?? throwErr('create fired with no features');
+      onCreate(feature);
+      draw.current?.setFeatureProperty(`${feature.id}`, 'drawModeSync', true);
     }
 
     map?.on('draw.create', handleDrawCreate);
@@ -58,10 +60,17 @@ export default function useDraw(
 
   // keep features on map in sync with provided features
   useEffect(() => {
-    if (!map) return;
-    draw.current?.set({
+    const d = draw.current;
+    if (!map || !d) return;
+
+    const featuresToKeep = d.getAll().features
+      .filter((f) => !f.properties?.['drawModeSync']);
+
+    d.set({
       type: 'FeatureCollection',
-      features,
+      features: features
+        .map<Feature>((f) => ({ ...f, properties: { ...f.properties, drawModeSync: true } }))
+        .concat(...featuresToKeep),
     });
   }, [map, features]);
 
