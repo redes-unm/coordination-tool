@@ -1,10 +1,21 @@
 .form {
-  display: grid;
-  grid-template: auto / min-content 1fr;
+  flex-grow: 1;
+  display: flex;
+  flex-flow: column nowrap;
   gap: 1.5rem;
 }
 
-.form > .label {
+.inputs {
+  display: grid;
+  grid-template: auto / min-content 1fr;
+  gap: 1.5rem;
+  height: 0;
+  flex-grow: 1;
+  overflow: auto;
+  align-content: start;
+}
+
+.inputs > .label {
   font-weight: bold;
 }
 
@@ -64,7 +75,7 @@
   margin-block: 0.5rem;
 }
 
-.collaborator.edit .inputs {
+.collaborator.edit .collab-inputs {
   flex-grow: 1;
   display: grid;
   grid-template: auto / min-content 1fr;

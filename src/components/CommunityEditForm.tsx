@@ -60,120 +60,122 @@ export default function CommunityEditForm({
 
   return (
     <form className={styles['form']} action={handleSave}>
-      <div className={styles['label']}>Name</div>
-      <div className={styles['contents']}>
-        <TextInput
-          label="name"
-          labelAbove
-          hideLabel
-          value={community.name}
-          onChange={(e) => setCommunity((old) => ({ ...old, name: e.target.value }))}
-          required
-        />
-      </div>
-
-      <div className={styles['label']}>Visibility</div>
-      <div className={`${styles['contents']} ${styles['visibility']}`}>
-        <div className={styles['value']}>
-          <FontAwesomeIcon icon={faUserLock} />
-          Private
+      <div className={styles['inputs']}>
+        <div className={styles['label']}>Name</div>
+        <div className={styles['contents']}>
+          <TextInput
+            label="name"
+            labelAbove
+            hideLabel
+            value={community.name}
+            onChange={(e) => setCommunity((old) => ({ ...old, name: e.target.value }))}
+            required
+          />
         </div>
-        <div className={styles['commentary']}>
-          All communities are private in this version.
-        </div>
-      </div>
 
-      <div className={styles['label']}>Description</div>
-      <div className={`${styles['contents']} ${styles['description']}`}>
-        <TextInput
-          label="description"
-          labelAbove
-          hideLabel
-          multiLine
-          value={community.description}
-          onChange={(e) => setCommunity((old) => ({ ...old, description: e.target.value }))}
-        />
-      </div>
-
-      <div className={styles['label']}>Collaborators</div>
-      <div className={`${styles['contents']} ${styles['collaborators']}`}>
-        {collaborators.map((c, i) => (
-          <div
-            key={c.id}
-            className={`${styles['collaborator']} ${styles[c.editable ? 'edit' : 'no-edit']}`}
-          >
-            {
-              c.editable ? (
-                <>
-                  <div className={styles['inputs']}>
-                    <div className={styles['label']}>Name</div>
-                    <TextInput
-                      label="Name"
-                      labelAbove
-                      hideLabel
-                      value={c.name}
-                      onChange={(e) => setCollaborator(c.id, { name: e.target.value })}
-                      required
-                      autoFocus={i === collaborators.length - 1}
-                    />
-                    <div className={styles['label']}>Role</div>
-                    <TextInput
-                      label="Role"
-                      labelAbove
-                      hideLabel
-                      value={c.role}
-                      onChange={(e) => setCollaborator(c.id, { role: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    className={`${btnStyles['btn']} ${btnStyles['danger']}`}
-                    onClick={() => setCollaborators((old) => old.filter(({ id }) => id !== c.id))}
-                  >
-                    <FontAwesomeIcon icon={faClose} />
-                    Remove
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className={styles['icon']}>
-                    <FontAwesomeIcon icon={c.role === 'admin' ? faUserShield : faUser} />
-                  </div>
-                  {`${c.name} (${c.role})`}
-                </>
-              )
-            }
+        <div className={styles['label']}>Visibility</div>
+        <div className={`${styles['contents']} ${styles['visibility']}`}>
+          <div className={styles['value']}>
+            <FontAwesomeIcon icon={faUserLock} />
+            Private
           </div>
-        ))}
-        <button
-          type="button"
-          className={btnStyles['btn']}
-          onClick={() => setCollaborators((old) => old.concat({
-            id: uuid(),
-            communityId: community.id,
-            name: '',
-            role: '',
-            editable: true,
-          }))}
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          Add
-        </button>
-      </div>
-
-      <div className={styles['label']}>Location</div>
-      <div className={`${styles['contents']} ${styles['location']}`}>
-        <div className={styles['commentary']}>
-          Choose a spot on the map below to center the map view of your community.
+          <div className={styles['commentary']}>
+            All communities are private in this version.
+          </div>
         </div>
-        <LocationPickerMap
-          location={community.mapCenter}
-          onLocationChange={useCallback((l) => setCommunity((old) => ({
-            ...old,
-            mapCenter: l,
-          })), [])}
-        />
+
+        <div className={styles['label']}>Description</div>
+        <div className={`${styles['contents']} ${styles['description']}`}>
+          <TextInput
+            label="description"
+            labelAbove
+            hideLabel
+            multiLine
+            value={community.description}
+            onChange={(e) => setCommunity((old) => ({ ...old, description: e.target.value }))}
+          />
+        </div>
+
+        <div className={styles['label']}>Collaborators</div>
+        <div className={`${styles['contents']} ${styles['collaborators']}`}>
+          {collaborators.map((c, i) => (
+            <div
+              key={c.id}
+              className={`${styles['collaborator']} ${styles[c.editable ? 'edit' : 'no-edit']}`}
+            >
+              {
+                c.editable ? (
+                  <>
+                    <div className={styles['collab-inputs']}>
+                      <div className={styles['label']}>Name</div>
+                      <TextInput
+                        label="Name"
+                        labelAbove
+                        hideLabel
+                        value={c.name}
+                        onChange={(e) => setCollaborator(c.id, { name: e.target.value })}
+                        required
+                        autoFocus={i === collaborators.length - 1}
+                      />
+                      <div className={styles['label']}>Role</div>
+                      <TextInput
+                        label="Role"
+                        labelAbove
+                        hideLabel
+                        value={c.role}
+                        onChange={(e) => setCollaborator(c.id, { role: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      className={`${btnStyles['btn']} ${btnStyles['danger']}`}
+                      onClick={() => setCollaborators((old) => old.filter(({ id }) => id !== c.id))}
+                    >
+                      <FontAwesomeIcon icon={faClose} />
+                      Remove
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className={styles['icon']}>
+                      <FontAwesomeIcon icon={c.role === 'admin' ? faUserShield : faUser} />
+                    </div>
+                    {`${c.name} (${c.role})`}
+                  </>
+                )
+              }
+            </div>
+          ))}
+          <button
+            type="button"
+            className={btnStyles['btn']}
+            onClick={() => setCollaborators((old) => old.concat({
+              id: uuid(),
+              communityId: community.id,
+              name: '',
+              role: '',
+              editable: true,
+            }))}
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            Add
+          </button>
+        </div>
+
+        <div className={styles['label']}>Location</div>
+        <div className={`${styles['contents']} ${styles['location']}`}>
+          <div className={styles['commentary']}>
+            Choose a spot on the map below to center the map view of your community.
+          </div>
+          <LocationPickerMap
+            location={community.mapCenter}
+            onLocationChange={useCallback((l) => setCommunity((old) => ({
+              ...old,
+              mapCenter: l,
+            })), [])}
+          />
+        </div>
       </div>
 
       { error && <div className={`error ${styles['error']}`}>{error}</div> }
