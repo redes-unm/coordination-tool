@@ -12,6 +12,28 @@
   overflow: hidden;
   min-height: max-content;
   flex-shrink: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.details {
+  display: flex;
+  flex-flow: column nowrap;
+  gap: 0.75rem;
+}
+
+.detail {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  line-height: 1;
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
 }
 
 .description {

@@ -22,6 +22,10 @@ import {
   faListCheck,
   faPencilRuler,
   faArrowPointer,
+  faRoadBridge,
+  faToolbox,
+  faLocationDot,
+  faDrawPolygon,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   faCalendar as faCalendarRegular,
@@ -34,7 +38,9 @@ import drawPoint from '@/icons/draw-point.svg';
 import drawLine from '@/icons/draw-line.svg';
 import drawRectangle from '@/icons/draw-rectangle.svg';
 import { FC, SVGProps } from 'react';
-import { CampaignType, TaskPriority, TaskStatus } from './types';
+import {
+  AnnotationType, CampaignType, TaskPriority, TaskStatus,
+} from './types';
 import { Mode } from './lib/mapboxDrawModes';
 
 export const campaignsIcon = faClipboard;
@@ -49,6 +55,14 @@ export const campaignTypeIcons: { [K in CampaignType]: IconDefinition } = {
   education: faSchoolFlag,
   event: faCalendarDays,
   other: faClipboardRegular,
+};
+
+export const annotationTypeIcons: { [K in AnnotationType]: IconDefinition } = {
+  infra: faRoadBridge,
+  equipment: faToolbox,
+  person: faUser,
+  poi: faLocationDot,
+  region: faDrawPolygon,
 };
 
 export const taskStatusIcons: { [K in TaskStatus]: IconDefinition } = {

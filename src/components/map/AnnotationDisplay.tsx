@@ -2,6 +2,8 @@ import { Annotation, annotationTypeDisplayNames } from '@/types';
 import CommunityContext from '@/contexts/CommunityContext';
 import { useContext, useMemo } from 'react';
 import { shorten } from '@/lib/util';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { annotationTypeIcons, campaignsIcon } from '@/icons';
 import styles from './AnnotationDisplay.module.css';
 
 type Props = {
@@ -24,9 +26,23 @@ export default function AnnotationDisplay({ item: annotation }: Props) {
 
   return (
     <div className={styles['container']}>
-      <strong className={styles['title']}>{annotation.name}</strong>
-      <div>{`Type: ${annotationTypeDisplayNames[annotation.type]}`}</div>
-      <div>{`Campaigns: ${annotationCampaigns || '[none]'}`}</div>
+      <h2 className={styles['title']}>{annotation.name}</h2>
+      <div className={styles['details']}>
+        <div className={`${styles['detail']} ${styles['type']}`}>
+          <FontAwesomeIcon
+            icon={annotationTypeIcons[annotation.type]}
+            className={styles['icon'] ?? ''}
+          />
+          {annotationTypeDisplayNames[annotation.type]}
+        </div>
+        <div className={`${styles['detail']} ${styles['campaigns']}`}>
+          <FontAwesomeIcon
+            icon={campaignsIcon}
+            className={styles['icon'] ?? ''}
+          />
+          {annotationCampaigns || '[none]'}
+        </div>
+      </div>
       <div className={styles['description']}>
         {
           annotation.description.split('\n')
