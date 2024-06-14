@@ -2,14 +2,14 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import btnStyles from '@/components/Button.module.css';
 import menuStyles from '@/components/Menu.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheck, faChevronDown, faChevronUp, faFilter,
-} from '@fortawesome/free-solid-svg-icons';
 import { Fragment, useMemo } from 'react';
 import {
   FilterEnabled, FilterNames, toggleAllEnabled, toggleSingleEnabled,
 } from '@/hooks/useFilter';
 import { throwErr } from '@/lib/util';
+import {
+  checkIcon, filterIcon, menuClosedIcon, menuOpenIcon,
+} from '@/icons';
 
 type Props = {
   names: FilterNames
@@ -36,12 +36,18 @@ export default function FilterMenu({
     <Dropdown.Root>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
         <span>
-          <FontAwesomeIcon icon={faFilter} className={btnStyles['icon'] ?? ''} />
+          <FontAwesomeIcon icon={filterIcon} className={btnStyles['icon'] ?? ''} />
           {label}
         </span>
         <span className={menuStyles['menu-icon']}>
-          <FontAwesomeIcon icon={faChevronDown} className={menuStyles['menu-icon-closed'] || ''} />
-          <FontAwesomeIcon icon={faChevronUp} className={menuStyles['menu-icon-open'] || ''} />
+          <FontAwesomeIcon
+            icon={menuClosedIcon}
+            className={menuStyles['menu-icon-closed'] || ''}
+          />
+          <FontAwesomeIcon
+            icon={menuOpenIcon}
+            className={menuStyles['menu-icon-open'] || ''}
+          />
         </span>
       </Dropdown.Trigger>
       <Dropdown.Portal>
@@ -68,7 +74,7 @@ export default function FilterMenu({
                     onSelect={(e) => e.preventDefault()}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
-                      <FontAwesomeIcon icon={faCheck} />
+                      <FontAwesomeIcon icon={checkIcon} />
                     </Dropdown.ItemIndicator>
                     {itemName}
                   </Dropdown.CheckboxItem>

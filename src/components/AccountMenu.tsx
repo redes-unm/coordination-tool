@@ -2,12 +2,12 @@
 
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faUser } from '@fortawesome/free-solid-svg-icons';
 import { usePathname, useRouter } from 'next/navigation';
 import { logOut } from '@/lib/auth/client';
 import Link from 'next/link';
 import AuthContext from '@/contexts/AuthContext';
 import { useContext } from 'react';
+import { menuClosedIcon, menuOpenIcon, userIcon } from '@/icons';
 import menuStyles from './Menu.module.css';
 import btnStyles from './Button.module.css';
 import styles from './AccountMenu.module.css';
@@ -27,13 +27,19 @@ export default function AccountMenu() {
     <Dropdown.Root>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${btnStyles['solid']} ${menuStyles['menu-btn']}`}>
         <span>
-          <FontAwesomeIcon icon={faUser} />
+          <FontAwesomeIcon icon={userIcon} />
           {' '}
           Account
         </span>
         <span className={menuStyles['menu-icon']}>
-          <FontAwesomeIcon icon={faChevronDown} className={menuStyles['menu-icon-closed'] || ''} />
-          <FontAwesomeIcon icon={faChevronUp} className={menuStyles['menu-icon-open'] || ''} />
+          <FontAwesomeIcon
+            icon={menuClosedIcon}
+            className={menuStyles['menu-icon-closed'] || ''}
+          />
+          <FontAwesomeIcon
+            icon={menuOpenIcon}
+            className={menuStyles['menu-icon-open'] || ''}
+          />
         </span>
       </Dropdown.Trigger>
 

@@ -2,9 +2,9 @@
 
 import * as Select from '@radix-ui/react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { menuClosedIcon } from '@/icons';
 import menuStyles from './Menu.module.css';
 import btnStyles from './Button.module.css';
 import styles from './SelectMenu.module.css';
@@ -55,7 +55,7 @@ export default function SelectMenu({
         >
           <Select.Value />
           <Select.Icon className={menuStyles['menu-icon']}>
-            <FontAwesomeIcon icon={faChevronDown} />
+            <FontAwesomeIcon icon={menuClosedIcon} />
           </Select.Icon>
         </Select.Trigger>
 

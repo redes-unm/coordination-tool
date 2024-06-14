@@ -1,13 +1,13 @@
 import { Collaborator, Community } from '@/types';
 import { useCallback, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faClose, faPlus, faUser, faUserLock, faUserShield,
-} from '@fortawesome/free-solid-svg-icons';
 import { throwErr } from '@/lib/util';
 import { v4 as uuid } from 'uuid';
 import btnStyles from '@/components/Button.module.css';
 import dynamic from 'next/dynamic';
+import {
+  addIcon, closeIcon, communityAdminIcon, communityPrivateIcon, userIcon,
+} from '@/icons';
 import styles from './CommunityEditForm.module.css';
 import TextInput from './TextInput';
 
@@ -76,7 +76,7 @@ export default function CommunityEditForm({
         <div className={styles['label']}>Visibility</div>
         <div className={`${styles['contents']} ${styles['visibility']}`}>
           <div className={styles['value']}>
-            <FontAwesomeIcon icon={faUserLock} />
+            <FontAwesomeIcon icon={communityPrivateIcon} />
             Private
           </div>
           <div className={styles['commentary']}>
@@ -132,14 +132,16 @@ export default function CommunityEditForm({
                       className={`${btnStyles['btn']} ${btnStyles['danger']}`}
                       onClick={() => setCollaborators((old) => old.filter(({ id }) => id !== c.id))}
                     >
-                      <FontAwesomeIcon icon={faClose} />
+                      <FontAwesomeIcon icon={closeIcon} />
                       Remove
                     </button>
                   </>
                 ) : (
                   <>
                     <div className={styles['icon']}>
-                      <FontAwesomeIcon icon={c.role === 'admin' ? faUserShield : faUser} />
+                      <FontAwesomeIcon
+                        icon={c.role === 'admin' ? communityAdminIcon : userIcon}
+                      />
                     </div>
                     {`${c.name} (${c.role})`}
                   </>
@@ -158,7 +160,7 @@ export default function CommunityEditForm({
               editable: true,
             }))}
           >
-            <FontAwesomeIcon icon={faPlus} />
+            <FontAwesomeIcon icon={addIcon} />
             Add
           </button>
         </div>

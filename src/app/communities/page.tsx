@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faClipboard, faListCheck, faPenRuler, faPlus, faUserLock,
-} from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
 import CommunityListContext from '@/contexts/CommunityListContext';
 import { shorten } from '@/lib/util';
+import {
+  addIcon, annotationsIcon, campaignsIcon, communityPrivateIcon, tasksIcon,
+} from '@/icons';
 import styles from './page.module.css';
 
 const descriptionMaxLength = 80;
@@ -24,7 +24,7 @@ export default function Communities() {
           </h2>
           <div className={styles['details']}>
             <span className={styles['details-publicity']}>
-              <FontAwesomeIcon icon={faUserLock} />
+              <FontAwesomeIcon icon={communityPrivateIcon} />
               <span>Private</span>
             </span>
             <span>&bull;</span>
@@ -38,22 +38,22 @@ export default function Communities() {
           </div>
           <div className={styles['links']}>
             <Link href={`/communities/${c.id}/campaigns`}>
-              <FontAwesomeIcon icon={faClipboard} />
+              <FontAwesomeIcon icon={campaignsIcon} />
               <span className="a11y-only">Campaigns</span>
             </Link>
             <Link href={`/communities/${c.id}/tasks`}>
-              <FontAwesomeIcon icon={faListCheck} />
+              <FontAwesomeIcon icon={tasksIcon} />
               <span className="a11y-only">Tasks</span>
             </Link>
             <Link href={`/communities/${c.id}`}>
-              <FontAwesomeIcon icon={faPenRuler} />
+              <FontAwesomeIcon icon={annotationsIcon} />
               <span className="a11y-only">Annotations</span>
             </Link>
           </div>
         </div>
       )) }
       <Link href="/communities/add" className={`${styles['card']} ${styles['join-create']}`}>
-        <FontAwesomeIcon icon={faPlus} />
+        <FontAwesomeIcon icon={addIcon} />
         <span className={styles['card-title']}>Join or Create</span>
       </Link>
     </div>

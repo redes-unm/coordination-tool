@@ -2,12 +2,11 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import btnStyles from '@/components/Button.module.css';
 import menuStyles from '@/components/Menu.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faArrowRightArrowLeft,
-  faCheck, faChevronDown, faChevronUp,
-} from '@fortawesome/free-solid-svg-icons';
 import { throwErr } from '@/lib/util';
 import { SortCriteriaOrder, SortDirection, SortNames } from '@/hooks/useSort';
+import {
+  checkIcon, menuClosedIcon, menuOpenIcon, sortIcon,
+} from '@/icons';
 
 type Props = {
   names: SortNames
@@ -29,15 +28,21 @@ export default function SortMenu({
       <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
         <span>
           <FontAwesomeIcon
-            icon={faArrowRightArrowLeft}
+            icon={sortIcon}
             className={btnStyles['icon'] ?? ''}
             style={{ transform: 'rotate(90deg)' }}
           />
           Sort
         </span>
         <span className={menuStyles['menu-icon']}>
-          <FontAwesomeIcon icon={faChevronDown} className={menuStyles['menu-icon-closed'] || ''} />
-          <FontAwesomeIcon icon={faChevronUp} className={menuStyles['menu-icon-open'] || ''} />
+          <FontAwesomeIcon
+            icon={menuClosedIcon}
+            className={menuStyles['menu-icon-closed'] || ''}
+          />
+          <FontAwesomeIcon
+            icon={menuOpenIcon}
+            className={menuStyles['menu-icon-open'] || ''}
+          />
         </span>
       </Dropdown.Trigger>
       <Dropdown.Portal>
@@ -60,7 +65,7 @@ export default function SortMenu({
                     }}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
-                      <FontAwesomeIcon icon={faCheck} />
+                      <FontAwesomeIcon icon={checkIcon} />
                     </Dropdown.ItemIndicator>
                     {names[id]}
                   </Dropdown.RadioItem>
@@ -85,7 +90,7 @@ export default function SortMenu({
               }}
             >
               <Dropdown.ItemIndicator className={menuStyles['item-check']}>
-                <FontAwesomeIcon icon={faCheck} />
+                <FontAwesomeIcon icon={checkIcon} />
               </Dropdown.ItemIndicator>
               Ascending
             </Dropdown.RadioItem>
@@ -98,7 +103,7 @@ export default function SortMenu({
               }}
             >
               <Dropdown.ItemIndicator className={menuStyles['item-check']}>
-                <FontAwesomeIcon icon={faCheck} />
+                <FontAwesomeIcon icon={checkIcon} />
               </Dropdown.ItemIndicator>
               Descending
             </Dropdown.RadioItem>

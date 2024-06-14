@@ -1,14 +1,14 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboard } from '@fortawesome/free-solid-svg-icons';
 import { Suspense } from 'react';
 import CampaignList from '@/components/CampaignList';
+import { campaignsIcon } from '@/icons';
 import styles from './page.module.css';
 
 export default async function Campaigns() {
   return (
     <div className={styles['content']}>
       <h2 className={styles['title']}>
-        <FontAwesomeIcon icon={faClipboard} />
+        <FontAwesomeIcon icon={campaignsIcon} />
         Campaigns
       </h2>
       <Suspense fallback="Loading...">

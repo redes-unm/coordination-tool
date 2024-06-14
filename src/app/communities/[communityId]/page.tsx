@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faUserLock, faClipboard, faListCheck, faPenRuler,
-} from '@fortawesome/free-solid-svg-icons';
 import { useContext } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import btnStyles from '@/components/Button.module.css';
 import { useRouter } from 'next/navigation';
 import { shorten } from '@/lib/util';
+import {
+  annotationsIcon, campaignsIcon, communityPrivateIcon, tasksIcon,
+} from '@/icons';
 import styles from './page.module.css';
 
 export default function Community() {
@@ -32,7 +32,7 @@ export default function Community() {
         <div className={styles['details-and-buttons']}>
           <div className={styles['details']}>
             <span className={styles['details-publicity']}>
-              <FontAwesomeIcon icon={faUserLock} />
+              <FontAwesomeIcon icon={communityPrivateIcon} />
               <span>Private</span>
             </span>
             <span>&bull;</span>
@@ -64,7 +64,7 @@ export default function Community() {
       <div className={styles['links']}>
         <Link href={`/communities/${community.id}/campaigns`}>
           <div className={styles['link']}>
-            <FontAwesomeIcon icon={faClipboard} />
+            <FontAwesomeIcon icon={campaignsIcon} />
             <span className={styles['link-name']}>Campaigns</span>
             <span className={styles['link-count']}>
               <span className={styles['count']}>{campaigns.length}</span>
@@ -74,7 +74,7 @@ export default function Community() {
         </Link>
         <Link href={`/communities/${community.id}/tasks`}>
           <div className={styles['link']}>
-            <FontAwesomeIcon icon={faListCheck} />
+            <FontAwesomeIcon icon={tasksIcon} />
             <span className={styles['link-name']}>Tasks</span>
             <span className={styles['link-count']}>
               <span className={styles['count']}>{tasks.length}</span>
@@ -83,7 +83,7 @@ export default function Community() {
           </div>
         </Link>
         <div className={styles['link']}>
-          <FontAwesomeIcon icon={faPenRuler} />
+          <FontAwesomeIcon icon={annotationsIcon} />
           <span className={styles['link-name']}>Annotations</span>
           <span className={styles['link-count']}>
             <span className={styles['count']}>{annotations.length}</span>

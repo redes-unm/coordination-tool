@@ -2,9 +2,9 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import btnStyles from '@/components/Button.module.css';
 import menuStyles from '@/components/Menu.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { checkIcon, menuClosedIcon, menuOpenIcon } from '@/icons';
 import styles from './MultiSelectMenu.module.css';
 
 type Props = {
@@ -42,8 +42,14 @@ export default function MultiSelectMenu({
             {btnText || '[none]'}
           </span>
           <span className={menuStyles['menu-icon']}>
-            <FontAwesomeIcon icon={faChevronDown} className={menuStyles['menu-icon-closed'] || ''} />
-            <FontAwesomeIcon icon={faChevronUp} className={menuStyles['menu-icon-open'] || ''} />
+            <FontAwesomeIcon
+              icon={menuClosedIcon}
+              className={menuStyles['menu-icon-closed'] || ''}
+            />
+            <FontAwesomeIcon
+              icon={menuOpenIcon}
+              className={menuStyles['menu-icon-open'] || ''}
+            />
           </span>
         </Dropdown.Trigger>
         <Dropdown.Portal>
@@ -59,7 +65,7 @@ export default function MultiSelectMenu({
                 onSelect={(e) => e.preventDefault()}
               >
                 <Dropdown.ItemIndicator className={menuStyles['item-check']}>
-                  <FontAwesomeIcon icon={faCheck} />
+                  <FontAwesomeIcon icon={checkIcon} />
                 </Dropdown.ItemIndicator>
                 {item.name}
               </Dropdown.CheckboxItem>

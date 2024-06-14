@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Campaign } from '@/types';
 import * as Dialog from '@radix-ui/react-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { closeIcon } from '@/icons';
 import styles from './CampaignDialog.module.css';
 import EditableItemDisplay from './EditableItemDisplay';
 import CampaignDisplay from './CampaignDisplay';
@@ -50,7 +50,7 @@ export default function CampaignDialog({
                 EditFormContents={CampaignEditFormContents}
               />
               <Dialog.Close className={styles['close']}>
-                <FontAwesomeIcon icon={faClose} />
+                <FontAwesomeIcon icon={closeIcon} />
                 <span className="a11y-only">Close</span>
               </Dialog.Close>
             </>
