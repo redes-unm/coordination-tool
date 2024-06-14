@@ -51,7 +51,7 @@ export default function SelectMenu({
       <Select.Root value={value} onValueChange={onValueChange}>
         <Select.Trigger
           className={`${btnStyles['btn']} ${menuStyles['menu-btn']} ${styles['select']}`}
-          aria-label={hideLabel ? label : undefined}
+          id={id}
         >
           <Select.Value />
           <Select.Icon className={menuStyles['menu-icon']}>

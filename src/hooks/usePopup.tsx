@@ -1,12 +1,13 @@
 import EditableItemDisplay from '@/components/EditableItemDisplay';
 import AnnotationDisplay from '@/components/map/AnnotationDisplay';
 import AnnotationEditFormContents from '@/components/map/AnnotationEditFormContents';
+import CommunityContext from '@/contexts/CommunityContext';
 import { throwErr, toLngLat } from '@/lib/util';
 import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
-  useCallback, useEffect, useRef,
+  useCallback, useContext, useEffect, useRef,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
@@ -70,6 +71,8 @@ export default function usePopup(
     closeHandler?.();
   }, [annotation?.id, deleteHandler, closeHandler]);
 
+  const contextValue = useContext(CommunityContext);
+
   // position and render the popup
   useEffect(() => {
     if (!annotation || !popup.current) {
@@ -99,14 +102,16 @@ export default function usePopup(
     }
 
     root.current.render(
-      <EditableItemDisplay
-        item={annotation}
-        editing={editing}
-        onSave={handlers.save}
-        onDelete={handleDelete}
-        Display={AnnotationDisplay}
-        EditFormContents={AnnotationEditFormContents}
-      />,
+      <CommunityContext.Provider value={contextValue}>
+        <EditableItemDisplay
+          item={annotation}
+          editing={editing}
+          onSave={handlers.save}
+          onDelete={handleDelete}
+          Display={AnnotationDisplay}
+          EditFormContents={AnnotationEditFormContents}
+        />
+      </CommunityContext.Provider>,
     );
-  }, [annotation, editing, handlers.save, handleDelete, map]);
+  }, [annotation, editing, handlers.save, handleDelete, map, contextValue]);
 }

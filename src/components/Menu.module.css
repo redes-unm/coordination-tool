@@ -6,6 +6,11 @@
   font-size: inherit;
   box-shadow: 0 0.125rem 0.125rem 0 #37425433;
   z-index: 5; /* above map controls and dialogs */
+  max-width: 15rem;
+}
+
+.menu-content.select {
+  max-width: 100%;
 }
 
 .menu-item {
@@ -33,7 +38,6 @@
 .menu-item {
   outline: none;
   cursor: pointer;
-  max-width: 15rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

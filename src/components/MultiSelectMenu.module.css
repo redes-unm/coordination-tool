@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-flow: column nowrap;
+  row-gap: 0.125rem;
+}
+
+.container .btn {
+  display: flex;
+  width: 100%;
+  font-weight: normal;
+}
+
+.btn-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -288,9 +288,16 @@ export default class Db {
       });
 
     handleError(error);
+
+    const { error: caError } = await this.client
+      .from('campaignannotations')
+      .insert(a.campaignIds.map((cid) => ({ campaignid: cid, annotationid: a.id })));
+
+    handleError(caError);
   }
 
   async upsertAnnotation(a: Annotation, communityId: string) {
+    // update annotation itself
     const { error } = await this.client
       .from('annotations')
       .upsert({
@@ -304,6 +311,25 @@ export default class Db {
       });
 
     handleError(error);
+
+    // delete campaign-annotation mappings not in the specified set
+    const { error: caDeleteError } = await this.client
+      .from('campaignannotations')
+      .delete()
+      .eq('annotationid', a.id)
+      .not('campaignid', 'in', `(${a.campaignIds.map((id) => `"${id}"`).join(',')})`);
+
+    handleError(caDeleteError);
+
+    // upsert specified campaign-annotation mappings
+    const { error: caUpsertError } = await this.client
+      .from('campaignannotations')
+      .upsert(
+        a.campaignIds.map((cid) => ({ campaignid: cid, annotationid: a.id })),
+        { onConflict: 'campaignid, annotationid' },
+      );
+
+    handleError(caUpsertError);
   }
 
   async deleteAnnotation(id: string) {
