@@ -1,12 +1,18 @@
-import { Task, taskPriorityDisplayNames, taskStatusDisplayNames } from '@/types';
+import {
+  Task, taskPriorityDisplayNames, taskStatusDisplayNames,
+} from '@/types';
 import { useContext, useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCircleCheck, faCircleHalfStroke, faClipboard, faExclamation,
-} from '@fortawesome/free-solid-svg-icons';
-import { faCalendarDays, faCircle } from '@fortawesome/free-regular-svg-icons';
 import { throwErr } from '@/lib/util';
 import CommunityContext from '@/contexts/CommunityContext';
+import {
+  campaignsIcon,
+  taskDateIcon,
+  taskNoDateIcon,
+  taskPriorityIcon,
+  taskPriorityIconCount,
+  taskStatusIcons,
+} from '@/icons';
 import styles from './TaskDisplay.module.css';
 
 type Props = {
@@ -31,19 +37,6 @@ export default function TaskDisplay({ item: task }: Props) {
     return `Due ${d}`;
   }, [task.date]);
 
-  const statusIcon = useMemo(() => {
-    switch (task.status) {
-      case 'done':
-        return faCircleCheck;
-      case 'in progress':
-        return faCircleHalfStroke;
-      case 'todo':
-        return faCircle;
-      default:
-        return faCircle;
-    }
-  }, [task.status]);
-
   const campaign = useMemo(
     () => campaigns.find((c) => c.id === task.campaignId) ?? throwErr('missing campaign'),
     [campaigns, task.campaignId],
@@ -53,24 +46,34 @@ export default function TaskDisplay({ item: task }: Props) {
     <div className={styles['container']}>
       <div className={styles['details']}>
         <div className={`${styles['detail']} ${styles['campaign'] ?? ''}`}>
-          <FontAwesomeIcon icon={faClipboard} className={styles['icon'] ?? ''} />
+          <FontAwesomeIcon icon={campaignsIcon} className={styles['icon'] ?? ''} />
           {`Campaign: ${campaign.name}`}
         </div>
 
         <div className={`${styles['detail']} ${styles['date'] ?? ''}`}>
-          <FontAwesomeIcon icon={faCalendarDays} className={styles['icon'] ?? ''} />
+          <FontAwesomeIcon
+            icon={task.date ? taskDateIcon : taskNoDateIcon}
+            className={styles['icon'] ?? ''}
+          />
           {date}
         </div>
 
         <div className={`${styles['detail']} ${styles['status'] ?? ''}`}>
-          <FontAwesomeIcon icon={statusIcon} className={styles['icon'] ?? ''} />
+          <FontAwesomeIcon
+            icon={taskStatusIcons[task.status]}
+            className={styles['icon'] ?? ''}
+          />
           {taskStatusDisplayNames[task.status]}
         </div>
 
         <div className={`${styles['detail']} ${styles['priority'] ?? ''}`}>
           <span className={styles['icon']}>
-            {task.priority !== 'low' && <FontAwesomeIcon icon={faExclamation} />}
-            {task.priority === 'high' && <FontAwesomeIcon icon={faExclamation} />}
+            {
+              new Array(taskPriorityIconCount[task.priority])
+                .fill(taskPriorityIcon)
+                // eslint-disable-next-line react/no-array-index-key -- what else is there?
+                .map((icon, i) => <FontAwesomeIcon icon={icon} key={i} />)
+            }
           </span>
           {taskPriorityDisplayNames[task.priority]}
         </div>

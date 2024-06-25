@@ -25,12 +25,21 @@ a.card {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .info {
   display: flex;
   flex-flow: column nowrap;
   gap: 1rem;
+  width: 0;
+  flex-grow: 1;
+}
+
+.name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .details {

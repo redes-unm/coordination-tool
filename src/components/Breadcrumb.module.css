@@ -1,6 +1,18 @@
+.element-wrapper {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  gap: 0.5rem;
+}
+
 .element {
   font-size: 1rem;
   font-weight: 500;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 15rem;
 }
 
 .element a {

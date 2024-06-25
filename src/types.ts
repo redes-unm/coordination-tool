@@ -10,8 +10,8 @@ export type Community = {
 
 export type CommunityData = {
   community: Community
-  campaigns: { id: string, name: string, default: boolean }[]
-  taskCount: number
+  campaigns: Campaign[]
+  tasks: Task[]
   collaborators: Collaborator[]
   annotations: Annotation[]
 };
@@ -49,11 +49,6 @@ export type Campaign = {
   default: boolean
 };
 
-export type CampaignWithCounts = Campaign & {
-  annotationCount: number
-  taskCount: number
-};
-
 export const annotationTypeDisplayNames = {
   infra: 'infrastructure',
   equipment: 'equipment',
@@ -70,7 +65,7 @@ export type Annotation = {
   description: string
   type: AnnotationType
   geometry: Geometry
-  campaignIds: string[] | undefined
+  campaignIds: string[]
 };
 
 export function assertAnnotationType(t: string): asserts t is AnnotationType {

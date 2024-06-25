@@ -1,11 +1,11 @@
 import {
-  Annotation, Campaign, CampaignWithCounts, Collaborator, Community, Profile, Task,
+  Annotation, Campaign, Collaborator, Community, CommunityData, Profile, Task,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
 import { validate } from 'uuid';
 import { Database } from './types.generated';
-import { DbError, DbNotFoundError } from './errors';
+import { DbNotFoundError } from './errors';
 import {
   getJoinedCount, handleError, decodePoint, encodePoint,
 } from './util';
@@ -35,20 +35,14 @@ export default class Db {
     }));
   }
 
-  async getCommunityData(id: string): Promise<{
-    community: Community,
-    campaigns: { id: string, name: string, default: boolean }[],
-    taskCount: number
-    collaborators: Collaborator[]
-    annotations: Annotation[]
-  }> {
+  async getCommunityData(id: string): Promise<CommunityData> {
     if (!validate(id)) {
       throw new DbNotFoundError();
     }
 
     const { data, error } = await this.client
       .from('communities')
-      .select('*, campaigns(id, name, defaultforcommunity, tasks(count)), collaborators(*), annotations(*, campaignannotations(campaignid))')
+      .select('*, campaigns(*, tasks(*)), collaborators(*), annotations(*, campaignannotations(campaignid))')
       .eq('id', id)
       .limit(1)
       .single();
@@ -66,11 +60,21 @@ export default class Db {
       campaigns: data.campaigns.map((c) => ({
         id: c.id,
         name: c.name,
+        description: c.description ?? '',
         default: !!c.defaultforcommunity,
+        communityId: c.communityid,
+        type: c.type,
       })),
-      taskCount: data.campaigns
-        .map((c) => getJoinedCount(c.tasks))
-        .reduce((sum, count) => sum + count, 0),
+      tasks: data.campaigns
+        .flatMap((c) => c.tasks.map((t) => ({
+          id: t.id,
+          campaignId: t.campaignid,
+          name: t.name,
+          description: t.description ?? '',
+          date: t.duedate ? new Date(t.duedate) : null,
+          priority: t.priority,
+          status: t.status,
+        }))),
       collaborators: data.collaborators.map((c) => ({
         id: c.id,
         communityId: c.communityid,
@@ -90,7 +94,7 @@ export default class Db {
     };
   }
 
-  async getCampaigns(communityId: string): Promise<CampaignWithCounts[]> {
+  async getCampaigns(communityId: string): Promise<Campaign[]> {
     if (!validate(communityId)) {
       throw new DbNotFoundError();
     }
@@ -112,57 +116,6 @@ export default class Db {
       annotationCount: getJoinedCount(d.campaignannotations),
       taskCount: getJoinedCount(d.tasks),
     }));
-  }
-
-  async getCampaign(campaignId: string): Promise<Campaign & {
-    tasks: Task[],
-    annotations: Annotation[],
-  }> {
-    if (!validate(campaignId)) {
-      throw new DbNotFoundError();
-    }
-
-    const { data, error } = await this.client
-      .from('campaigns')
-      .select('*, tasks(*), campaignannotations(annotations(*))')
-      .eq('id', campaignId)
-      .limit(1)
-      .single();
-
-    handleError(error);
-
-    return {
-      id: data.id,
-      name: data.name,
-      description: data.description ?? '',
-      type: data.type,
-      communityId: data.communityid,
-      default: !!data.defaultforcommunity,
-      tasks: data.tasks.map((t) => ({
-        id: t.id,
-        name: t.name,
-        description: t.description ?? '',
-        priority: t.priority,
-        status: t.status,
-        date: t.duedate ? new Date(t.duedate) : null,
-        campaignId: t.campaignid,
-      })),
-      annotations: data.campaignannotations.map((ca) => {
-        const a = ca.annotations;
-        if (!a) {
-          throw new DbError('expected an annotation matching campaign annotation');
-        }
-
-        return {
-          id: a.id,
-          name: a.name,
-          description: a.description ?? '',
-          type: a.type,
-          geometry: a.geo as Geometry,
-          campaignIds: undefined,
-        };
-      }),
-    };
   }
 
   async insertCampaign(c: Campaign) {
@@ -187,6 +140,7 @@ export default class Db {
         name: c.name,
         description: c.description,
         communityid: c.communityId,
+        type: c.type,
       })
       .eq('id', c.id);
 
@@ -334,9 +288,16 @@ export default class Db {
       });
 
     handleError(error);
+
+    const { error: caError } = await this.client
+      .from('campaignannotations')
+      .insert(a.campaignIds.map((cid) => ({ campaignid: cid, annotationid: a.id })));
+
+    handleError(caError);
   }
 
   async upsertAnnotation(a: Annotation, communityId: string) {
+    // update annotation itself
     const { error } = await this.client
       .from('annotations')
       .upsert({
@@ -350,6 +311,25 @@ export default class Db {
       });
 
     handleError(error);
+
+    // delete campaign-annotation mappings not in the specified set
+    const { error: caDeleteError } = await this.client
+      .from('campaignannotations')
+      .delete()
+      .eq('annotationid', a.id)
+      .not('campaignid', 'in', `(${a.campaignIds.map((id) => `"${id}"`).join(',')})`);
+
+    handleError(caDeleteError);
+
+    // upsert specified campaign-annotation mappings
+    const { error: caUpsertError } = await this.client
+      .from('campaignannotations')
+      .upsert(
+        a.campaignIds.map((cid) => ({ campaignid: cid, annotationid: a.id })),
+        { onConflict: 'campaignid, annotationid' },
+      );
+
+    handleError(caUpsertError);
   }
 
   async deleteAnnotation(id: string) {

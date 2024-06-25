@@ -15,9 +15,9 @@ import useMapControl from '@/hooks/useMapControl';
 import saveAs from 'file-saver';
 import { toBlob } from 'html-to-image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import btnStyles from '@/components/Button.module.css';
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
+import { downloadIcon } from '@/icons';
 import styles from './Map.module.css';
 import ModeControl from './ModeControl';
 import FilterMenu from '../FilterMenu';
@@ -75,7 +75,7 @@ export default function Map({
 
   const handleSaveViewClicked = useCallback(async () => {
     const blob = await toBlob(mapContainer.current ?? throwErr('no map ref'), {
-      filter: (node) => !node.classList.contains('mapboxgl-ctrl'),
+      filter: (node) => !node.classList?.contains('mapboxgl-ctrl'),
     }) ?? throwErr('no blob created');
 
     saveAs(blob, 'map-view.png');
@@ -174,7 +174,7 @@ export default function Map({
           className={btnStyles['btn']}
           onClick={handleSaveViewClicked}
         >
-          <FontAwesomeIcon icon={faDownload} className={btnStyles['icon'] ?? ''} />
+          <FontAwesomeIcon icon={downloadIcon} className={btnStyles['icon'] ?? ''} />
           <span>Save map view</span>
         </button>
       </div>

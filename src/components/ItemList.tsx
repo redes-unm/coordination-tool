@@ -1,8 +1,8 @@
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
-import { faPlus, faSearch } from '@fortawesome/free-solid-svg-icons';
 import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { addIcon, searchIcon } from '@/icons';
 import styles from './ItemList.module.css';
 import btnStyles from './Button.module.css';
 import SortMenu from './SortMenu';
@@ -76,7 +76,7 @@ export default function ItemList<T extends object>({
           <TextInput
             label="Search"
             placeholder="Search"
-            icon={faSearch}
+            icon={searchIcon}
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             hideLabel
@@ -88,7 +88,7 @@ export default function ItemList<T extends object>({
               onClick={onNew}
               className={`${btnStyles['btn']} ${btnStyles['solid']}`}
             >
-              <FontAwesomeIcon icon={faPlus} className={btnStyles['icon'] ?? ''} />
+              <FontAwesomeIcon icon={addIcon} className={btnStyles['icon'] ?? ''} />
               {newLabel}
             </button>
           )}

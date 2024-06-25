@@ -5,7 +5,7 @@ import SelectMenu from './SelectMenu';
 
 const languages = {
   en: 'English',
-  es: 'Español',
+  es: { name: 'Español', disabled: true },
 };
 
 export default function LanguageMenu() {

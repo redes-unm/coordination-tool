@@ -80,7 +80,7 @@ export default function Breadcrumb({ className }: Props) {
           : text;
 
         return (
-          <span key={href}>
+          <span key={href} className={styles['element-wrapper']}>
             { i > 0 && <span className={styles['separator']}> &gt; </span> }
             <ErrorBoundary fallback={<span>[error]</span>}>
               <span className={styles['element']}>
