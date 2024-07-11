@@ -32,4 +32,4 @@ The following steps describe how to create a new user for the production deploym
 3. Enter an email and password, make sure that `Auto Confirm User?` is checked, and click `Create user`. (The email currently isn't used for anything and therefore can be fake if needed.)
 4. Click on the new user's `User UID` to copy it from the list.
 5. Go to the Supabase SQL Editor at <https://supabase.com/dashboard/project/xscyklpyjgkwjzjansnh/sql/new>.
-6. Enter and run the following query, substituting `<user id>` for the copied ID and `<name>` for the user's desired display name: `insert into profiles (userid, name) values (<user id>, <name>);`.
+6. Enter and run the following query, substituting `<user id>` for the copied ID and `<name>` for the user's desired display name: `insert into profiles (userid, name) values ('<user id>', '<name>');`.
