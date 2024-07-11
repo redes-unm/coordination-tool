@@ -28,7 +28,7 @@ export function TrackingProvider({
   const value = useMemo(() => ({
     trackStore,
     handleTracking: (d: TrackStoreData) => {
-      console.log('inside handleTracking');
+      // console.log('inside handleTracking');
       updateTrackStore((old) => [
         ...old,
         d,

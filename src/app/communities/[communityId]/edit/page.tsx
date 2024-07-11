@@ -24,7 +24,15 @@ export default function EditCommunity() {
   const { trackStore } = useContext(TrackingContext);
 
   useEffect(() => {
-    console.log(`** From Community Edit Page\n**** Current store: ${trackStore}`);
+    console.info('** From Community Edit Page -- current store:');
+    trackStore.map((item, i) => {
+      console.info(`** ${i}`);
+      console.info(`  --> element: ${item.element}`);
+      console.info(`  --> event: ${item.event}`);
+      console.info(`  --> page: ${item.page}`);
+      console.info(`  --> timestamp: ${item.timestamp}`);
+    });
+    console.info('** [end store log]');
   }, [trackStore]);
 
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {

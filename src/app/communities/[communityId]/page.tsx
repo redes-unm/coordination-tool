@@ -33,7 +33,7 @@ export default function Community() {
   const trackClick = (element: string) => {
     const timestamp = new Date().toISOString();
     // console.log(`TESTING DATE ${timestamp}`);
-    console.log(`** From Community page: tracking click for ${element} `);
+    // console.info(`** From Community page: tracking click for ${element} `);
     handleTracking({
       event: 'click',
       element,
@@ -44,6 +44,7 @@ export default function Community() {
 
   const editCommunity = () => {
     trackClick('edit-community-button');
+    // TODO track that we are navigating away from the page
     return router.push(`/communities/${community.id}/edit`);
   };
 
