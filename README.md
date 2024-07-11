@@ -22,3 +22,14 @@ A web-based tool for community network measurement coordination.
 In production, the coordination tool runs as a Docker container, built with the included `Dockerfile`.
 
 To build a production image locally, run the `build.sh` script. It expects that all of the variables set in the `.env.local` file above be set as well. The easiest way to set them is by creating a `.env.prod.local` file with the correct values and then running `./build.sh --env .env.prod.local`.
+
+## Account creation
+
+The following steps describe how to create a new user for the production deployment of the coordination tool.
+
+1. Go to the Supabase Authentication page at <https://supabase.com/dashboard/project/xscyklpyjgkwjzjansnh/auth/users>.
+2. Click `Add User` > `Create new user`.
+3. Enter an email and password, make sure that `Auto Confirm User?` is checked, and click `Create user`. (The email currently isn't used for anything and therefore can be fake if needed.)
+4. Click on the new user's `User UID` to copy it from the list.
+5. Go to the Supabase SQL Editor at <https://supabase.com/dashboard/project/xscyklpyjgkwjzjansnh/sql/new>.
+6. Enter and run the following query, substituting `<user id>` for the copied ID and `<name>` for the user's desired display name: `insert into profiles (userid, name) values (<user id>, <name>);`.
