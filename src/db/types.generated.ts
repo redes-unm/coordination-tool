@@ -229,7 +229,7 @@ export type Database = {
           {
             foreignKeyName: "profiles_userid_fkey"
             columns: ["userid"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -269,6 +269,38 @@ export type Database = {
             columns: ["campaignid"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracking: {
+        Row: {
+          element: string
+          event: string
+          id: string
+          timestamp: string
+          userid: string
+        }
+        Insert: {
+          element: string
+          event: string
+          id?: string
+          timestamp: string
+          userid: string
+        }
+        Update: {
+          element?: string
+          event?: string
+          id?: string
+          timestamp?: string
+          userid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_userid_fkey"
+            columns: ["userid"]
+            isOneToOne: false
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
