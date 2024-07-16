@@ -1,5 +1,5 @@
 import {
-  Annotation, Campaign, Collaborator, Community, CommunityData, Profile, Task,
+  Annotation, Campaign, Collaborator, Community, CommunityData, Profile, Task, TrackStoreData,
 } from '@/types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
@@ -402,6 +402,20 @@ export default class Db {
       .insert({
         userid: profile.userId,
         name: profile.name,
+      });
+
+    handleError(error);
+  }
+
+  async insertTrackStoreData(data: TrackStoreData) {
+    const { error } = await this.client
+      .from('tracking')
+      .insert({
+        element: data.element,
+        event: data.event,
+        page: data.page,
+        timestamp: data.timestamp.toISOString(),
+        userid: data.userId,
       });
 
     handleError(error);

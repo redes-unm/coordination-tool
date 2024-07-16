@@ -115,3 +115,11 @@ export type Profile = {
   userId: string
   name: string
 };
+
+export type TrackStoreData = {
+  element: string;
+  event: string;
+  page: string;
+  timestamp: Date;
+  userId: string;
+};
