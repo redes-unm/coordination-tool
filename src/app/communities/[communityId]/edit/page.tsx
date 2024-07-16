@@ -34,6 +34,7 @@ export default function EditCommunity() {
       console.info(`  --> event: ${item.event}`);
       console.info(`  --> page: ${item.page}`);
       console.info(`  --> timestamp: ${item.timestamp}`);
+      console.info(`  --> userId: ${item.userId}`);
     });
     console.info('** [end store log]');
   }, [trackStore]);

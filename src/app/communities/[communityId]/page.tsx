@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useContext } from 'react';
+import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
 
@@ -15,6 +16,7 @@ import {
 import styles from './page.module.css';
 
 export default function Community() {
+  const { user } = useContext(AuthContext);
   const {
     community,
     collaborators,
@@ -32,15 +34,17 @@ export default function Community() {
   } = useContext(TrackingContext);
 
   const trackClick = (element: string) => {
-    const timestamp = new Date().toISOString();
-    // console.log(`TESTING DATE ${timestamp}`);
-    // console.info(`** From Community page: tracking click for ${element} `);
-    handleTracking({
-      event: 'click',
-      element,
-      timestamp,
-      page,
-    });
+    if (user) {
+      const timestamp = new Date();
+
+      handleTracking({
+        event: 'click',
+        element,
+        timestamp,
+        page,
+        userId: user.id,
+      });
+    }
   };
 
   const editCommunity = () => {
