@@ -2,19 +2,23 @@
 
 import * as Select from '@radix-ui/react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
+import { menuClosedIcon } from '@/icons';
 import menuStyles from './Menu.module.css';
 import btnStyles from './Button.module.css';
 import styles from './SelectMenu.module.css';
 
-function isSimpleOptions(options: string[] | [string, string][]): options is string[] {
+type SimpleOptions = string[];
+type NamedOptions = [string, string | { name: string, disabled?: boolean }][];
+type Options = SimpleOptions | NamedOptions;
+
+function isSimpleOptions(options: Options): options is SimpleOptions {
   return !Array.isArray(options[0]);
 }
 
 type Props = {
-  options: string[] | [string, string][]
+  options: Options
   id?: string
   value: string
   onValueChange: (val: string) => void
@@ -47,22 +51,37 @@ export default function SelectMenu({
       <Select.Root value={value} onValueChange={onValueChange}>
         <Select.Trigger
           className={`${btnStyles['btn']} ${menuStyles['menu-btn']} ${styles['select']}`}
-          aria-label={hideLabel ? label : undefined}
+          id={id}
         >
           <Select.Value />
           <Select.Icon className={menuStyles['menu-icon']}>
-            <FontAwesomeIcon icon={faChevronDown} />
+            <FontAwesomeIcon icon={menuClosedIcon} />
           </Select.Icon>
         </Select.Trigger>
 
         <Select.Portal>
           <Select.Content className={`${menuStyles['menu-content']} ${menuStyles['select']}`}>
             <Select.Viewport>
-              { opts.map(([val, display]) => (
-                <Select.Item value={val} key={val} className={menuStyles['menu-item']}>
-                  <Select.ItemText>{display}</Select.ItemText>
-                </Select.Item>
-              )) }
+              { opts.map(([val, nameOrConfig]) => {
+                const name = typeof nameOrConfig === 'string'
+                  ? nameOrConfig
+                  : nameOrConfig.name;
+
+                const disabled = typeof nameOrConfig === 'string'
+                  ? false
+                  : nameOrConfig.disabled ?? false;
+
+                return (
+                  <Select.Item
+                    value={val}
+                    key={val}
+                    className={menuStyles['menu-item']}
+                    disabled={disabled}
+                  >
+                    <Select.ItemText>{name}</Select.ItemText>
+                  </Select.Item>
+                );
+              }) }
             </Select.Viewport>
           </Select.Content>
         </Select.Portal>

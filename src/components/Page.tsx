@@ -4,7 +4,7 @@ import {
   useCallback, useEffect, useMemo, useState,
 } from 'react';
 import AuthContext from '@/contexts/AuthContext';
-import { isLoggedIn } from '@/lib/auth/client';
+import { User, getUser } from '@/lib/auth/client';
 import { BreadcrumbProvider } from '@/contexts/BreadcrumbContext';
 import { TrackingProvider } from '@/contexts/TrackingContext';
 import AccountMenu from './AccountMenu';
@@ -15,9 +15,9 @@ import styles from './Page.module.css';
 type Props = React.PropsWithChildren<{}>;
 
 export default function Page({ children }: Props) {
-  const [loggedIn, setLoggedIn] = useState(false);
-  const recheckLoggedIn = useCallback(async () => setLoggedIn(await isLoggedIn()), []);
-  useEffect(() => { recheckLoggedIn(); }, [recheckLoggedIn]);
+  const [user, setUser] = useState<User | null>(null);
+  const updateUser = useCallback(async () => setUser(await getUser()), []);
+  useEffect(() => { updateUser(); }, [updateUser]);
 
   /* NOTE for now we are just initializing the tracking store to an empty array,
    * which means the tracking store persists until we refresh the page.
@@ -32,9 +32,9 @@ export default function Page({ children }: Props) {
       <TrackingProvider initialStore={[]}>
         <AuthContext.Provider
           value={useMemo(() => ({
-            loggedIn,
-            reset: recheckLoggedIn,
-          }), [loggedIn, recheckLoggedIn])}
+            user,
+            reset: updateUser,
+          }), [user, updateUser])}
         >
           <BreadcrumbProvider>
             <header className={styles['header']}>

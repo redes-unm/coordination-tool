@@ -9,6 +9,7 @@ import { Collaborator, Community } from '@/types';
 import BreadcrumbContext from '@/contexts/BreadcrumbContext';
 import TrackingContext from '@/contexts/TrackingContext';
 
+import CommunityListContext from '@/contexts/CommunityListContext';
 import styles from './page.module.css';
 
 export default function EditCommunity() {
@@ -19,6 +20,8 @@ export default function EditCommunity() {
     collaborators,
     onCommunityDataUpdated,
   } = useContext(CommunityContext);
+
+  const { onCommunityUpdated, onCommunityDeleted } = useContext(CommunityListContext);
 
   const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
   const { trackStore } = useContext(TrackingContext);
@@ -38,12 +41,14 @@ export default function EditCommunity() {
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {
     await newDb().updateCommunity(comm, collabs);
     onCommunityDataUpdated({ community: comm, collaborators: collabs });
+    onCommunityUpdated({ ...community, collaboratorCount: collabs.length });
     updateBreadcrumb();
     router.push(`/communities/${community.id}`);
   };
 
   const handleDelete = async () => {
     await newDb().deleteCommunity(community.id);
+    onCommunityDeleted(community.id);
     router.push('/communities');
   };
 

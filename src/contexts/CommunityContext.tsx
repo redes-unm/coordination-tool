@@ -15,7 +15,7 @@ const CommunityContext = createContext<Data>({
     description: '',
   },
   campaigns: [],
-  taskCount: 0,
+  tasks: [],
   collaborators: [],
   annotations: [],
   onCommunityDataUpdated: () => {},

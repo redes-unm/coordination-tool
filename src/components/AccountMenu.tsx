@@ -2,12 +2,12 @@
 
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faUser } from '@fortawesome/free-solid-svg-icons';
 import { usePathname, useRouter } from 'next/navigation';
 import { logOut } from '@/lib/auth/client';
 import Link from 'next/link';
 import AuthContext from '@/contexts/AuthContext';
 import { useContext } from 'react';
+import { menuClosedIcon, menuOpenIcon, userIcon } from '@/icons';
 import menuStyles from './Menu.module.css';
 import btnStyles from './Button.module.css';
 import styles from './AccountMenu.module.css';
@@ -15,7 +15,7 @@ import styles from './AccountMenu.module.css';
 export default function AccountMenu() {
   const router = useRouter();
   const pathname = usePathname();
-  const { loggedIn, reset } = useContext(AuthContext);
+  const { user, reset } = useContext(AuthContext);
 
   const handleLogOut = async () => {
     await logOut();
@@ -23,24 +23,32 @@ export default function AccountMenu() {
     reset();
   };
 
-  return loggedIn ? (
+  return user ? (
     <Dropdown.Root>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${btnStyles['solid']} ${menuStyles['menu-btn']}`}>
         <span>
-          <FontAwesomeIcon icon={faUser} />
+          <FontAwesomeIcon icon={userIcon} />
           {' '}
           Account
         </span>
         <span className={menuStyles['menu-icon']}>
-          <FontAwesomeIcon icon={faChevronDown} className={menuStyles['menu-icon-closed'] || ''} />
-          <FontAwesomeIcon icon={faChevronUp} className={menuStyles['menu-icon-open'] || ''} />
+          <FontAwesomeIcon
+            icon={menuClosedIcon}
+            className={menuStyles['menu-icon-closed'] || ''}
+          />
+          <FontAwesomeIcon
+            icon={menuOpenIcon}
+            className={menuStyles['menu-icon-open'] || ''}
+          />
         </span>
       </Dropdown.Trigger>
 
       <Dropdown.Portal>
         <Dropdown.Content className={menuStyles['menu-content']}>
           <Dropdown.Arrow className={menuStyles['menu-arrow']} />
-          <Dropdown.Item className={menuStyles['menu-item']}>Settings</Dropdown.Item>
+          <Dropdown.Label className={menuStyles['menu-label']}>
+            {user.name ?? user.email ?? 'Unknown user'}
+          </Dropdown.Label>
           <Dropdown.Item className={menuStyles['menu-item']} onClick={handleLogOut}>Log out</Dropdown.Item>
         </Dropdown.Content>
       </Dropdown.Portal>

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Task } from '@/types';
 import * as Dialog from '@radix-ui/react-dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { closeIcon } from '@/icons';
 import styles from './TaskDialog.module.css';
 import TaskDisplay from './TaskDisplay';
 import TaskEditFormContents from './TaskEditFormContents';
@@ -50,7 +50,7 @@ export default function TaskDialog({
                 EditFormContents={TaskEditFormContents}
               />
               <Dialog.Close className={styles['close']}>
-                <FontAwesomeIcon icon={faClose} />
+                <FontAwesomeIcon icon={closeIcon} />
                 <span className="a11y-only">Close</span>
               </Dialog.Close>
             </>

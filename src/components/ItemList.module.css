@@ -37,6 +37,9 @@
 .message {
   padding-bottom: 0.5rem;
   font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .menus {

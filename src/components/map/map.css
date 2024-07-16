@@ -6,6 +6,10 @@
   font-family: Roboto, sans-serif;
 }
 
+.mapboxgl-popup-content {
+  border-radius: 0.3125rem !important;
+}
+
 /* Hide the close button via CSS. Using the popup option {closeButton: false}
  * breaks our current popup implementation. */
 .mapboxgl-popup-close-button {

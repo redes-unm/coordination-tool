@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "echo starting \"$(cat public/version.txt)\" && next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "gen-db-types": "supabase migration up && (echo '// DO NOT MODIFY. Types generated with `npm run gen-db-types`.' && supabase gen types typescript --local) >src/db/types.generated.ts"

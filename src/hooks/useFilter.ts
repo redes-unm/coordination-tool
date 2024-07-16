@@ -84,7 +84,7 @@ export default function useFilter<T>(things: T[], filter: Filter<T>): {
       ))
     ), [things, filter, enabled]),
     filterNames: useMemo(() => extractNames(filter), [filter]),
-    filterEnabled: enabled,
+    filterEnabled: useMemo(() => makeEnabled(filter, enabled), [filter, enabled]),
     setFilterEnabled: setEnabled,
   };
 }

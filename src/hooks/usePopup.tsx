@@ -1,12 +1,13 @@
 import EditableItemDisplay from '@/components/EditableItemDisplay';
 import AnnotationDisplay from '@/components/map/AnnotationDisplay';
 import AnnotationEditFormContents from '@/components/map/AnnotationEditFormContents';
+import CommunityContext from '@/contexts/CommunityContext';
 import { throwErr, toLngLat } from '@/lib/util';
 import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
-  useCallback, useEffect, useRef,
+  useCallback, useContext, useEffect, useRef,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
@@ -70,6 +71,8 @@ export default function usePopup(
     closeHandler?.();
   }, [annotation?.id, deleteHandler, closeHandler]);
 
+  const contextValue = useContext(CommunityContext);
+
   // position and render the popup
   useEffect(() => {
     if (!annotation || !popup.current) {
@@ -81,18 +84,34 @@ export default function usePopup(
     if (!root.current) {
       const id = `${annotation.id}-popup-container`;
       popup.current.setHTML(`<div id="${id}"/>`);
-      root.current = createRoot(document.getElementById(id) ?? throwErr('no popup container'));
+      const rootEl = document.getElementById(id) ?? throwErr('no popup container');
+      root.current = createRoot(rootEl);
+
+      // The popup repositions itself to stay in view whenever the map moves. It
+      // may choose a position that works when the annotation is being displayed
+      // but no longer works when it's being edited because it's gotten bigger.
+      // Trigger the repositioning whenever the popup's size changes with a
+      // little hack: pan the map by 0.
+      const observer = new ResizeObserver((entries) => {
+        if (entries.find((e) => e.target.id === id)) {
+          map?.panBy([0, 0]);
+        }
+      });
+
+      observer.observe(rootEl);
     }
 
     root.current.render(
-      <EditableItemDisplay
-        item={annotation}
-        editing={editing}
-        onSave={handlers.save}
-        onDelete={handleDelete}
-        Display={AnnotationDisplay}
-        EditFormContents={AnnotationEditFormContents}
-      />,
+      <CommunityContext.Provider value={contextValue}>
+        <EditableItemDisplay
+          item={annotation}
+          editing={editing}
+          onSave={handlers.save}
+          onDelete={handleDelete}
+          Display={AnnotationDisplay}
+          EditFormContents={AnnotationEditFormContents}
+        />
+      </CommunityContext.Provider>,
     );
-  }, [annotation, editing, handlers.save, handleDelete]);
+  }, [annotation, editing, handlers.save, handleDelete, map, contextValue]);
 }
