@@ -161,7 +161,7 @@ export default function CommunityEditForm({
             }))}
           >
             <FontAwesomeIcon icon={addIcon} />
-            Add
+            { collaborators.filter((c) => c.editable).length > 0 ? 'Add another' : 'Add' }
           </button>
         </div>
 
