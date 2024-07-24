@@ -82,7 +82,7 @@ export default function Community() {
             </span>
           </div>
         </Link>
-        <div className={styles['link']}>
+        <div className={`${styles['link']} ${styles['disabled']}`}>
           <FontAwesomeIcon icon={annotationsIcon} />
           <span className={styles['link-name']}>Annotations</span>
           <span className={styles['link-count']}>
