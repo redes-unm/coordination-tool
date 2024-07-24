@@ -21,6 +21,11 @@
   margin-bottom: 1.75rem;
 }
 
+.title a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .breadcrumb {
   flex: 0 0 100%;
   display: flex;
