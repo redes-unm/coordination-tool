@@ -3,3 +3,8 @@
   flex-flow: column nowrap;
   gap: 0.5rem;
 }
+
+.required-disclaimer {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
