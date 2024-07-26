@@ -22,6 +22,7 @@ export function handleError(e: PostgrestError | null): asserts e is null {
     case 'PGRST302': // JWT auth issue
       throw new DbNotFoundError();
     default:
+      console.error('unknown DB error', e); // eslint-disable-line no-console
       throw new DbError();
   }
 }

@@ -15,9 +15,13 @@ function CampaignEditFormContents({
 }: Props, ref: React.ForwardedRef<{ focus: () => void }>) {
   return (
     <div className={styles['inputs']}>
+      <span className={styles['required-disclaimer']}>
+        * indicates required field
+      </span>
+
       <TextInput
         ref={ref}
-        label="Name"
+        label="Name *"
         value={campaign.name}
         onChange={(e) => onChange({ ...campaign, name: e.target.value })}
         labelAbove

@@ -21,9 +21,13 @@ function TaskEditFormContents({
 
   return (
     <div className={styles['inputs']}>
+      <span className={styles['required-disclaimer']}>
+        * indicates required field
+      </span>
+
       <TextInput
         ref={ref}
-        label="Name"
+        label="Name *"
         value={task.name}
         onChange={(e) => onChange({ ...task, name: e.target.value })}
         labelAbove

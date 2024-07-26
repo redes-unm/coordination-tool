@@ -42,7 +42,7 @@ function AnnotationEditFormContents({
     <div className={styles['inputs']}>
       <TextInput
         ref={ref}
-        label="Name"
+        label="Name *"
         value={annotation.name}
         onChange={useCallback((e: ChangeEvent<HTMLInputElement>) => {
           onChange({ ...annotation, name: e.target.value });
@@ -77,6 +77,10 @@ function AnnotationEditFormContents({
         multiLine
         labelAbove
       />
+
+      <span className={styles['required-disclaimer']}>
+        * indicates required field
+      </span>
     </div>
   );
 }

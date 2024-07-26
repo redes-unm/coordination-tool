@@ -60,8 +60,12 @@ export default function CommunityEditForm({
 
   return (
     <form className={styles['form']} action={handleSave}>
+      <span className={styles['required-disclaimer']}>
+        * indicates required field
+      </span>
+
       <div className={styles['inputs']}>
-        <div className={styles['label']}>Name</div>
+        <div className={styles['label']}>Name *</div>
         <div className={styles['contents']}>
           <TextInput
             label="name"
@@ -107,7 +111,7 @@ export default function CommunityEditForm({
                 c.editable ? (
                   <>
                     <div className={styles['collab-inputs']}>
-                      <div className={styles['label']}>Name</div>
+                      <div className={styles['label']}>Name *</div>
                       <TextInput
                         label="Name"
                         labelAbove
@@ -117,7 +121,7 @@ export default function CommunityEditForm({
                         required
                         autoFocus={i === collaborators.length - 1}
                       />
-                      <div className={styles['label']}>Role</div>
+                      <div className={styles['label']}>Role *</div>
                       <TextInput
                         label="Role"
                         labelAbove
@@ -161,7 +165,7 @@ export default function CommunityEditForm({
             }))}
           >
             <FontAwesomeIcon icon={addIcon} />
-            Add
+            { collaborators.filter((c) => c.editable).length > 0 ? 'Add another' : 'Add' }
           </button>
         </div>
 
