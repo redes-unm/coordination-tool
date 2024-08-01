@@ -16,6 +16,7 @@ type Props = {
   enabled: FilterEnabled
   onEnabledChange: (e: FilterEnabled) => void
   label?: string
+  trackEvent: (element: string, event: string) => void
 };
 
 export default function FilterMenu({
@@ -23,6 +24,7 @@ export default function FilterMenu({
   enabled,
   onEnabledChange,
   label = 'Filter',
+  trackEvent,
 }: Props) {
   const allEnabled = useMemo(() => (
     Object.values(enabled).every((group) => Object.values(group).every((item) => item))
@@ -32,8 +34,12 @@ export default function FilterMenu({
     Object.values(enabled).every((group) => Object.values(group).every((item) => !item))
   ), [enabled]);
 
+  const openMenu = (open: boolean) => {
+    if (open) trackEvent('filter-map-annotations', 'open');
+  };
+
   return (
-    <Dropdown.Root>
+    <Dropdown.Root onOpenChange={openMenu}>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
         <span>
           <FontAwesomeIcon icon={filterIcon} className={btnStyles['icon'] ?? ''} />

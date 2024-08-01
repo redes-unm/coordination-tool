@@ -170,6 +170,7 @@ export default function Map({
           enabled={filterEnabled}
           onEnabledChange={onFilterEnabled}
           label="Filter annotations"
+          trackEvent={trackEvent}
         />
 
         <button
