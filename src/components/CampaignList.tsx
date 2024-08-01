@@ -12,7 +12,9 @@ import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria } from '@/hooks/useSort';
 import useSearchParam from '@/hooks/useSearchParam';
+import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import ItemList from './ItemList';
 import CampaignCard from './CampaignCard';
 import CampaignDialog from './CampaignDialog';
@@ -22,12 +24,29 @@ type Props = {
 };
 
 export default function CampaignList({ className }: Props) {
+  const { user } = useContext(AuthContext);
   const { community, campaigns, onCommunityDataUpdated } = useContext(CommunityContext);
   const db = useMemo(() => newDb(), []);
   const [newCampaign, setNewCampaign] = useState<Campaign | null>(null);
   const [openCampaignId, setOpenCampaignId] = useSearchParam('campaign');
 
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    if (user) {
+      const timestamp = new Date();
+
+      handleTracking({
+        event,
+        element,
+        timestamp,
+        page: `Campaigns-${community.id}`,
+        userId: user.id,
+      });
+    }
+  }, [community, handleTracking, user]);
+
   const openCampaign = useMemo(
+    // TODO add trackEvent('campaign-dialog', 'open'); somewhere here?
     () => newCampaign ?? campaigns.find((c) => c.id === openCampaignId),
     [campaigns, newCampaign, openCampaignId],
   );
@@ -70,16 +89,22 @@ export default function CampaignList({ className }: Props) {
 
   const searchFields: SearchField<Campaign>[] = useMemo(() => ['name', 'description'], []);
 
-  const handleNew = useCallback(() => setNewCampaign({
-    id: uuid(),
-    name: '',
-    description: '',
-    type: 'measurement',
-    communityId: community.id,
-    default: false,
-  }), [community.id]);
+  const handleNew = useCallback(() => {
+    trackEvent('new-button', 'click');
+    return setNewCampaign({
+      id: uuid(),
+      name: '',
+      description: '',
+      type: 'measurement',
+      communityId: community.id,
+      default: false,
+    });
+    // TODO make sure that including the trackEvent here as a dependency doesn't
+    // cause any unexpected issues
+  }, [community.id, trackEvent]);
 
   const handleSaveCampaign = useCallback(async (campaign: Campaign) => {
+    trackEvent('save-button', 'click');
     if (newCampaign) {
       await db.insertCampaign(campaign);
       setNewCampaign(null);
@@ -90,13 +115,21 @@ export default function CampaignList({ className }: Props) {
     onCommunityDataUpdated({
       campaigns: campaigns.filter((t) => t.id !== campaign.id).concat(campaign),
     });
-  }, [db, newCampaign, onCommunityDataUpdated, campaigns]);
+  }, [db, newCampaign, onCommunityDataUpdated, campaigns, trackEvent]);
 
   const handleDeleteCampaign = useCallback(async (id: string) => {
+    trackEvent('delete-button', 'click');
     await db.deleteCampaign(id);
 
     onCommunityDataUpdated({ campaigns: campaigns.filter((t) => t.id !== id) });
-  }, [db, onCommunityDataUpdated, campaigns]);
+  }, [db, onCommunityDataUpdated, campaigns, trackEvent]);
+
+  const handleClose = useCallback(() => {
+    // NOTE: this will get triggered any time the dialog gets closed
+    trackEvent('campaign-dialog', 'close');
+    setOpenCampaignId(null);
+    setNewCampaign(null);
+  }, [setOpenCampaignId, trackEvent]);
 
   return (
     <>
@@ -116,10 +149,7 @@ export default function CampaignList({ className }: Props) {
         editing={openCampaign === newCampaign}
         title={openCampaign === newCampaign ? 'New campaign' : undefined}
         closeOnCancel={openCampaign === newCampaign}
-        onClose={useCallback(() => {
-          setOpenCampaignId(null);
-          setNewCampaign(null);
-        }, [setOpenCampaignId])}
+        onClose={handleClose}
         onSave={handleSaveCampaign}
         onDelete={handleDeleteCampaign}
       />
