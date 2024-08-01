@@ -1,11 +1,12 @@
 'use client';
 
 import CommunityEditForm from '@/components/CommunityEditForm';
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { Collaborator, Community } from '@/types';
+import AuthContext from '@/contexts/AuthContext';
 import BreadcrumbContext from '@/contexts/BreadcrumbContext';
 import TrackingContext from '@/contexts/TrackingContext';
 
@@ -14,6 +15,8 @@ import styles from './page.module.css';
 
 export default function EditCommunity() {
   const router = useRouter();
+
+  const { user } = useContext(AuthContext);
 
   const {
     community,
@@ -24,7 +27,7 @@ export default function EditCommunity() {
   const { onCommunityUpdated, onCommunityDeleted } = useContext(CommunityListContext);
 
   const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
-  const { trackStore } = useContext(TrackingContext);
+  const { trackStore, handleTracking } = useContext(TrackingContext);
 
   useEffect(() => {
     console.info('** From Community Edit Page -- current store:');
@@ -39,7 +42,22 @@ export default function EditCommunity() {
     console.info('** [end store log]');
   }, [trackStore]);
 
+  const trackEvent = useCallback((element: string, event: string) => {
+    if (user) {
+      const timestamp = new Date();
+
+      handleTracking({
+        event,
+        element,
+        timestamp,
+        page: `EditCommunity-${community.id}`,
+        userId: user.id,
+      });
+    }
+  }, [community, handleTracking, user]);
+
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {
+    trackEvent('save-button', 'click');
     await newDb().updateCommunity(comm, collabs);
     onCommunityDataUpdated({ community: comm, collaborators: collabs });
     onCommunityUpdated({ ...community, collaboratorCount: collabs.length });
@@ -48,9 +66,15 @@ export default function EditCommunity() {
   };
 
   const handleDelete = async () => {
+    trackEvent('delete-button', 'click');
     await newDb().deleteCommunity(community.id);
     onCommunityDeleted(community.id);
     router.push('/communities');
+  };
+
+  const handleCancel = () => {
+    trackEvent('cancel-button', 'click');
+    return router.push(`/communities/${community.id}`);
   };
 
   return (
@@ -65,7 +89,7 @@ export default function EditCommunity() {
           mapCenter: community.mapCenter,
         }}
         collaborators={collaborators}
-        onCancel={() => router.push(`/communities/${community.id}`)}
+        onCancel={handleCancel}
         onSave={handleSave}
         onDelete={handleDelete}
       />
