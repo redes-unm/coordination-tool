@@ -23,13 +23,17 @@ export default function CommunityLayout({
     newDb().getCommunityData(params.communityId),
   ), [params.communityId]));
 
+  const parentPage = (nextSegment
+    ? nextSegment.charAt(0).toUpperCase() + nextSegment.slice(1)
+    : 'CommunityOverview');
+
   return data ? (
     <CommunityProvider initialData={data}>
       { showMap ? (
         <div className={styles['panes']}>
           <div className={styles['content-pane']}>{children}</div>
           <div className={styles['map-pane']}>
-            <CommunityMap />
+            <CommunityMap parentPage={parentPage} />
           </div>
         </div>
       ) : children }
