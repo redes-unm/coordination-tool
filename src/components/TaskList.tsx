@@ -8,7 +8,9 @@ import {
 import {
   useCallback, useContext, useMemo, useState,
 } from 'react';
+import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import useFilter from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria, SortCriterion } from '@/hooks/useSort';
@@ -28,12 +30,34 @@ type Props = {
 };
 
 export default function TaskList({ className }: Props) {
+  const { user } = useContext(AuthContext);
   const db = useMemo(() => newDb(), []);
-  const { campaigns, tasks, onCommunityDataUpdated } = useContext(CommunityContext);
+  const {
+    community,
+    campaigns,
+    tasks,
+    onCommunityDataUpdated,
+  } = useContext(CommunityContext);
   const [newTask, setNewTask] = useState<Task | null>(null);
   const [openTaskId, setOpenTaskId] = useSearchParam('task');
 
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    if (user) {
+      const timestamp = new Date();
+
+      handleTracking({
+        event,
+        element,
+        timestamp,
+        page: `Tasks-${community.id}`,
+        userId: user.id,
+      });
+    }
+  }, [community, handleTracking, user]);
+
   const openTask = useMemo(
+    // TODO add trackEvent('task-dialog', 'open'); somewhere here?
     () => newTask ?? tasks.find((t) => t.id === openTaskId),
     [tasks, newTask, openTaskId],
   );
@@ -142,17 +166,21 @@ export default function TaskList({ className }: Props) {
 
   const searchFields: SearchField<Task>[] = useMemo(() => ['name', 'description'], []);
 
-  const handleNew = useCallback(() => setNewTask({
-    id: uuid(),
-    name: '',
-    description: '',
-    priority: 'medium',
-    status: 'todo',
-    date: null,
-    campaignId: campaigns.find((c) => c.default)?.id ?? throwErr('no default campaign!'),
-  }), [campaigns]);
+  const handleNew = useCallback(() => {
+    trackEvent('new-button', 'click');
+    return setNewTask({
+      id: uuid(),
+      name: '',
+      description: '',
+      priority: 'medium',
+      status: 'todo',
+      date: null,
+      campaignId: campaigns.find((c) => c.default)?.id ?? throwErr('no default campaign!'),
+    });
+  }, [campaigns, trackEvent]);
 
   const handleSaveTask = useCallback(async (task: Task) => {
+    trackEvent('save-button', 'click');
     if (newTask) {
       await db.insertTask(task);
       setNewTask(null);
@@ -161,12 +189,20 @@ export default function TaskList({ className }: Props) {
     }
 
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== task.id).concat(task) });
-  }, [db, newTask, tasks, onCommunityDataUpdated]);
+  }, [db, newTask, tasks, onCommunityDataUpdated, trackEvent]);
 
   const handleDeleteTask = useCallback(async (id: string) => {
+    trackEvent('delete-button', 'click');
     await db.deleteTask(id);
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== id) });
-  }, [db, tasks, onCommunityDataUpdated]);
+  }, [db, tasks, onCommunityDataUpdated, trackEvent]);
+
+  const handleClose = useCallback(() => {
+    // NOTE: this will get triggered any time the dialog gets closed
+    trackEvent('task-dialog', 'close');
+    setOpenTaskId(null);
+    setNewTask(null);
+  }, [setOpenTaskId, trackEvent]);
 
   return (
     <>
@@ -188,10 +224,7 @@ export default function TaskList({ className }: Props) {
         editing={openTask === newTask}
         title={openTask === newTask ? 'New task' : undefined}
         closeOnCancel={openTask === newTask}
-        onClose={useCallback(() => {
-          setOpenTaskId(null);
-          setNewTask(null);
-        }, [setOpenTaskId])}
+        onClose={handleClose}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
       />
