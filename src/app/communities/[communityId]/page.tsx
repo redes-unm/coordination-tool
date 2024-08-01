@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
@@ -27,33 +27,36 @@ export default function Community() {
   const router = useRouter();
   const collabCount = collaborators.length;
 
-  const page = `CommunityOverview-${community.id}`;
-
   const {
     handleTracking,
   } = useContext(TrackingContext);
 
-  const trackClick = (element: string) => {
+  const trackEvent = useCallback((element: string, event: string) => {
     if (user) {
       const timestamp = new Date();
 
       handleTracking({
-        event: 'click',
+        event,
         element,
         timestamp,
-        page,
+        page: `CommunityOverview-${community.id}`,
         userId: user.id,
       });
     }
-  };
+  }, [community, handleTracking, user]);
 
   const editCommunity = () => {
-    trackClick('edit-community-button');
-    // TODO track that we are navigating away from the page
+    trackEvent('edit-community-button', 'click');
     return router.push(`/communities/${community.id}/edit`);
   };
 
   const testClick = () => {
+    /* TODO might have to re-structure the NextJS Link elements below to
+     * so that we can define a custom onClick handler in order to track
+     * Link clicks (and to properly use the event object)
+     * See "If the child is a functional component" in doc
+     * https://nextjs.org/docs/app/api-reference/components/link
+     */
     console.log('CLICKED A LINK BUTTON');
   };
 
@@ -78,7 +81,6 @@ export default function Community() {
             <button
               type="button"
               className={btnStyles['btn']}
-              // onClick={() => router.push(`/communities/${community.id}/edit`)}
               onClick={editCommunity}
             >
               Edit
