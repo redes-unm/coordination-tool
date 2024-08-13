@@ -27,9 +27,7 @@ export default function Community() {
   const router = useRouter();
   const collabCount = collaborators.length;
 
-  const {
-    handleTracking,
-  } = useContext(TrackingContext);
+  const { handleTracking } = useContext(TrackingContext);
 
   const trackEvent = useCallback((element: string, event: string) => {
     if (user) {
@@ -43,7 +41,16 @@ export default function Community() {
         userId: user.id,
       });
     }
-  }, [community, handleTracking, user]);
+  }, [community.id, handleTracking, user]);
+
+  useEffect(() => {
+    // page mounted
+    trackEvent('', 'page-mount');
+    return () => {
+      // page unmounted
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   const editCommunity = () => {
     trackEvent('edit-community-button', 'click');
