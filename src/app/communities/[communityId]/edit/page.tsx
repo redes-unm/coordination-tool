@@ -1,7 +1,7 @@
 'use client';
 
 import CommunityEditForm from '@/components/CommunityEditForm';
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
@@ -27,20 +27,7 @@ export default function EditCommunity() {
   const { onCommunityUpdated, onCommunityDeleted } = useContext(CommunityListContext);
 
   const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
-  const { trackStore, handleTracking } = useContext(TrackingContext);
-
-  useEffect(() => {
-    console.info('** From Community Edit Page -- current store:');
-    trackStore.map((item, i) => {
-      console.info(`** ${i}`);
-      console.info(`  --> element: ${item.element}`);
-      console.info(`  --> event: ${item.event}`);
-      console.info(`  --> page: ${item.page}`);
-      console.info(`  --> timestamp: ${item.timestamp}`);
-      console.info(`  --> userId: ${item.userId}`);
-    });
-    console.info('** [end store log]');
-  }, [trackStore]);
+  const { handleTracking } = useContext(TrackingContext);
 
   const trackEvent = useCallback((element: string, event: string) => {
     if (user) {
