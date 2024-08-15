@@ -12,7 +12,6 @@ import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria } from '@/hooks/useSort';
 import useSearchParam from '@/hooks/useSearchParam';
-import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
 import ItemList from './ItemList';
@@ -24,7 +23,6 @@ type Props = {
 };
 
 export default function CampaignList({ className }: Props) {
-  const { user } = useContext(AuthContext);
   const { community, campaigns, onCommunityDataUpdated } = useContext(CommunityContext);
   const db = useMemo(() => newDb(), []);
   const [newCampaign, setNewCampaign] = useState<Campaign | null>(null);
@@ -32,18 +30,15 @@ export default function CampaignList({ className }: Props) {
 
   const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
-    if (user) {
-      const timestamp = new Date();
+    const timestamp = new Date();
 
-      handleTracking({
-        event,
-        element,
-        timestamp,
-        page: `Campaigns-${community.id}`,
-        userId: user.id,
-      });
-    }
-  }, [community, handleTracking, user]);
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `Campaigns-${community.id}`,
+    });
+  }, [community, handleTracking]);
 
   const openCampaign = useMemo(
     // TODO add trackEvent('campaign-dialog', 'open'); somewhere here?

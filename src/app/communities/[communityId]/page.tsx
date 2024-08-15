@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCallback, useContext, useEffect } from 'react';
-import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
 
@@ -16,7 +15,6 @@ import {
 import styles from './page.module.css';
 
 export default function Community() {
-  const { user } = useContext(AuthContext);
   const {
     community,
     collaborators,
@@ -30,24 +28,19 @@ export default function Community() {
   const { handleTracking } = useContext(TrackingContext);
 
   const trackEvent = useCallback((element: string, event: string) => {
-    if (user) {
-      const timestamp = new Date();
+    const timestamp = new Date();
 
-      handleTracking({
-        event,
-        element,
-        timestamp,
-        page: `CommunityOverview-${community.id}`,
-        userId: user.id,
-      });
-    }
-  }, [community.id, handleTracking, user]);
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `CommunityOverview-${community.id}`,
+    });
+  }, [community.id, handleTracking]);
 
   useEffect(() => {
-    // page mounted
     trackEvent('', 'page-mount');
     return () => {
-      // page unmounted
       trackEvent('', 'page-unmount');
     };
   }, [trackEvent]);

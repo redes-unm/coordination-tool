@@ -6,7 +6,6 @@ import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { Collaborator, Community } from '@/types';
-import AuthContext from '@/contexts/AuthContext';
 import BreadcrumbContext from '@/contexts/BreadcrumbContext';
 import TrackingContext from '@/contexts/TrackingContext';
 
@@ -15,8 +14,6 @@ import styles from './page.module.css';
 
 export default function EditCommunity() {
   const router = useRouter();
-
-  const { user } = useContext(AuthContext);
 
   const {
     community,
@@ -30,18 +27,15 @@ export default function EditCommunity() {
   const { handleTracking } = useContext(TrackingContext);
 
   const trackEvent = useCallback((element: string, event: string) => {
-    if (user) {
-      const timestamp = new Date();
+    const timestamp = new Date();
 
-      handleTracking({
-        event,
-        element,
-        timestamp,
-        page: `EditCommunity-${community.id}`,
-        userId: user.id,
-      });
-    }
-  }, [community, handleTracking, user]);
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `EditCommunity-${community.id}`,
+    });
+  }, [community, handleTracking]);
 
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {
     trackEvent('save-button', 'click');

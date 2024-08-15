@@ -9,7 +9,7 @@ import {
 import { TrackStoreData } from '@/types';
 
 type Data = {
-  handleTracking: (store: TrackStoreData) => void
+  handleTracking: (store: Omit<TrackStoreData, 'userId'>) => void
 };
 
 const TrackingContext = createContext<Data>({
@@ -20,16 +20,19 @@ export default TrackingContext;
 
 type Props = {
   initialStore: TrackStoreData[],
+  userId: string,
 };
 
 export function TrackingProvider({
   initialStore,
   children,
+  userId,
 }: React.PropsWithChildren<Props>) {
   const [trackStore, updateTrackStore] = useState(initialStore);
 
   useEffect(() => {
     // TODO debounce calls to the db on trackStore update
+    /* eslint-disable no-console */
     console.info('**** trackStore updated:');
     trackStore.map((item, i) => {
       console.info(`**** ${i}`);
@@ -40,14 +43,18 @@ export function TrackingProvider({
       console.info(`    --> userId: ${item.userId}`);
     });
     console.info('**** [end store log]');
+    /* eslint-enable no-console */
   }, [trackStore]);
 
-  const handleTracking = useCallback((d: TrackStoreData) => {
+  const handleTracking = useCallback((d: Omit<TrackStoreData, 'userId'>) => {
     updateTrackStore((old) => [
       ...old,
-      d,
+      {
+        ...d,
+        userId,
+      },
     ]);
-  }, []);
+  }, [userId]);
 
   const value = useMemo(() => ({
     handleTracking,

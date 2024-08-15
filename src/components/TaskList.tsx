@@ -8,7 +8,6 @@ import {
 import {
   useCallback, useContext, useMemo, useState,
 } from 'react';
-import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
 import useFilter from '@/hooks/useFilter';
@@ -30,7 +29,6 @@ type Props = {
 };
 
 export default function TaskList({ className }: Props) {
-  const { user } = useContext(AuthContext);
   const db = useMemo(() => newDb(), []);
   const {
     community,
@@ -43,18 +41,15 @@ export default function TaskList({ className }: Props) {
 
   const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
-    if (user) {
-      const timestamp = new Date();
+    const timestamp = new Date();
 
-      handleTracking({
-        event,
-        element,
-        timestamp,
-        page: `Tasks-${community.id}`,
-        userId: user.id,
-      });
-    }
-  }, [community, handleTracking, user]);
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `Tasks-${community.id}`,
+    });
+  }, [community.id, handleTracking]);
 
   const openTask = useMemo(
     // TODO add trackEvent('task-dialog', 'open'); somewhere here?

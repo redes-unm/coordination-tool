@@ -48,18 +48,15 @@ export default function CommunityCreator({
   const { handleTracking } = useContext(TrackingContext);
 
   const trackEvent = useCallback((element: string, event: string) => {
-    if (creator) {
-      const timestamp = new Date();
+    const timestamp = new Date();
 
-      handleTracking({
-        event,
-        element,
-        timestamp,
-        page: 'New-Community',
-        userId: creator.userId,
-      });
-    }
-  }, [creator, handleTracking]);
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: 'New-Community',
+    });
+  }, [handleTracking]);
 
   const handleCancel = () => {
     trackEvent('cancel-button', 'click');

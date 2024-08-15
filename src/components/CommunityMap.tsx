@@ -9,7 +9,6 @@ import {
 import { newDb } from '@/db/client';
 import useFilter from '@/hooks/useFilter';
 import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
-import AuthContext from '@/contexts/AuthContext';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
 import Map from './map/Map';
@@ -19,7 +18,6 @@ type Props = {
 };
 
 export default function CommunityMap({ parentPage }: Props) {
-  const { user } = useContext(AuthContext);
   const {
     community,
     campaigns,
@@ -29,18 +27,15 @@ export default function CommunityMap({ parentPage }: Props) {
   const { handleTracking } = useContext(TrackingContext);
 
   const trackEvent = useCallback((element: string, event: string) => {
-    if (user) {
-      const timestamp = new Date();
+    const timestamp = new Date();
 
-      handleTracking({
-        event,
-        element,
-        timestamp,
-        page: `${parentPage}-${community.id}`,
-        userId: user.id,
-      });
-    }
-  }, [community, handleTracking, parentPage, user]);
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `${parentPage}-${community.id}`,
+    });
+  }, [community.id, handleTracking, parentPage]);
 
   const setAnnotations = useCallback((setter: (old: Annotation[]) => Annotation[]) => {
     onCommunityDataUpdated({ annotations: setter(annotations) });
