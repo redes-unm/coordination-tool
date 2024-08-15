@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import CommunityListContext from '@/contexts/CommunityListContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import { shorten } from '@/lib/util';
 import {
   addIcon, annotationsIcon, campaignsIcon, communityPrivateIcon, tasksIcon,
@@ -14,6 +15,24 @@ const descriptionMaxLength = 80;
 
 export default function Communities() {
   const { communities } = useContext(CommunityListContext);
+
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: 'Community-List',
+    });
+  }, [handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   return (
     <div className={styles['cards']}>

@@ -26,10 +26,8 @@ export default function Community() {
   const collabCount = collaborators.length;
 
   const { handleTracking } = useContext(TrackingContext);
-
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
-
     handleTracking({
       event,
       element,

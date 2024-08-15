@@ -6,7 +6,7 @@ import {
   Campaign, assertCampaignType, campaignTypeDisplayNames,
 } from '@/types';
 import {
-  useCallback, useContext, useMemo, useState,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
@@ -31,14 +31,20 @@ export default function CampaignList({ className }: Props) {
   const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
-
     handleTracking({
       event,
       element,
       timestamp,
       page: `Campaigns-${community.id}`,
     });
-  }, [community, handleTracking]);
+  }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   const openCampaign = useMemo(
     // TODO add trackEvent('campaign-dialog', 'open'); somewhere here?

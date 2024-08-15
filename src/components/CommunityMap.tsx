@@ -24,11 +24,10 @@ export default function CommunityMap({ parentPage }: Props) {
     annotations,
     onCommunityDataUpdated,
   } = useContext(CommunityContext);
-  const { handleTracking } = useContext(TrackingContext);
 
+  const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
-
     handleTracking({
       event,
       element,
@@ -36,6 +35,12 @@ export default function CommunityMap({ parentPage }: Props) {
       page: `${parentPage}-${community.id}`,
     });
   }, [community.id, handleTracking, parentPage]);
+
+  /* NOTE we only want to pass on the trackEvent from the CommunityMap
+     component so that we can track specific button clicks and actions
+     related to the map. We should NOT track component mount/unmounting
+     here because that is already being handled by the parent page.
+   */
 
   const setAnnotations = useCallback((setter: (old: Annotation[]) => Annotation[]) => {
     onCommunityDataUpdated({ annotations: setter(annotations) });

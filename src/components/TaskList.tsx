@@ -6,7 +6,7 @@ import {
   taskPriorityDisplayNames, taskStatusDisplayNames,
 } from '@/types';
 import {
-  useCallback, useContext, useMemo, useState,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import TrackingContext from '@/contexts/TrackingContext';
@@ -42,7 +42,6 @@ export default function TaskList({ className }: Props) {
   const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
-
     handleTracking({
       event,
       element,
@@ -50,6 +49,13 @@ export default function TaskList({ className }: Props) {
       page: `Tasks-${community.id}`,
     });
   }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   const openTask = useMemo(
     // TODO add trackEvent('task-dialog', 'open'); somewhere here?

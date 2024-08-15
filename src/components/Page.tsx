@@ -18,14 +18,12 @@ export default function Page({ children }: Props) {
   const [user, setUser] = useState<User | null>(null);
   const updateUser = useCallback(async () => setUser(await getUser()), []);
   useEffect(() => { updateUser(); }, [updateUser]);
-  // TODO have a useEffect for checking first load?
 
   /* NOTE for now we are just initializing the tracking store to an empty array,
    * which means the tracking store persists until we refresh the page.
    * This should be sufficient for now, since there shouldn't be a reason why
    * we need to see what's already stored in the db.
    */
-
   return (
     <div className={styles['page']}>
       <AuthContext.Provider
@@ -34,7 +32,6 @@ export default function Page({ children }: Props) {
           reset: updateUser,
         }), [user, updateUser])}
       >
-        {/* TODO make sure the userId gets updated properly between sessions */}
         <TrackingProvider initialStore={[]} userId={user ? user.id : 'unauthenticated'}>
           <BreadcrumbProvider>
             <header className={styles['header']}>

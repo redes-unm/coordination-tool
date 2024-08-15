@@ -1,7 +1,7 @@
 'use client';
 
 import CommunityEditForm from '@/components/CommunityEditForm';
-import { useCallback, useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
@@ -24,18 +24,24 @@ export default function EditCommunity() {
   const { onCommunityUpdated, onCommunityDeleted } = useContext(CommunityListContext);
 
   const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
-  const { handleTracking } = useContext(TrackingContext);
 
+  const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
-
     handleTracking({
       event,
       element,
       timestamp,
       page: `EditCommunity-${community.id}`,
     });
-  }, [community, handleTracking]);
+  }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {
     trackEvent('save-button', 'click');

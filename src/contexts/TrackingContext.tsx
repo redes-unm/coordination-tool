@@ -1,9 +1,5 @@
 import {
-  createContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
+  createContext, useCallback, useEffect, useMemo, useState,
 } from 'react';
 
 import { TrackStoreData } from '@/types';

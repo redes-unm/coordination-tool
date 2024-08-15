@@ -5,7 +5,9 @@ import { Collaborator, Community, Profile } from '@/types';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { v4 as uuid } from 'uuid';
-import { useCallback, useContext, useMemo } from 'react';
+import {
+  useCallback, useContext, useEffect, useMemo,
+} from 'react';
 import CommunityListContext from '@/contexts/CommunityListContext';
 import TrackingContext from '@/contexts/TrackingContext';
 
@@ -46,10 +48,8 @@ export default function CommunityCreator({
   ], [creator, admin, initialCommunity.id]);
 
   const { handleTracking } = useContext(TrackingContext);
-
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
-
     handleTracking({
       event,
       element,
@@ -57,6 +57,13 @@ export default function CommunityCreator({
       page: 'New-Community',
     });
   }, [handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   const handleCancel = () => {
     trackEvent('cancel-button', 'click');
