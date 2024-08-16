@@ -36,11 +36,11 @@ export function TrackingProvider({
       event: 'test',
       page: 'test',
       timestamp: new Date(),
-      userId: 'test',
+      userId,
     });
     updateTrackStore([]);
   // }, debounceMillis), [trackStore]);
-  }, debounceMillis), []);
+  }, debounceMillis), [userId]);
 
   useEffect(() => {
     /* eslint-disable no-console */

@@ -278,6 +278,7 @@ export type Database = {
           element: string
           event: string
           id: string
+          page: string
           timestamp: string
           userid: string
         }
@@ -285,6 +286,7 @@ export type Database = {
           element: string
           event: string
           id?: string
+          page: string
           timestamp: string
           userid: string
         }
@@ -292,6 +294,7 @@ export type Database = {
           element?: string
           event?: string
           id?: string
+          page?: string
           timestamp?: string
           userid?: string
         }
