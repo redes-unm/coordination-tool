@@ -1,8 +1,10 @@
+import debounce from 'debounce';
 import {
   createContext, useCallback, useEffect, useMemo, useState,
 } from 'react';
 
 import { TrackStoreData } from '@/types';
+import { newDb } from '@/db/client';
 
 type Data = {
   handleTracking: (store: Omit<TrackStoreData, 'userId'>) => void
@@ -26,8 +28,21 @@ export function TrackingProvider({
 }: React.PropsWithChildren<Props>) {
   const [trackStore, updateTrackStore] = useState(initialStore);
 
+  const debounceMillis = 500;
+  const writeTrackStore = useMemo(() => debounce(async () => {
+    // await newDb().insertTrackStoreData(trackStore);
+    await newDb().insertTrackStoreData({
+      element: 'test',
+      event: 'test',
+      page: 'test',
+      timestamp: new Date(),
+      userId: 'test',
+    });
+    updateTrackStore([]);
+  // }, debounceMillis), [trackStore]);
+  }, debounceMillis), []);
+
   useEffect(() => {
-    // TODO debounce calls to the db on trackStore update
     /* eslint-disable no-console */
     console.info('**** trackStore updated:');
     trackStore.map((item, i) => {
@@ -39,8 +54,13 @@ export function TrackingProvider({
       console.info(`    --> userId: ${item.userId}`);
     });
     console.info('**** [end store log]');
+
+    if (trackStore && trackStore.length !== 0) {
+      console.info(' !! TRACKSTORE NOT EMPTY !!');
+      writeTrackStore();
+    }
     /* eslint-enable no-console */
-  }, [trackStore]);
+  }, [trackStore, writeTrackStore]);
 
   const handleTracking = useCallback((d: Omit<TrackStoreData, 'userId'>) => {
     updateTrackStore((old) => [
