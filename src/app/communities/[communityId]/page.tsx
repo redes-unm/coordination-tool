@@ -48,14 +48,8 @@ export default function Community() {
     return router.push(`/communities/${community.id}/edit`);
   };
 
-  const testClick = () => {
-    /* TODO might have to re-structure the NextJS Link elements below to
-     * so that we can define a custom onClick handler in order to track
-     * Link clicks (and to properly use the event object)
-     * See "If the child is a functional component" in doc
-     * https://nextjs.org/docs/app/api-reference/components/link
-     */
-    console.log('CLICKED A LINK BUTTON');
+  const trackClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    trackEvent(event.currentTarget.dataset['element'] || 'link', 'click');
   };
 
   return (
@@ -97,7 +91,7 @@ export default function Community() {
       </div>
 
       <div className={styles['links']}>
-        <Link href={`/communities/${community.id}/campaigns`} onClick={testClick}>
+        <Link href={`/communities/${community.id}/campaigns`} data-element="campaigns-link" onClick={trackClick}>
           <div className={styles['link']}>
             <FontAwesomeIcon icon={campaignsIcon} />
             <span className={styles['link-name']}>Campaigns</span>
@@ -107,7 +101,7 @@ export default function Community() {
             </span>
           </div>
         </Link>
-        <Link href={`/communities/${community.id}/tasks`}>
+        <Link href={`/communities/${community.id}/tasks`} data-element="tasks-link" onClick={trackClick}>
           <div className={styles['link']}>
             <FontAwesomeIcon icon={tasksIcon} />
             <span className={styles['link-name']}>Tasks</span>
