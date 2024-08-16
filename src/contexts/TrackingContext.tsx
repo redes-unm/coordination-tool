@@ -3,8 +3,10 @@ import {
   createContext, useCallback, useEffect, useMemo, useState,
 } from 'react';
 
-import { TrackStoreData } from '@/types';
+import { TrackStoreData, UNAUTH_USER_ID } from '@/types';
 import { newDb } from '@/db/client';
+
+const DEBUG = true;
 
 type Data = {
   handleTracking: (store: Omit<TrackStoreData, 'userId'>) => void
@@ -30,46 +32,44 @@ export function TrackingProvider({
 
   const debounceMillis = 500;
   const writeTrackStore = useMemo(() => debounce(async () => {
-    // await newDb().insertTrackStoreData(trackStore);
-    await newDb().insertTrackStoreData({
-      element: 'test',
-      event: 'test',
-      page: 'test',
-      timestamp: new Date(),
-      userId,
-    });
+    await newDb().insertTrackStoreData(trackStore);
     updateTrackStore([]);
-  // }, debounceMillis), [trackStore]);
-  }, debounceMillis), [userId]);
+  }, debounceMillis), [trackStore]);
 
   useEffect(() => {
-    /* eslint-disable no-console */
-    console.info('**** trackStore updated:');
-    trackStore.map((item, i) => {
-      console.info(`**** ${i}`);
-      console.info(`    --> element: ${item.element}`);
-      console.info(`    --> event: ${item.event}`);
-      console.info(`    --> page: ${item.page}`);
-      console.info(`    --> timestamp: ${item.timestamp}`);
-      console.info(`    --> userId: ${item.userId}`);
-    });
-    console.info('**** [end store log]');
+    if (DEBUG) {
+      /* eslint-disable no-console, array-callback-return */
+      console.info('**** trackStore updated:');
+      trackStore.map((item, i) => {
+        console.info(`**** ${i}`);
+        console.info(`    --> element: ${item.element}`);
+        console.info(`    --> event: ${item.event}`);
+        console.info(`    --> page: ${item.page}`);
+        console.info(`    --> timestamp: ${item.timestamp}`);
+        console.info(`    --> userId: ${item.userId}`);
+      });
+      console.info('**** [end store log]');
+      /* eslint-enable no-console, array-callback-return */
+    }
 
-    if (trackStore && trackStore.length !== 0) {
-      console.info(' !! TRACKSTORE NOT EMPTY !!');
+    if (trackStore && trackStore.length !== 0 && !DEBUG) {
       writeTrackStore();
     }
-    /* eslint-enable no-console */
   }, [trackStore, writeTrackStore]);
 
   const handleTracking = useCallback((d: Omit<TrackStoreData, 'userId'>) => {
-    updateTrackStore((old) => [
-      ...old,
-      {
-        ...d,
-        userId,
-      },
-    ]);
+    if (userId !== UNAUTH_USER_ID) {
+      /* We want to ignore any updates from unauthenticated users because,
+       * otherwise, we would have to allow anybody to insert any tracking event
+       * to the database without logging in. */
+      updateTrackStore((old) => [
+        ...old,
+        {
+          ...d,
+          userId,
+        },
+      ]);
+    }
   }, [userId]);
 
   const value = useMemo(() => ({

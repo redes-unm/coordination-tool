@@ -116,6 +116,7 @@ export type Profile = {
   name: string
 };
 
+export const UNAUTH_USER_ID = 'unauthenticated';
 export type TrackStoreData = {
   element: string;
   event: string;

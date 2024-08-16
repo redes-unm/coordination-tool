@@ -7,6 +7,7 @@ import AuthContext from '@/contexts/AuthContext';
 import { User, getUser } from '@/lib/auth/client';
 import { BreadcrumbProvider } from '@/contexts/BreadcrumbContext';
 import { TrackingProvider } from '@/contexts/TrackingContext';
+import { UNAUTH_USER_ID } from '@/types';
 import AccountMenu from './AccountMenu';
 import Breadcrumb from './Breadcrumb';
 import LanguageMenu from './LanguageMenu';
@@ -32,7 +33,7 @@ export default function Page({ children }: Props) {
           reset: updateUser,
         }), [user, updateUser])}
       >
-        <TrackingProvider initialStore={[]} userId={user ? user.id : 'unauthenticated'}>
+        <TrackingProvider initialStore={[]} userId={user ? user.id : UNAUTH_USER_ID}>
           <BreadcrumbProvider>
             <header className={styles['header']}>
               <h1 className={styles['title']}>Coordination Tool</h1>

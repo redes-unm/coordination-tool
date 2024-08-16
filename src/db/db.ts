@@ -407,26 +407,18 @@ export default class Db {
     handleError(error);
   }
 
-  // async insertTrackStoreData(trackStore: TrackStoreData[]) {
-  async insertTrackStoreData(data: TrackStoreData) {
-    // const data = trackStore.map((item) => ({
-    //   element: item.element,
-    //   event: item.event,
-    //   page: item.page,
-    //   timestamp: item.timestamp.toISOString(),
-    //   userid: item.userId,
-    // }));
+  async insertTrackStoreData(trackStore: TrackStoreData[]) {
+    const data = trackStore.map((item) => ({
+      element: item.element,
+      event: item.event,
+      page: item.page,
+      timestamp: item.timestamp.toISOString(),
+      userid: item.userId,
+    }));
 
     const { error } = await this.client
       .from('tracking')
-      // .insert(data);
-      .insert({
-        element: data.element,
-        event: data.event,
-        page: data.page,
-        timestamp: data.timestamp.toISOString(),
-        userid: data.userId,
-      });
+      .insert(data);
 
     handleError(error);
   }
