@@ -63,6 +63,12 @@ export default function TaskList({ className }: Props) {
     [tasks, newTask, openTaskId],
   );
 
+  useEffect(() => {
+    if (openTask) {
+      trackEvent(`task-dialog-${openTaskId || 'new'}`, 'open');
+    }
+  }, [openTask, openTaskId, trackEvent]);
+
   const filter = useMemo(() => ({
     priority: {
       name: 'By priority',
@@ -181,7 +187,7 @@ export default function TaskList({ className }: Props) {
   }, [campaigns, trackEvent]);
 
   const handleSaveTask = useCallback(async (task: Task) => {
-    trackEvent('save-button', 'click');
+    trackEvent(`save-task-${task.id}`, 'click');
     if (newTask) {
       await db.insertTask(task);
       setNewTask(null);
@@ -190,20 +196,25 @@ export default function TaskList({ className }: Props) {
     }
 
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== task.id).concat(task) });
+    // TODO might have to reset openTaskId here
   }, [db, newTask, tasks, onCommunityDataUpdated, trackEvent]);
 
   const handleDeleteTask = useCallback(async (id: string) => {
-    trackEvent('delete-button', 'click');
+    trackEvent(`delete-task-${id}`, 'click');
     await db.deleteTask(id);
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== id) });
+    // TODO might have to reset openTaskId here
   }, [db, tasks, onCommunityDataUpdated, trackEvent]);
 
   const handleClose = useCallback(() => {
-    // NOTE: this will get triggered any time the dialog gets closed
-    trackEvent('task-dialog', 'close');
+    trackEvent(`task-dialog-${openTaskId || 'new'}`, 'close');
     setOpenTaskId(null);
     setNewTask(null);
-  }, [setOpenTaskId, trackEvent]);
+  }, [openTaskId, setOpenTaskId, trackEvent]);
+
+  const handleEdit = useCallback(() => {
+    trackEvent(`task-edit-${openTaskId || 'new'}`, 'click');
+  }, [openTaskId, trackEvent]);
 
   return (
     <>
@@ -228,6 +239,7 @@ export default function TaskList({ className }: Props) {
         onClose={handleClose}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
+        onEdit={handleEdit}
       />
     </>
   );
