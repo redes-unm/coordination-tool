@@ -216,6 +216,10 @@ export default function TaskList({ className }: Props) {
     trackEvent(`task-edit-${openTaskId || 'new'}`, 'click');
   }, [openTaskId, trackEvent]);
 
+  const handleOpenFilter = useCallback(() => {
+    trackEvent('filter-tasks', 'open');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -230,6 +234,7 @@ export default function TaskList({ className }: Props) {
         searchFields={searchFields}
         onNew={handleNew}
         className={className}
+        onOpenFilter={handleOpenFilter}
       />
       <TaskDialog
         task={openTask}

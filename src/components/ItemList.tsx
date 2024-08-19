@@ -18,7 +18,8 @@ type Props<T extends object> = {
   sortCriteria: SortCriteria<T>
   fallbackSortCriterion?: SortCriterion<T>
   searchFields: SearchField<T>[]
-  onNew?: () => void,
+  onNew?: () => void
+  onOpenFilter?: () => void
   newLabel?: string
   message?: string | undefined
   className?: string | undefined
@@ -34,6 +35,7 @@ export default function ItemList<T extends object>({
   fallbackSortCriterion,
   searchFields,
   onNew,
+  onOpenFilter,
   newLabel = 'New',
   message,
   className,
@@ -62,6 +64,7 @@ export default function ItemList<T extends object>({
               names={filterNames}
               enabled={filterEnabled}
               onEnabledChange={onFilterEnabled}
+              onOpen={onOpenFilter ?? null}
             />
 
             <SortMenu

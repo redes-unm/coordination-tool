@@ -140,6 +140,10 @@ export default function CampaignList({ className }: Props) {
     trackEvent(`campaign-edit-${openCampaignId || 'new'}`, 'click');
   }, [openCampaignId, trackEvent]);
 
+  const handleOpenFilter = useCallback(() => {
+    trackEvent('filter-campaigns', 'open');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -151,6 +155,7 @@ export default function CampaignList({ className }: Props) {
         sortCriteria={sortCriteria}
         searchFields={searchFields}
         onNew={handleNew}
+        onOpenFilter={handleOpenFilter}
         className={className}
       />
       <CampaignDialog

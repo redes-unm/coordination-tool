@@ -16,7 +16,7 @@ type Props = {
   enabled: FilterEnabled
   onEnabledChange: (e: FilterEnabled) => void
   label?: string
-  onOpen?: () => void
+  onOpen?: (() => void) | null
 };
 
 export default function FilterMenu({
