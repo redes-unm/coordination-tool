@@ -47,10 +47,15 @@ export default function CampaignList({ className }: Props) {
   }, [trackEvent]);
 
   const openCampaign = useMemo(
-    // TODO add trackEvent('campaign-dialog', 'open'); somewhere here?
     () => newCampaign ?? campaigns.find((c) => c.id === openCampaignId),
     [campaigns, newCampaign, openCampaignId],
   );
+
+  useEffect(() => {
+    if (openCampaign) {
+      trackEvent(`campaign-dialog-${openCampaignId || 'new'}`, 'open');
+    }
+  }, [openCampaign, openCampaignId, trackEvent]);
 
   const filter: Filter<Campaign> = useMemo(() => ({
     type: {
@@ -100,12 +105,10 @@ export default function CampaignList({ className }: Props) {
       communityId: community.id,
       default: false,
     });
-    // TODO make sure that including the trackEvent here as a dependency doesn't
-    // cause any unexpected issues
   }, [community.id, trackEvent]);
 
   const handleSaveCampaign = useCallback(async (campaign: Campaign) => {
-    trackEvent('save-button', 'click');
+    trackEvent(`save-campaign-${campaign.id}`, 'click');
     if (newCampaign) {
       await db.insertCampaign(campaign);
       setNewCampaign(null);
@@ -116,21 +119,26 @@ export default function CampaignList({ className }: Props) {
     onCommunityDataUpdated({
       campaigns: campaigns.filter((t) => t.id !== campaign.id).concat(campaign),
     });
+    // TODO might have to reset openCampaignId here
   }, [db, newCampaign, onCommunityDataUpdated, campaigns, trackEvent]);
 
   const handleDeleteCampaign = useCallback(async (id: string) => {
-    trackEvent('delete-button', 'click');
+    trackEvent(`delete-campaign-${id}`, 'click');
     await db.deleteCampaign(id);
 
     onCommunityDataUpdated({ campaigns: campaigns.filter((t) => t.id !== id) });
+    // TODO might have to reset openCampaignId here
   }, [db, onCommunityDataUpdated, campaigns, trackEvent]);
 
   const handleClose = useCallback(() => {
-    // NOTE: this will get triggered any time the dialog gets closed
-    trackEvent('campaign-dialog', 'close');
+    trackEvent(`campaign-dialog-${openCampaignId || 'new'}`, 'close');
     setOpenCampaignId(null);
     setNewCampaign(null);
-  }, [setOpenCampaignId, trackEvent]);
+  }, [openCampaignId, setOpenCampaignId, trackEvent]);
+
+  const handleEdit = useCallback(() => {
+    trackEvent(`campaign-edit-${openCampaignId || 'new'}`, 'click');
+  }, [openCampaignId, trackEvent]);
 
   return (
     <>
@@ -153,6 +161,7 @@ export default function CampaignList({ className }: Props) {
         onClose={handleClose}
         onSave={handleSaveCampaign}
         onDelete={handleDeleteCampaign}
+        onEdit={handleEdit}
       />
     </>
   );
