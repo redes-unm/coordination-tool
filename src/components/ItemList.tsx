@@ -20,6 +20,7 @@ type Props<T extends object> = {
   searchFields: SearchField<T>[]
   onNew?: () => void
   onOpenFilter?: () => void
+  onOpenSort?: () => void
   newLabel?: string
   message?: string | undefined
   className?: string | undefined
@@ -36,6 +37,7 @@ export default function ItemList<T extends object>({
   searchFields,
   onNew,
   onOpenFilter,
+  onOpenSort,
   newLabel = 'New',
   message,
   className,
@@ -73,6 +75,7 @@ export default function ItemList<T extends object>({
               setCriteriaOrder={setSortCriteriaOrder}
               direction={sortDirection}
               setDirection={setSortDirection}
+              onOpen={onOpenSort ?? null}
             />
           </div>
 

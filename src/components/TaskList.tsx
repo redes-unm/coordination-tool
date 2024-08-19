@@ -220,6 +220,10 @@ export default function TaskList({ className }: Props) {
     trackEvent('filter-tasks', 'open');
   }, [trackEvent]);
 
+  const handleOpenSort = useCallback(() => {
+    trackEvent('sort-tasks', 'open');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -235,6 +239,7 @@ export default function TaskList({ className }: Props) {
         onNew={handleNew}
         className={className}
         onOpenFilter={handleOpenFilter}
+        onOpenSort={handleOpenSort}
       />
       <TaskDialog
         task={openTask}

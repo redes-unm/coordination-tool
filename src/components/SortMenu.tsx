@@ -14,6 +14,7 @@ type Props = {
   setCriteriaOrder: (o: SortCriteriaOrder) => void
   direction: SortDirection
   setDirection: (d: SortDirection) => void
+  onOpen?: (() => void) | null
 };
 
 export default function SortMenu({
@@ -22,9 +23,14 @@ export default function SortMenu({
   setCriteriaOrder,
   direction,
   setDirection,
+  onOpen,
 }: Props) {
+  const openMenu = (open: boolean) => {
+    if (open && onOpen) onOpen();
+  };
+
   return (
-    <Dropdown.Root>
+    <Dropdown.Root onOpenChange={openMenu}>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
         <span>
           <FontAwesomeIcon
