@@ -84,6 +84,10 @@ export default function Map({
     saveAs(blob, 'map-view.png');
   }, [trackEvent]);
 
+  const handleOpenFilter = useCallback(() => {
+    trackEvent('filter-map-annotations', 'open');
+  }, [trackEvent]);
+
   // update the selected annotation when the annotations change, but don't allow
   // the selected annotation to be cleared as a result
   useEffect(() => {
@@ -170,7 +174,7 @@ export default function Map({
           enabled={filterEnabled}
           onEnabledChange={onFilterEnabled}
           label="Filter annotations"
-          trackEvent={trackEvent}
+          onOpen={handleOpenFilter}
         />
 
         <button

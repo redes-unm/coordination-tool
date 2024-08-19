@@ -16,7 +16,7 @@ type Props = {
   enabled: FilterEnabled
   onEnabledChange: (e: FilterEnabled) => void
   label?: string
-  trackEvent: (element: string, event: string) => void
+  onOpen?: () => void
 };
 
 export default function FilterMenu({
@@ -24,7 +24,7 @@ export default function FilterMenu({
   enabled,
   onEnabledChange,
   label = 'Filter',
-  trackEvent,
+  onOpen,
 }: Props) {
   const allEnabled = useMemo(() => (
     Object.values(enabled).every((group) => Object.values(group).every((item) => item))
@@ -35,7 +35,7 @@ export default function FilterMenu({
   ), [enabled]);
 
   const openMenu = (open: boolean) => {
-    if (open) trackEvent('filter-map-annotations', 'open');
+    if (open && onOpen) onOpen();
   };
 
   return (
