@@ -148,6 +148,10 @@ export default function CampaignList({ className }: Props) {
     trackEvent('sort-campaigns', 'open');
   }, [trackEvent]);
 
+  const handleSearch = useCallback((text: string) => {
+    trackEvent(`${text}`, 'search');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -161,6 +165,7 @@ export default function CampaignList({ className }: Props) {
         onNew={handleNew}
         onOpenFilter={handleOpenFilter}
         onOpenSort={handleOpenSort}
+        onSearch={handleSearch}
         className={className}
       />
       <CampaignDialog

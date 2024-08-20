@@ -224,6 +224,10 @@ export default function TaskList({ className }: Props) {
     trackEvent('sort-tasks', 'open');
   }, [trackEvent]);
 
+  const handleSearch = useCallback((text: string) => {
+    trackEvent(`${text}`, 'search');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -240,6 +244,7 @@ export default function TaskList({ className }: Props) {
         className={className}
         onOpenFilter={handleOpenFilter}
         onOpenSort={handleOpenSort}
+        onSearch={handleSearch}
       />
       <TaskDialog
         task={openTask}

@@ -21,6 +21,7 @@ type Props<T extends object> = {
   onNew?: () => void
   onOpenFilter?: () => void
   onOpenSort?: () => void
+  onSearch?: (text: string) => void
   newLabel?: string
   message?: string | undefined
   className?: string | undefined
@@ -38,6 +39,7 @@ export default function ItemList<T extends object>({
   onNew,
   onOpenFilter,
   onOpenSort,
+  onSearch,
   newLabel = 'New',
   message,
   className,
@@ -46,7 +48,7 @@ export default function ItemList<T extends object>({
     searched,
     searchText,
     setSearchText,
-  } = useSearch(items, searchFields);
+  } = useSearch(items, searchFields, (onSearch || null));
 
   const {
     sorted,
