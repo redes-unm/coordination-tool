@@ -119,16 +119,18 @@ export default function CampaignList({ className }: Props) {
     onCommunityDataUpdated({
       campaigns: campaigns.filter((t) => t.id !== campaign.id).concat(campaign),
     });
-    // TODO might have to reset openCampaignId here
-  }, [db, newCampaign, onCommunityDataUpdated, campaigns, trackEvent]);
+    setOpenCampaignId(null);
+    setNewCampaign(null);
+  }, [db, newCampaign, onCommunityDataUpdated, campaigns, trackEvent, setOpenCampaignId]);
 
   const handleDeleteCampaign = useCallback(async (id: string) => {
     trackEvent(`delete-campaign-${id}`, 'click');
     await db.deleteCampaign(id);
 
     onCommunityDataUpdated({ campaigns: campaigns.filter((t) => t.id !== id) });
-    // TODO might have to reset openCampaignId here
-  }, [db, onCommunityDataUpdated, campaigns, trackEvent]);
+    setOpenCampaignId(null);
+    setNewCampaign(null);
+  }, [db, onCommunityDataUpdated, campaigns, trackEvent, setOpenCampaignId]);
 
   const handleClose = useCallback(() => {
     trackEvent(`campaign-dialog-${openCampaignId || 'new'}`, 'close');

@@ -196,15 +196,17 @@ export default function TaskList({ className }: Props) {
     }
 
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== task.id).concat(task) });
-    // TODO might have to reset openTaskId here
-  }, [db, newTask, tasks, onCommunityDataUpdated, trackEvent]);
+    setOpenTaskId(null);
+    setNewTask(null);
+  }, [db, newTask, tasks, onCommunityDataUpdated, trackEvent, setOpenTaskId]);
 
   const handleDeleteTask = useCallback(async (id: string) => {
     trackEvent(`delete-task-${id}`, 'click');
     await db.deleteTask(id);
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== id) });
-    // TODO might have to reset openTaskId here
-  }, [db, tasks, onCommunityDataUpdated, trackEvent]);
+    setOpenTaskId(null);
+    setNewTask(null);
+  }, [db, tasks, onCommunityDataUpdated, trackEvent, setOpenTaskId]);
 
   const handleClose = useCallback(() => {
     trackEvent(`task-dialog-${openTaskId || 'new'}`, 'close');
