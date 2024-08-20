@@ -31,7 +31,7 @@ export default function useSearch<T extends object>(
       assertString(val);
       return val.toLowerCase().includes(text.toLowerCase());
     })));
-  }, debounceMillis), [things, fields, debounceMillis]);
+  }, debounceMillis), [things, fields, debounceMillis, onSearch]);
 
   useEffect(() => search(searchText), [search, searchText]);
 
