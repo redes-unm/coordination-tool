@@ -158,6 +158,10 @@ export default function CampaignList({ className }: Props) {
     trackEvent(`${dir}-by-${criterion}`, 'sort-change');
   }, [trackEvent]);
 
+  const handleFilterChange = useCallback(() => {
+    trackEvent('filter-campaigns', 'filter-change');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -165,6 +169,7 @@ export default function CampaignList({ className }: Props) {
         Item={CampaignCard}
         filterNames={filterNames}
         filterEnabled={filterEnabled}
+        onFilterChange={handleFilterChange}
         onFilterEnabled={setFilterEnabled}
         sortCriteria={sortCriteria}
         searchFields={searchFields}

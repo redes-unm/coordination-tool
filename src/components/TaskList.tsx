@@ -234,6 +234,10 @@ export default function TaskList({ className }: Props) {
     trackEvent(`${dir}-by-${criterion}`, 'sort-change');
   }, [trackEvent]);
 
+  const handleFilterChange = useCallback(() => {
+    trackEvent('filter-tasks', 'filter-change');
+  }, [trackEvent]);
+
   return (
     <>
       <ItemList
@@ -241,6 +245,7 @@ export default function TaskList({ className }: Props) {
         Item={TaskCard}
         filterNames={filterNames}
         filterEnabled={filterEnabled}
+        onFilterChange={handleFilterChange}
         onFilterEnabled={handleFilterEnabled}
         message={message}
         sortCriteria={sortCriteria}

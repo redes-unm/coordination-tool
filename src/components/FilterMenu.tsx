@@ -17,6 +17,7 @@ type Props = {
   onEnabledChange: (e: FilterEnabled) => void
   label?: string
   onOpen?: (() => void) | null
+  onChange?: (() => void) | null
 };
 
 export default function FilterMenu({
@@ -25,6 +26,7 @@ export default function FilterMenu({
   onEnabledChange,
   label = 'Filter',
   onOpen,
+  onChange,
 }: Props) {
   const allEnabled = useMemo(() => (
     Object.values(enabled).every((group) => Object.values(group).every((item) => item))
@@ -36,6 +38,18 @@ export default function FilterMenu({
 
   const openMenu = (open: boolean) => {
     if (open && onOpen) onOpen();
+  };
+
+  // for when we click hide/show all
+  const handleClick = (status: boolean) => {
+    if (onChange) onChange();
+    onEnabledChange(toggleAllEnabled(enabled, status));
+  };
+
+  // for when we change filter selection
+  const handleSelect = (e: Event) => {
+    if (onChange) onChange();
+    e.preventDefault();
   };
 
   return (
@@ -77,7 +91,7 @@ export default function FilterMenu({
                     onCheckedChange={(checked) => onEnabledChange(
                       toggleSingleEnabled(enabled, groupId, itemId, checked),
                     )}
-                    onSelect={(e) => e.preventDefault()}
+                    onSelect={handleSelect}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
                       <FontAwesomeIcon icon={checkIcon} />
@@ -95,7 +109,7 @@ export default function FilterMenu({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => onEnabledChange(toggleAllEnabled(enabled, true))}
+            onClick={() => handleClick(true)}
             disabled={allEnabled}
           >
             Show all
@@ -103,7 +117,7 @@ export default function FilterMenu({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => onEnabledChange(toggleAllEnabled(enabled, false))}
+            onClick={() => handleClick(false)}
             disabled={allDisabled}
           >
             Hide all

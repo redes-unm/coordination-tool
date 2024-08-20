@@ -88,6 +88,10 @@ export default function Map({
     trackEvent('filter-map-annotations', 'open');
   }, [trackEvent]);
 
+  const handleFilterChange = useCallback(() => {
+    trackEvent('filter-map-annotations', 'filter-change');
+  }, [trackEvent]);
+
   // update the selected annotation when the annotations change, but don't allow
   // the selected annotation to be cleared as a result
   useEffect(() => {
@@ -172,6 +176,7 @@ export default function Map({
         <FilterMenu
           names={filterNames}
           enabled={filterEnabled}
+          onChange={handleFilterChange}
           onEnabledChange={onFilterEnabled}
           label="Filter annotations"
           onOpen={handleOpenFilter}

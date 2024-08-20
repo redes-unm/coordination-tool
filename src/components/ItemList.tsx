@@ -15,6 +15,7 @@ type Props<T extends object> = {
   Item: React.FC<{ item: T, className?: string | undefined }>,
   filterNames: FilterNames
   filterEnabled: FilterEnabled
+  onFilterChange?: (() => void) | null
   onFilterEnabled: (e: FilterEnabled) => void
   sortCriteria: SortCriteria<T>
   fallbackSortCriterion?: SortCriterion<T>
@@ -34,6 +35,7 @@ export default function ItemList<T extends object>({
   Item,
   filterNames,
   filterEnabled,
+  onFilterChange,
   onFilterEnabled,
   sortCriteria,
   fallbackSortCriterion,
@@ -83,6 +85,7 @@ export default function ItemList<T extends object>({
             <FilterMenu
               names={filterNames}
               enabled={filterEnabled}
+              onChange={onFilterChange ?? null}
               onEnabledChange={onFilterEnabled}
               onOpen={onOpenFilter ?? null}
             />
