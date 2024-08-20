@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
 import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
@@ -22,6 +23,7 @@ type Props<T extends object> = {
   onOpenFilter?: () => void
   onOpenSort?: () => void
   onSearch?: (text: string) => void
+  onSortChange?: (criterion: string, dir: string) => void
   newLabel?: string
   message?: string | undefined
   className?: string | undefined
@@ -40,6 +42,7 @@ export default function ItemList<T extends object>({
   onOpenFilter,
   onOpenSort,
   onSearch,
+  onSortChange,
   newLabel = 'New',
   message,
   className,
@@ -58,6 +61,19 @@ export default function ItemList<T extends object>({
     sortDirection,
     setSortDirection,
   } = useSort(searched, sortCriteria, fallbackSortCriterion);
+
+  useEffect(() => {
+    /* NOTE this gets triggered every time the page loads for the first time,
+     * thus, we'll have to massage a bit the tracking data for our analysis.
+     * One option would be to check whether the previous tracked action was of
+     * {event: open && element: sort-*} OR {event: sort-change}.
+     * Alternatively, we can ignore any actions that happen on a page before
+     * the mount action appears.
+     */
+    if (onSortChange && sortCriteriaOrder[0]) {
+      onSortChange(sortCriteriaOrder[0], sortDirection);
+    }
+  }, [sortCriteriaOrder, sortDirection, onSortChange]);
 
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
