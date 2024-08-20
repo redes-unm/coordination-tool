@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
 import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
@@ -64,16 +64,9 @@ export default function ItemList<T extends object>({
     setSortDirection,
   } = useSort(searched, sortCriteria, fallbackSortCriterion);
 
-  useEffect(() => {
-    /* NOTE this gets triggered every time the page loads for the first time,
-     * thus, we'll have to massage a bit the tracking data for our analysis.
-     * One option would be to check whether the previous tracked action was of
-     * {event: open && element: sort-*} OR {event: sort-change}.
-     * Alternatively, we can ignore any actions that happen on a page before
-     * the mount action appears.
-     */
+  const trackSortChange = useCallback((criterion?: string, dir?: string) => {
     if (onSortChange && sortCriteriaOrder[0]) {
-      onSortChange(sortCriteriaOrder[0], sortDirection);
+      onSortChange((criterion ?? sortCriteriaOrder[0]), (dir ?? sortDirection));
     }
   }, [sortCriteriaOrder, sortDirection, onSortChange]);
 
@@ -96,6 +89,7 @@ export default function ItemList<T extends object>({
               setCriteriaOrder={setSortCriteriaOrder}
               direction={sortDirection}
               setDirection={setSortDirection}
+              onChange={trackSortChange}
               onOpen={onOpenSort ?? null}
             />
           </div>

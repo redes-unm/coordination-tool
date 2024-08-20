@@ -1,4 +1,5 @@
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { useCallback } from 'react';
 import btnStyles from '@/components/Button.module.css';
 import menuStyles from '@/components/Menu.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +15,7 @@ type Props = {
   setCriteriaOrder: (o: SortCriteriaOrder) => void
   direction: SortDirection
   setDirection: (d: SortDirection) => void
+  onChange?: ((criterion?: string, dir?: string) => void) | null
   onOpen?: (() => void) | null
 };
 
@@ -23,11 +25,24 @@ export default function SortMenu({
   setCriteriaOrder,
   direction,
   setDirection,
+  onChange,
   onOpen,
 }: Props) {
   const openMenu = (open: boolean) => {
     if (open && onOpen) onOpen();
   };
+
+  const handleDirectionChange = useCallback((e: Event, dir: SortDirection) => {
+    e.preventDefault();
+    setDirection(dir);
+    if (onChange) onChange(undefined, dir);
+  }, [onChange, setDirection]);
+
+  const handleCriteriaChange = useCallback((e: Event, id: string) => {
+    e.preventDefault();
+    setCriteriaOrder([id, ...criteriaOrder.filter((i) => i !== id)]);
+    if (onChange) onChange(id, undefined);
+  }, [criteriaOrder, onChange, setCriteriaOrder]);
 
   return (
     <Dropdown.Root onOpenChange={openMenu}>
@@ -66,8 +81,7 @@ export default function SortMenu({
                     className={menuStyles['menu-item']}
                     value={id}
                     onSelect={(e) => {
-                      e.preventDefault();
-                      setCriteriaOrder([id, ...criteriaOrder.filter((i) => i !== id)]);
+                      handleCriteriaChange(e, id);
                     }}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
@@ -91,8 +105,7 @@ export default function SortMenu({
               className={menuStyles['menu-item']}
               value="ascending"
               onSelect={(e) => {
-                e.preventDefault();
-                setDirection('ascending');
+                handleDirectionChange(e, 'ascending');
               }}
             >
               <Dropdown.ItemIndicator className={menuStyles['item-check']}>
@@ -104,8 +117,7 @@ export default function SortMenu({
               className={menuStyles['menu-item']}
               value="descending"
               onSelect={(e) => {
-                e.preventDefault();
-                setDirection('descending');
+                handleDirectionChange(e, 'descending');
               }}
             >
               <Dropdown.ItemIndicator className={menuStyles['item-check']}>
