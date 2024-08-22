@@ -24,19 +24,21 @@ export default function useSearch<T extends object>(
   const [searchText, setSearchText] = useState('');
   const [searched, setSearched] = useState(things);
 
+  const trackSearch = useMemo(() => debounce((text: string) => {
+    if (text && onSearch) {
+      onSearch(text);
+    }
+  }, debounceMillis), [debounceMillis, onSearch]);
+
+  useEffect(() => trackSearch(searchText), [trackSearch, searchText]);
+
   const search = useMemo(() => debounce((text: string) => {
-    /* NOTE that a new search gets triggered every time there is a search
-     * string already populated in the search bar and we change the filters or
-     * the sorting criteria. We'll have to be careful analyzing tracking data
-     * after a search.
-     */
-    if (text && onSearch) onSearch(text);
     setSearched(things.filter((t) => fields.some((field) => {
       const val = t[field];
       assertString(val);
       return val.toLowerCase().includes(text.toLowerCase());
     })));
-  }, debounceMillis), [things, fields, debounceMillis, onSearch]);
+  }, debounceMillis), [things, fields, debounceMillis]);
 
   useEffect(() => search(searchText), [search, searchText]);
 
