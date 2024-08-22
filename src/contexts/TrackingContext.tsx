@@ -31,10 +31,10 @@ export function TrackingProvider({
   const [trackStore, updateTrackStore] = useState(initialStore);
 
   const debounceMillis = 500;
-  const writeTrackStore = useMemo(() => debounce(async () => {
-    await newDb().insertTrackStoreData(trackStore);
+  const writeTrackStore = useMemo(() => debounce(async (store: TrackStoreData[]) => {
+    await newDb().insertTrackStoreData(store);
     updateTrackStore([]);
-  }, debounceMillis), [trackStore]);
+  }, debounceMillis), []);
 
   useEffect(() => {
     if (DEBUG) {
@@ -53,7 +53,7 @@ export function TrackingProvider({
     }
 
     if (trackStore && trackStore.length !== 0 && !DEBUG) {
-      writeTrackStore();
+      writeTrackStore(trackStore);
     }
   }, [trackStore, writeTrackStore]);
 
