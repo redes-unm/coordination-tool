@@ -14,7 +14,7 @@ function assertString(s: unknown): asserts s is string {
 export default function useSearch<T extends object>(
   things: T[],
   fields: SearchField<T>[],
-  onSearch?: ((test: string) => void) | null,
+  onSearch?: ((text: string) => void) | null,
   debounceMillis = 300,
 ): {
     searched: T[]
