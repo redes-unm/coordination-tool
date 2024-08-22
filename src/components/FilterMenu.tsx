@@ -40,15 +40,13 @@ export default function FilterMenu({
     if (open && onOpen) onOpen();
   };
 
-  // for when we click hide/show all
-  const handleClick = (status: boolean) => {
-    if (onChange) onChange();
+  const handleToggleAllClick = (status: boolean) => {
+    onChange?.();
     onEnabledChange(toggleAllEnabled(enabled, status));
   };
 
-  // for when we change filter selection
-  const handleSelect = (e: Event) => {
-    if (onChange) onChange();
+  const handleFilterSelection = (e: Event) => {
+    onChange?.();
     e.preventDefault();
   };
 
@@ -91,7 +89,7 @@ export default function FilterMenu({
                     onCheckedChange={(checked) => onEnabledChange(
                       toggleSingleEnabled(enabled, groupId, itemId, checked),
                     )}
-                    onSelect={handleSelect}
+                    onSelect={handleFilterSelection}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
                       <FontAwesomeIcon icon={checkIcon} />
@@ -109,7 +107,7 @@ export default function FilterMenu({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => handleClick(true)}
+            onClick={() => handleToggleAllClick(true)}
             disabled={allEnabled}
           >
             Show all
@@ -117,7 +115,7 @@ export default function FilterMenu({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => handleClick(false)}
+            onClick={() => handleToggleAllClick(false)}
             disabled={allDisabled}
           >
             Hide all
