@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
-import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
+import useSort, { SortCriteria, SortCriterion, SortDirection } from '@/hooks/useSort';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addIcon, searchIcon } from '@/icons';
 import styles from './ItemList.module.css';
@@ -24,7 +24,7 @@ type Props<T extends object> = {
   onOpenFilter?: () => void
   onOpenSort?: () => void
   onSearch?: (text: string) => void
-  onSortChange?: (criterion: string, dir: string) => void
+  onSortChange?: (criterion: string, dir: SortDirection) => void
   newLabel?: string
   message?: string | undefined
   className?: string | undefined
@@ -64,7 +64,7 @@ export default function ItemList<T extends object>({
     setSortDirection,
   } = useSort(searched, sortCriteria, fallbackSortCriterion);
 
-  const trackSortChange = useCallback((criterion?: string, dir?: string) => {
+  const trackSortChange = useCallback((criterion?: string, dir?: SortDirection) => {
     if (onSortChange && sortCriteriaOrder[0]) {
       onSortChange((criterion ?? sortCriteriaOrder[0]), (dir ?? sortDirection));
     }

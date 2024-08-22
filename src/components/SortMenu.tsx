@@ -15,7 +15,7 @@ type Props = {
   setCriteriaOrder: (o: SortCriteriaOrder) => void
   direction: SortDirection
   setDirection: (d: SortDirection) => void
-  onChange?: ((criterion?: string, dir?: string) => void) | null
+  onChange?: ((criterion?: string, dir?: SortDirection) => void) | null
   onOpen?: (() => void) | null
 };
 
