@@ -6,7 +6,7 @@ import {
 import { TrackStoreData, UNAUTH_USER_ID } from '@/types';
 import { newDb } from '@/db/client';
 
-const DEBUG = true;
+const DEBUG = process.env.NODE_ENV !== 'production';
 
 type Data = {
   handleTracking: (store: Omit<TrackStoreData, 'userId'>) => void
