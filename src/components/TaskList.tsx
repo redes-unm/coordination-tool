@@ -58,7 +58,6 @@ export default function TaskList({ className }: Props) {
   }, [trackEvent]);
 
   const openTask = useMemo(
-    // TODO add trackEvent('task-dialog', 'open'); somewhere here?
     () => newTask ?? tasks.find((t) => t.id === openTaskId),
     [tasks, newTask, openTaskId],
   );
