@@ -38,9 +38,9 @@ export function TrackingProvider({
 
   useEffect(() => {
     if (DEBUG) {
-      /* eslint-disable no-console, array-callback-return */
+      /* eslint-disable no-console */
       console.info('**** trackStore updated:');
-      trackStore.map((item, i) => {
+      trackStore.forEach((item, i) => {
         console.info(`**** ${i}`);
         console.info(`    --> element: ${item.element}`);
         console.info(`    --> event: ${item.event}`);
@@ -49,7 +49,7 @@ export function TrackingProvider({
         console.info(`    --> userId: ${item.userId}`);
       });
       console.info('**** [end store log]');
-      /* eslint-enable no-console, array-callback-return */
+      /* eslint-enable no-console */
     }
 
     if (trackStore && trackStore.length !== 0 && !DEBUG) {
