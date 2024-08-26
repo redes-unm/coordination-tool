@@ -1,4 +1,5 @@
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { useCallback } from 'react';
 import btnStyles from '@/components/Button.module.css';
 import menuStyles from '@/components/Menu.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -14,6 +15,8 @@ type Props = {
   setCriteriaOrder: (o: SortCriteriaOrder) => void
   direction: SortDirection
   setDirection: (d: SortDirection) => void
+  onChange?: ((criterion?: string, dir?: SortDirection) => void) | null
+  onOpen?: (() => void) | null
 };
 
 export default function SortMenu({
@@ -22,9 +25,43 @@ export default function SortMenu({
   setCriteriaOrder,
   direction,
   setDirection,
+  onChange,
+  onOpen,
 }: Props) {
+  const openMenu = (open: boolean) => {
+    if (open && onOpen) onOpen();
+  };
+
+  /* NOTE could be simplified by just calling onChange directly with both
+   * the criteria and the direction, i.e.
+   *
+   * onSelect={(e) => {
+   *   e.preventDefault();
+   *   setCriteriaOrder([id, ...criteriaOrder.filter((i) => i !== id)]);
+   *   onChange?.(id, direction);
+   * }}
+   *
+   * Then you could eliminate the handleDirectionChange and
+   * handleCriteriaChange callbacks above and the trackSortChange callback in
+   * the ItemList (because you always have both a criteria and a direction).
+   *
+   * However, it may be harder to replace the handleDirectionChange because
+   * the criteria value is stored in an array, which could be undefined...
+   */
+  const handleDirectionChange = useCallback((e: Event, dir: SortDirection) => {
+    e.preventDefault();
+    setDirection(dir);
+    if (onChange) onChange(undefined, dir);
+  }, [onChange, setDirection]);
+
+  const handleCriteriaChange = useCallback((e: Event, id: string) => {
+    e.preventDefault();
+    setCriteriaOrder([id, ...criteriaOrder.filter((i) => i !== id)]);
+    if (onChange) onChange(id, undefined);
+  }, [criteriaOrder, onChange, setCriteriaOrder]);
+
   return (
-    <Dropdown.Root>
+    <Dropdown.Root onOpenChange={openMenu}>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
         <span>
           <FontAwesomeIcon
@@ -60,8 +97,7 @@ export default function SortMenu({
                     className={menuStyles['menu-item']}
                     value={id}
                     onSelect={(e) => {
-                      e.preventDefault();
-                      setCriteriaOrder([id, ...criteriaOrder.filter((i) => i !== id)]);
+                      handleCriteriaChange(e, id);
                     }}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
@@ -85,8 +121,7 @@ export default function SortMenu({
               className={menuStyles['menu-item']}
               value="ascending"
               onSelect={(e) => {
-                e.preventDefault();
-                setDirection('ascending');
+                handleDirectionChange(e, 'ascending');
               }}
             >
               <Dropdown.ItemIndicator className={menuStyles['item-check']}>
@@ -98,8 +133,7 @@ export default function SortMenu({
               className={menuStyles['menu-item']}
               value="descending"
               onSelect={(e) => {
-                e.preventDefault();
-                setDirection('descending');
+                handleDirectionChange(e, 'descending');
               }}
             >
               <Dropdown.ItemIndicator className={menuStyles['item-check']}>

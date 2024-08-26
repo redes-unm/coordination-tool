@@ -1,6 +1,7 @@
+import { useCallback } from 'react';
 import { FilterEnabled, FilterNames } from '@/hooks/useFilter';
 import useSearch, { SearchField } from '@/hooks/useSearch';
-import useSort, { SortCriteria, SortCriterion } from '@/hooks/useSort';
+import useSort, { SortCriteria, SortCriterion, SortDirection } from '@/hooks/useSort';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { addIcon, searchIcon } from '@/icons';
 import styles from './ItemList.module.css';
@@ -14,11 +15,16 @@ type Props<T extends object> = {
   Item: React.FC<{ item: T, className?: string | undefined }>,
   filterNames: FilterNames
   filterEnabled: FilterEnabled
+  onFilterChange?: (() => void) | null
   onFilterEnabled: (e: FilterEnabled) => void
   sortCriteria: SortCriteria<T>
   fallbackSortCriterion?: SortCriterion<T>
   searchFields: SearchField<T>[]
-  onNew?: () => void,
+  onNew?: () => void
+  onOpenFilter?: () => void
+  onOpenSort?: () => void
+  onSearch?: (text: string) => void
+  onSortChange?: (criterion: string, dir: SortDirection) => void
   newLabel?: string
   message?: string | undefined
   className?: string | undefined
@@ -29,11 +35,16 @@ export default function ItemList<T extends object>({
   Item,
   filterNames,
   filterEnabled,
+  onFilterChange,
   onFilterEnabled,
   sortCriteria,
   fallbackSortCriterion,
   searchFields,
   onNew,
+  onOpenFilter,
+  onOpenSort,
+  onSearch,
+  onSortChange,
   newLabel = 'New',
   message,
   className,
@@ -42,7 +53,7 @@ export default function ItemList<T extends object>({
     searched,
     searchText,
     setSearchText,
-  } = useSearch(items, searchFields);
+  } = useSearch(items, searchFields, (onSearch || null));
 
   const {
     sorted,
@@ -53,6 +64,12 @@ export default function ItemList<T extends object>({
     setSortDirection,
   } = useSort(searched, sortCriteria, fallbackSortCriterion);
 
+  const trackSortChange = useCallback((criterion?: string, dir?: SortDirection) => {
+    if (onSortChange && sortCriteriaOrder[0]) {
+      onSortChange((criterion ?? sortCriteriaOrder[0]), (dir ?? sortDirection));
+    }
+  }, [sortCriteriaOrder, sortDirection, onSortChange]);
+
   return (
     <div className={`${styles['container']} ${className ?? ''}`}>
       <div className={styles['header']}>
@@ -61,7 +78,9 @@ export default function ItemList<T extends object>({
             <FilterMenu
               names={filterNames}
               enabled={filterEnabled}
+              onChange={onFilterChange ?? null}
               onEnabledChange={onFilterEnabled}
+              onOpen={onOpenFilter ?? null}
             />
 
             <SortMenu
@@ -70,6 +89,8 @@ export default function ItemList<T extends object>({
               setCriteriaOrder={setSortCriteriaOrder}
               direction={sortDirection}
               setDirection={setSortDirection}
+              onChange={trackSortChange}
+              onOpen={onOpenSort ?? null}
             />
           </div>
 

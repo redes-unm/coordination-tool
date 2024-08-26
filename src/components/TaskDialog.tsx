@@ -14,6 +14,7 @@ type Props = {
   title?: string | undefined
   closeOnCancel?: boolean
   onClose: () => void
+  onEdit: () => void
   onSave: (t: Task) => Promise<void>
   onDelete: (id: string) => Promise<void>
 };
@@ -26,6 +27,7 @@ export default function TaskDialog({
   onSave,
   onDelete,
   onClose,
+  onEdit,
 }: Props) {
   return (
     <Dialog.Root
@@ -46,6 +48,7 @@ export default function TaskDialog({
                 onSave={onSave}
                 onDelete={() => onDelete(task.id)}
                 onCancel={closeOnCancel ? onClose : () => {}}
+                onEdit={onEdit}
                 Display={TaskDisplay}
                 EditFormContents={TaskEditFormContents}
               />

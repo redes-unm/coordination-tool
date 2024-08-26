@@ -10,15 +10,37 @@ import { newDb } from '@/db/client';
 import useFilter from '@/hooks/useFilter';
 import useAutoCampaignFilter from '@/hooks/useAutoCampaignFilter';
 import CommunityContext from '@/contexts/CommunityContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import Map from './map/Map';
 
-export default function CommunityMap() {
+type Props = {
+  parentPage: string,
+};
+
+export default function CommunityMap({ parentPage }: Props) {
   const {
     community,
     campaigns,
     annotations,
     onCommunityDataUpdated,
   } = useContext(CommunityContext);
+
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `${parentPage}-${community.id}`,
+    });
+  }, [community.id, handleTracking, parentPage]);
+
+  /* NOTE we only want to pass on the trackEvent from the CommunityMap
+     component so that we can track specific button clicks and actions
+     related to the map. We should NOT track component mount/unmounting
+     here because that is already being handled by the parent page.
+   */
 
   const setAnnotations = useCallback((setter: (old: Annotation[]) => Annotation[]) => {
     onCommunityDataUpdated({ annotations: setter(annotations) });
@@ -92,6 +114,7 @@ export default function CommunityMap() {
       onUpdate={handleUpdateAnnotation}
       onDelete={handleDeleteAnnotation}
       initialLngLat={community.mapCenter}
+      trackEvent={trackEvent}
     />
   );
 }

@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import CommunityListContext from '@/contexts/CommunityListContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import { shorten } from '@/lib/util';
 import {
   addIcon, annotationsIcon, campaignsIcon, communityPrivateIcon, tasksIcon,
@@ -15,12 +16,34 @@ const descriptionMaxLength = 80;
 export default function Communities() {
   const { communities } = useContext(CommunityListContext);
 
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: 'Community-List',
+    });
+  }, [handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
+
+  const trackClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    trackEvent(event.currentTarget.dataset['element'] || 'link', 'click');
+  };
+
   return (
     <div className={styles['cards']}>
       { communities.map((c) => (
         <div key={c.id} className={styles['card']}>
           <h2 className={styles['card-title']}>
-            <Link href={`/communities/${c.id}`}>{c.name}</Link>
+            <Link href={`/communities/${c.id}`} data-element="community-link" onClick={trackClick}>{c.name}</Link>
           </h2>
           <div className={styles['details']}>
             <span className={styles['details-publicity']}>
@@ -34,25 +57,25 @@ export default function Communities() {
             { shorten(c.description, descriptionMaxLength) }
           </div>
           <div className={styles['read-more']}>
-            <Link href={`/communities/${c.id}`}>Read more</Link>
+            <Link href={`/communities/${c.id}`} data-element="readmore-link" onClick={trackClick}>Read more</Link>
           </div>
           <div className={styles['links']}>
-            <Link href={`/communities/${c.id}/campaigns`}>
+            <Link href={`/communities/${c.id}/campaigns`} data-element="campaigns-link" onClick={trackClick}>
               <FontAwesomeIcon icon={campaignsIcon} />
               <span className="a11y-only">Campaigns</span>
             </Link>
-            <Link href={`/communities/${c.id}/tasks`}>
+            <Link href={`/communities/${c.id}/tasks`} data-element="tasks-link" onClick={trackClick}>
               <FontAwesomeIcon icon={tasksIcon} />
               <span className="a11y-only">Tasks</span>
             </Link>
-            <Link href={`/communities/${c.id}`}>
+            <Link href={`/communities/${c.id}`} data-element="annotations-link" onClick={trackClick}>
               <FontAwesomeIcon icon={annotationsIcon} />
               <span className="a11y-only">Annotations</span>
             </Link>
           </div>
         </div>
       )) }
-      <Link href="/communities/add" className={`${styles['card']} ${styles['join-create']}`}>
+      <Link href="/communities/add" className={`${styles['card']} ${styles['join-create']}`} data-element="joincreate-link" onClick={trackClick}>
         <FontAwesomeIcon icon={addIcon} />
         <span className={styles['card-title']}>Join or Create</span>
       </Link>

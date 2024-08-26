@@ -49,6 +49,7 @@ type Props = {
   onAdd: (a: Annotation) => Promise<void>
   onUpdate: (a: Annotation) => Promise<void>
   onDelete: (id: string) => Promise<void>
+  trackEvent: (element: string, event: string) => void
   initialLngLat?: [number, number] | undefined
   initialZoom?: number
 };
@@ -67,6 +68,7 @@ export default function Map({
   onAdd,
   onDelete,
   onUpdate,
+  trackEvent,
 }: Props) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const [map, setMap] = useState<mapboxgl.Map>();
@@ -74,12 +76,21 @@ export default function Map({
   const [newAnnotation, setNewAnnotation] = useState<Annotation | undefined>();
 
   const handleSaveViewClicked = useCallback(async () => {
+    trackEvent('save-map-view', 'click');
     const blob = await toBlob(mapContainer.current ?? throwErr('no map ref'), {
       filter: (node) => !node.classList?.contains('mapboxgl-ctrl'),
     }) ?? throwErr('no blob created');
 
     saveAs(blob, 'map-view.png');
-  }, []);
+  }, [trackEvent]);
+
+  const handleOpenFilter = useCallback(() => {
+    trackEvent('filter-map-annotations', 'open');
+  }, [trackEvent]);
+
+  const handleFilterChange = useCallback(() => {
+    trackEvent('filter-map-annotations', 'filter-change');
+  }, [trackEvent]);
 
   // update the selected annotation when the annotations change, but don't allow
   // the selected annotation to be cleared as a result
@@ -165,8 +176,10 @@ export default function Map({
         <FilterMenu
           names={filterNames}
           enabled={filterEnabled}
+          onChange={handleFilterChange}
           onEnabledChange={onFilterEnabled}
           label="Filter annotations"
+          onOpen={handleOpenFilter}
         />
 
         <button

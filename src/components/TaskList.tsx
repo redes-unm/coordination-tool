@@ -6,9 +6,10 @@ import {
   taskPriorityDisplayNames, taskStatusDisplayNames,
 } from '@/types';
 import {
-  useCallback, useContext, useMemo, useState,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import useFilter from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria, SortCriterion } from '@/hooks/useSort';
@@ -29,14 +30,43 @@ type Props = {
 
 export default function TaskList({ className }: Props) {
   const db = useMemo(() => newDb(), []);
-  const { campaigns, tasks, onCommunityDataUpdated } = useContext(CommunityContext);
+  const {
+    community,
+    campaigns,
+    tasks,
+    onCommunityDataUpdated,
+  } = useContext(CommunityContext);
   const [newTask, setNewTask] = useState<Task | null>(null);
   const [openTaskId, setOpenTaskId] = useSearchParam('task');
+
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `Tasks-${community.id}`,
+    });
+  }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
 
   const openTask = useMemo(
     () => newTask ?? tasks.find((t) => t.id === openTaskId),
     [tasks, newTask, openTaskId],
   );
+
+  useEffect(() => {
+    if (openTask) {
+      trackEvent(`task-dialog-${openTaskId || 'new'}`, 'open');
+    }
+  }, [openTask, openTaskId, trackEvent]);
 
   const filter = useMemo(() => ({
     priority: {
@@ -142,17 +172,21 @@ export default function TaskList({ className }: Props) {
 
   const searchFields: SearchField<Task>[] = useMemo(() => ['name', 'description'], []);
 
-  const handleNew = useCallback(() => setNewTask({
-    id: uuid(),
-    name: '',
-    description: '',
-    priority: 'medium',
-    status: 'todo',
-    date: null,
-    campaignId: campaigns.find((c) => c.default)?.id ?? throwErr('no default campaign!'),
-  }), [campaigns]);
+  const handleNew = useCallback(() => {
+    trackEvent('new-button', 'click');
+    return setNewTask({
+      id: uuid(),
+      name: '',
+      description: '',
+      priority: 'medium',
+      status: 'todo',
+      date: null,
+      campaignId: campaigns.find((c) => c.default)?.id ?? throwErr('no default campaign!'),
+    });
+  }, [campaigns, trackEvent]);
 
   const handleSaveTask = useCallback(async (task: Task) => {
+    trackEvent(`save-task-${task.id}`, 'click');
     if (newTask) {
       await db.insertTask(task);
       setNewTask(null);
@@ -161,12 +195,47 @@ export default function TaskList({ className }: Props) {
     }
 
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== task.id).concat(task) });
-  }, [db, newTask, tasks, onCommunityDataUpdated]);
+    setOpenTaskId(null);
+    setNewTask(null);
+  }, [db, newTask, tasks, onCommunityDataUpdated, trackEvent, setOpenTaskId]);
 
   const handleDeleteTask = useCallback(async (id: string) => {
+    trackEvent(`delete-task-${id}`, 'click');
     await db.deleteTask(id);
     onCommunityDataUpdated({ tasks: tasks.filter((t) => t.id !== id) });
-  }, [db, tasks, onCommunityDataUpdated]);
+    setOpenTaskId(null);
+    setNewTask(null);
+  }, [db, tasks, onCommunityDataUpdated, trackEvent, setOpenTaskId]);
+
+  const handleClose = useCallback(() => {
+    trackEvent(`task-dialog-${openTaskId || 'new'}`, 'close');
+    setOpenTaskId(null);
+    setNewTask(null);
+  }, [openTaskId, setOpenTaskId, trackEvent]);
+
+  const handleEdit = useCallback(() => {
+    trackEvent(`task-edit-${openTaskId || 'new'}`, 'click');
+  }, [openTaskId, trackEvent]);
+
+  const handleOpenFilter = useCallback(() => {
+    trackEvent('filter-tasks', 'open');
+  }, [trackEvent]);
+
+  const handleOpenSort = useCallback(() => {
+    trackEvent('sort-tasks', 'open');
+  }, [trackEvent]);
+
+  const handleSearch = useCallback((text: string) => {
+    trackEvent(`${text}`, 'search');
+  }, [trackEvent]);
+
+  const handleSortChange = useCallback((criterion: string, dir: string) => {
+    trackEvent(`${dir}-by-${criterion}`, 'sort-change');
+  }, [trackEvent]);
+
+  const handleFilterChange = useCallback(() => {
+    trackEvent('filter-tasks', 'filter-change');
+  }, [trackEvent]);
 
   return (
     <>
@@ -175,6 +244,7 @@ export default function TaskList({ className }: Props) {
         Item={TaskCard}
         filterNames={filterNames}
         filterEnabled={filterEnabled}
+        onFilterChange={handleFilterChange}
         onFilterEnabled={handleFilterEnabled}
         message={message}
         sortCriteria={sortCriteria}
@@ -182,18 +252,20 @@ export default function TaskList({ className }: Props) {
         searchFields={searchFields}
         onNew={handleNew}
         className={className}
+        onOpenFilter={handleOpenFilter}
+        onOpenSort={handleOpenSort}
+        onSearch={handleSearch}
+        onSortChange={handleSortChange}
       />
       <TaskDialog
         task={openTask}
         editing={openTask === newTask}
         title={openTask === newTask ? 'New task' : undefined}
         closeOnCancel={openTask === newTask}
-        onClose={useCallback(() => {
-          setOpenTaskId(null);
-          setNewTask(null);
-        }, [setOpenTaskId])}
+        onClose={handleClose}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
+        onEdit={handleEdit}
       />
     </>
   );

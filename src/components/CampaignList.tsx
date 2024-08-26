@@ -6,13 +6,14 @@ import {
   Campaign, assertCampaignType, campaignTypeDisplayNames,
 } from '@/types';
 import {
-  useCallback, useContext, useMemo, useState,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import useFilter, { Filter } from '@/hooks/useFilter';
 import { SearchField } from '@/hooks/useSearch';
 import { SortCriteria } from '@/hooks/useSort';
 import useSearchParam from '@/hooks/useSearchParam';
 import CommunityContext from '@/contexts/CommunityContext';
+import TrackingContext from '@/contexts/TrackingContext';
 import ItemList from './ItemList';
 import CampaignCard from './CampaignCard';
 import CampaignDialog from './CampaignDialog';
@@ -27,10 +28,34 @@ export default function CampaignList({ className }: Props) {
   const [newCampaign, setNewCampaign] = useState<Campaign | null>(null);
   const [openCampaignId, setOpenCampaignId] = useSearchParam('campaign');
 
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `Campaigns-${community.id}`,
+    });
+  }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
+
   const openCampaign = useMemo(
     () => newCampaign ?? campaigns.find((c) => c.id === openCampaignId),
     [campaigns, newCampaign, openCampaignId],
   );
+
+  useEffect(() => {
+    if (openCampaign) {
+      trackEvent(`campaign-dialog-${openCampaignId || 'new'}`, 'open');
+    }
+  }, [openCampaign, openCampaignId, trackEvent]);
 
   const filter: Filter<Campaign> = useMemo(() => ({
     type: {
@@ -70,16 +95,20 @@ export default function CampaignList({ className }: Props) {
 
   const searchFields: SearchField<Campaign>[] = useMemo(() => ['name', 'description'], []);
 
-  const handleNew = useCallback(() => setNewCampaign({
-    id: uuid(),
-    name: '',
-    description: '',
-    type: 'measurement',
-    communityId: community.id,
-    default: false,
-  }), [community.id]);
+  const handleNew = useCallback(() => {
+    trackEvent('new-button', 'click');
+    return setNewCampaign({
+      id: uuid(),
+      name: '',
+      description: '',
+      type: 'measurement',
+      communityId: community.id,
+      default: false,
+    });
+  }, [community.id, trackEvent]);
 
   const handleSaveCampaign = useCallback(async (campaign: Campaign) => {
+    trackEvent(`save-campaign-${campaign.id}`, 'click');
     if (newCampaign) {
       await db.insertCampaign(campaign);
       setNewCampaign(null);
@@ -90,13 +119,48 @@ export default function CampaignList({ className }: Props) {
     onCommunityDataUpdated({
       campaigns: campaigns.filter((t) => t.id !== campaign.id).concat(campaign),
     });
-  }, [db, newCampaign, onCommunityDataUpdated, campaigns]);
+    setOpenCampaignId(null);
+    setNewCampaign(null);
+  }, [db, newCampaign, onCommunityDataUpdated, campaigns, trackEvent, setOpenCampaignId]);
 
   const handleDeleteCampaign = useCallback(async (id: string) => {
+    trackEvent(`delete-campaign-${id}`, 'click');
     await db.deleteCampaign(id);
 
     onCommunityDataUpdated({ campaigns: campaigns.filter((t) => t.id !== id) });
-  }, [db, onCommunityDataUpdated, campaigns]);
+    setOpenCampaignId(null);
+    setNewCampaign(null);
+  }, [db, onCommunityDataUpdated, campaigns, trackEvent, setOpenCampaignId]);
+
+  const handleClose = useCallback(() => {
+    trackEvent(`campaign-dialog-${openCampaignId || 'new'}`, 'close');
+    setOpenCampaignId(null);
+    setNewCampaign(null);
+  }, [openCampaignId, setOpenCampaignId, trackEvent]);
+
+  const handleEdit = useCallback(() => {
+    trackEvent(`campaign-edit-${openCampaignId || 'new'}`, 'click');
+  }, [openCampaignId, trackEvent]);
+
+  const handleOpenFilter = useCallback(() => {
+    trackEvent('filter-campaigns', 'open');
+  }, [trackEvent]);
+
+  const handleOpenSort = useCallback(() => {
+    trackEvent('sort-campaigns', 'open');
+  }, [trackEvent]);
+
+  const handleSearch = useCallback((text: string) => {
+    trackEvent(`${text}`, 'search');
+  }, [trackEvent]);
+
+  const handleSortChange = useCallback((criterion: string, dir: string) => {
+    trackEvent(`${dir}-by-${criterion}`, 'sort-change');
+  }, [trackEvent]);
+
+  const handleFilterChange = useCallback(() => {
+    trackEvent('filter-campaigns', 'filter-change');
+  }, [trackEvent]);
 
   return (
     <>
@@ -105,10 +169,15 @@ export default function CampaignList({ className }: Props) {
         Item={CampaignCard}
         filterNames={filterNames}
         filterEnabled={filterEnabled}
+        onFilterChange={handleFilterChange}
         onFilterEnabled={setFilterEnabled}
         sortCriteria={sortCriteria}
         searchFields={searchFields}
         onNew={handleNew}
+        onOpenFilter={handleOpenFilter}
+        onOpenSort={handleOpenSort}
+        onSearch={handleSearch}
+        onSortChange={handleSortChange}
         className={className}
       />
       <CampaignDialog
@@ -116,12 +185,10 @@ export default function CampaignList({ className }: Props) {
         editing={openCampaign === newCampaign}
         title={openCampaign === newCampaign ? 'New campaign' : undefined}
         closeOnCancel={openCampaign === newCampaign}
-        onClose={useCallback(() => {
-          setOpenCampaignId(null);
-          setNewCampaign(null);
-        }, [setOpenCampaignId])}
+        onClose={handleClose}
         onSave={handleSaveCampaign}
         onDelete={handleDeleteCampaign}
+        onEdit={handleEdit}
       />
     </>
   );

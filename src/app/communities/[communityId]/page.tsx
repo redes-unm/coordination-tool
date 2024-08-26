@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
+import TrackingContext from '@/contexts/TrackingContext';
+
 import btnStyles from '@/components/Button.module.css';
 import { useRouter } from 'next/navigation';
 import { shorten } from '@/lib/util';
@@ -22,6 +24,56 @@ export default function Community() {
   } = useContext(CommunityContext);
   const router = useRouter();
   const collabCount = collaborators.length;
+
+  /* NOTE could probably extract tracking to a shared hook. However, must be
+   * careful when handling pages that SHOULD NOT track mount/unmount.
+   *
+   * export default function useTracking(page: string) {
+   *   const { handleTracking } = useContext(TrackingContext);
+   *   const trackEvent = useCallback((element: string, event: string) => {
+   *     const timestamp = new Date();
+   *     handleTracking({ event, element, timestamp, page });
+   *   }, [page, handleTracking]);
+   *
+   *   useEffect(() => {
+   *     trackEvent('', 'page-mount');
+   *     return () => trackEvent('', 'page-unmount');
+   *   }, [trackEvent]);
+
+   *   const trackClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+   *     trackEvent(event.currentTarget.dataset['element'] || 'link', 'click');
+   *   };
+   *
+   *   return {trackEvent, trackClick};
+   * }
+   */
+
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `CommunityOverview-${community.id}`,
+    });
+  }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
+
+  const editCommunity = () => {
+    trackEvent('edit-community-button', 'click');
+    return router.push(`/communities/${community.id}/edit`);
+  };
+
+  const trackClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    trackEvent(event.currentTarget.dataset['element'] || 'link', 'click');
+  };
 
   return (
     <>
@@ -44,7 +96,7 @@ export default function Community() {
             <button
               type="button"
               className={btnStyles['btn']}
-              onClick={() => router.push(`/communities/${community.id}/edit`)}
+              onClick={editCommunity}
             >
               Edit
             </button>
@@ -62,7 +114,7 @@ export default function Community() {
       </div>
 
       <div className={styles['links']}>
-        <Link href={`/communities/${community.id}/campaigns`}>
+        <Link href={`/communities/${community.id}/campaigns`} data-element="campaigns-link" onClick={trackClick}>
           <div className={styles['link']}>
             <FontAwesomeIcon icon={campaignsIcon} />
             <span className={styles['link-name']}>Campaigns</span>
@@ -72,7 +124,7 @@ export default function Community() {
             </span>
           </div>
         </Link>
-        <Link href={`/communities/${community.id}/tasks`}>
+        <Link href={`/communities/${community.id}/tasks`} data-element="tasks-link" onClick={trackClick}>
           <div className={styles['link']}>
             <FontAwesomeIcon icon={tasksIcon} />
             <span className={styles['link-name']}>Tasks</span>

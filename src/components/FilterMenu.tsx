@@ -16,6 +16,8 @@ type Props = {
   enabled: FilterEnabled
   onEnabledChange: (e: FilterEnabled) => void
   label?: string
+  onOpen?: (() => void) | null
+  onChange?: (() => void) | null
 };
 
 export default function FilterMenu({
@@ -23,6 +25,8 @@ export default function FilterMenu({
   enabled,
   onEnabledChange,
   label = 'Filter',
+  onOpen,
+  onChange,
 }: Props) {
   const allEnabled = useMemo(() => (
     Object.values(enabled).every((group) => Object.values(group).every((item) => item))
@@ -32,8 +36,22 @@ export default function FilterMenu({
     Object.values(enabled).every((group) => Object.values(group).every((item) => !item))
   ), [enabled]);
 
+  const openMenu = (open: boolean) => {
+    if (open && onOpen) onOpen();
+  };
+
+  const handleToggleAllClick = (status: boolean) => {
+    onChange?.();
+    onEnabledChange(toggleAllEnabled(enabled, status));
+  };
+
+  const handleFilterSelection = (e: Event) => {
+    onChange?.();
+    e.preventDefault();
+  };
+
   return (
-    <Dropdown.Root>
+    <Dropdown.Root onOpenChange={openMenu}>
       <Dropdown.Trigger className={`${btnStyles['btn']} ${menuStyles['menu-btn']}`}>
         <span>
           <FontAwesomeIcon icon={filterIcon} className={btnStyles['icon'] ?? ''} />
@@ -71,7 +89,7 @@ export default function FilterMenu({
                     onCheckedChange={(checked) => onEnabledChange(
                       toggleSingleEnabled(enabled, groupId, itemId, checked),
                     )}
-                    onSelect={(e) => e.preventDefault()}
+                    onSelect={handleFilterSelection}
                   >
                     <Dropdown.ItemIndicator className={menuStyles['item-check']}>
                       <FontAwesomeIcon icon={checkIcon} />
@@ -89,7 +107,7 @@ export default function FilterMenu({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => onEnabledChange(toggleAllEnabled(enabled, true))}
+            onClick={() => handleToggleAllClick(true)}
             disabled={allEnabled}
           >
             Show all
@@ -97,7 +115,7 @@ export default function FilterMenu({
 
           <Dropdown.Item
             className={menuStyles['menu-item']}
-            onClick={() => onEnabledChange(toggleAllEnabled(enabled, false))}
+            onClick={() => handleToggleAllClick(false)}
             disabled={allDisabled}
           >
             Hide all

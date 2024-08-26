@@ -1,12 +1,14 @@
 'use client';
 
 import CommunityEditForm from '@/components/CommunityEditForm';
-import { useContext } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import CommunityContext from '@/contexts/CommunityContext';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { Collaborator, Community } from '@/types';
 import BreadcrumbContext from '@/contexts/BreadcrumbContext';
+import TrackingContext from '@/contexts/TrackingContext';
+
 import CommunityListContext from '@/contexts/CommunityListContext';
 import styles from './page.module.css';
 
@@ -23,7 +25,26 @@ export default function EditCommunity() {
 
   const { update: updateBreadcrumb } = useContext(BreadcrumbContext);
 
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: `EditCommunity-${community.id}`,
+    });
+  }, [community.id, handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
+
   const handleSave = async (comm: Community, collabs: Collaborator[]) => {
+    trackEvent('save-button', 'click');
     await newDb().updateCommunity(comm, collabs);
     onCommunityDataUpdated({ community: comm, collaborators: collabs });
     onCommunityUpdated({ ...community, collaboratorCount: collabs.length });
@@ -32,9 +53,15 @@ export default function EditCommunity() {
   };
 
   const handleDelete = async () => {
+    trackEvent('delete-button', 'click');
     await newDb().deleteCommunity(community.id);
     onCommunityDeleted(community.id);
     router.push('/communities');
+  };
+
+  const handleCancel = () => {
+    trackEvent('cancel-button', 'click');
+    return router.push(`/communities/${community.id}`);
   };
 
   return (
@@ -49,7 +76,7 @@ export default function EditCommunity() {
           mapCenter: community.mapCenter,
         }}
         collaborators={collaborators}
-        onCancel={() => router.push(`/communities/${community.id}`)}
+        onCancel={handleCancel}
         onSave={handleSave}
         onDelete={handleDelete}
       />

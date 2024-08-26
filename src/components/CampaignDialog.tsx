@@ -14,6 +14,7 @@ type Props = {
   title?: string | undefined
   closeOnCancel?: boolean
   onClose: () => void
+  onEdit: () => void
   onSave: (c: Campaign) => Promise<void>
   onDelete: (id: string) => Promise<void>
 };
@@ -26,6 +27,7 @@ export default function CampaignDialog({
   onSave,
   onDelete,
   onClose,
+  onEdit,
 }: Props) {
   return (
     <Dialog.Root
@@ -46,6 +48,7 @@ export default function CampaignDialog({
                 onSave={onSave}
                 onDelete={() => onDelete(campaign.id)}
                 onCancel={closeOnCancel ? onClose : () => {}}
+                onEdit={onEdit}
                 Display={CampaignDisplay}
                 EditFormContents={CampaignEditFormContents}
               />

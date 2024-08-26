@@ -14,6 +14,7 @@ function assertString(s: unknown): asserts s is string {
 export default function useSearch<T extends object>(
   things: T[],
   fields: SearchField<T>[],
+  onSearch?: ((text: string) => void) | null,
   debounceMillis = 300,
 ): {
     searched: T[]
@@ -22,6 +23,14 @@ export default function useSearch<T extends object>(
   } {
   const [searchText, setSearchText] = useState('');
   const [searched, setSearched] = useState(things);
+
+  const trackSearch = useMemo(() => debounce((text: string) => {
+    if (text && onSearch) {
+      onSearch(text);
+    }
+  }, debounceMillis), [debounceMillis, onSearch]);
+
+  useEffect(() => trackSearch(searchText), [trackSearch, searchText]);
 
   const search = useMemo(() => debounce((text: string) => {
     setSearched(things.filter((t) => fields.some((field) => {

@@ -10,6 +10,7 @@ type Props<T> = {
   onSave: (item: T) => Promise<void>
   onDelete: () => Promise<void>
   onCancel?: () => void,
+  onEdit?: () => void,
   Display: React.FC<{ item: T }>
   EditFormContents: React.ForwardRefExoticComponent<{
     item: T,
@@ -23,6 +24,7 @@ export default function EditableItemDisplay<T>({
   onSave,
   onDelete,
   onCancel,
+  onEdit,
   Display,
   EditFormContents,
 }: Props<T>) {
@@ -61,6 +63,11 @@ export default function EditableItemDisplay<T>({
     onCancel?.();
   }, [initialItem, onCancel]);
 
+  const handleEdit = useCallback(() => {
+    setEditing(true);
+    onEdit?.();
+  }, [onEdit]);
+
   return (
     <div>
       {editing ? (
@@ -94,7 +101,7 @@ export default function EditableItemDisplay<T>({
             <button
               type="button"
               className={btnStyles['btn']}
-              onClick={() => setEditing(true)}
+              onClick={handleEdit}
               disabled={loading}
             >
               Edit

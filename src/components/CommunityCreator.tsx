@@ -5,8 +5,11 @@ import { Collaborator, Community, Profile } from '@/types';
 import { useRouter } from 'next/navigation';
 import { newDb } from '@/db/client';
 import { v4 as uuid } from 'uuid';
-import { useContext, useMemo } from 'react';
+import {
+  useCallback, useContext, useEffect, useMemo,
+} from 'react';
 import CommunityListContext from '@/contexts/CommunityListContext';
+import TrackingContext from '@/contexts/TrackingContext';
 
 type Props = {
   creator: Profile
@@ -44,7 +47,31 @@ export default function CommunityCreator({
     }] : []),
   ], [creator, admin, initialCommunity.id]);
 
+  const { handleTracking } = useContext(TrackingContext);
+  const trackEvent = useCallback((element: string, event: string) => {
+    const timestamp = new Date();
+    handleTracking({
+      event,
+      element,
+      timestamp,
+      page: 'New-Community',
+    });
+  }, [handleTracking]);
+
+  useEffect(() => {
+    trackEvent('', 'page-mount');
+    return () => {
+      trackEvent('', 'page-unmount');
+    };
+  }, [trackEvent]);
+
+  const handleCancel = () => {
+    trackEvent('cancel-button', 'click');
+    return router.push('/communities');
+  };
+
   const handleSave = async (community: Community, collaborators: Collaborator[]) => {
+    trackEvent('save-button', 'click');
     await newDb().insertCommunity(community, collaborators);
     onCommunityUpdated({ ...community, collaboratorCount: collaborators.length });
     router.push(`/communities/${community.id}`);
@@ -54,7 +81,7 @@ export default function CommunityCreator({
     <CommunityEditForm
       community={initialCommunity}
       collaborators={initialCollaborators}
-      onCancel={() => router.push('/communities')}
+      onCancel={handleCancel}
       onSave={handleSave}
     />
   );
