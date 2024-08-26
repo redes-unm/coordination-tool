@@ -8,6 +8,7 @@ import { User, getUser } from '@/lib/auth/client';
 import { BreadcrumbProvider } from '@/contexts/BreadcrumbContext';
 import { TrackingProvider } from '@/contexts/TrackingContext';
 import { UNAUTH_USER_ID } from '@/types';
+import Link from 'next/link';
 import AccountMenu from './AccountMenu';
 import Breadcrumb from './Breadcrumb';
 import LanguageMenu from './LanguageMenu';
@@ -36,7 +37,7 @@ export default function Page({ children }: Props) {
         <TrackingProvider initialStore={[]} userId={user ? user.id : UNAUTH_USER_ID}>
           <BreadcrumbProvider>
             <header className={styles['header']}>
-              <h1 className={styles['title']}>Coordination Tool</h1>
+              <h1 className={styles['title']}><Link href="/communities">Coordination Tool</Link></h1>
               <nav className={styles['menus']}>
                 <LanguageMenu />
                 <AccountMenu />

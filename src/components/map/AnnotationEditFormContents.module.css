@@ -4,3 +4,8 @@
   gap: 0.5rem;
   min-width: 15rem;
 }
+
+.required-disclaimer {
+  margin-top: 0.5rem;
+  color: #333;
+}
