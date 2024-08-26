@@ -62,6 +62,9 @@ export function TrackingProvider({
   }, [trackStore, writeTrackStore]);
 
   const handleTracking = useCallback((d: Omit<TrackStoreData, 'userId'>) => {
+    /* NOTE might make sense to add the timestamp to tracking events within
+     * this function rather than within each page's trackEvent function.
+     */
     if (userId !== UNAUTH_USER_ID) {
       /* We want to ignore any updates from unauthenticated users because,
        * otherwise, we would have to allow anybody to insert any tracking event

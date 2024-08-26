@@ -32,6 +32,22 @@ export default function SortMenu({
     if (open && onOpen) onOpen();
   };
 
+  /* NOTE could be simplified by just calling onChange directly with both
+   * the criteria and the direction, i.e.
+   *
+   * onSelect={(e) => {
+   *   e.preventDefault();
+   *   setCriteriaOrder([id, ...criteriaOrder.filter((i) => i !== id)]);
+   *   onChange?.(id, direction);
+   * }}
+   *
+   * Then you could eliminate the handleDirectionChange and
+   * handleCriteriaChange callbacks above and the trackSortChange callback in
+   * the ItemList (because you always have both a criteria and a direction).
+   *
+   * However, it may be harder to replace the handleDirectionChange because
+   * the criteria value is stored in an array, which could be undefined...
+   */
   const handleDirectionChange = useCallback((e: Event, dir: SortDirection) => {
     e.preventDefault();
     setDirection(dir);

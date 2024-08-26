@@ -23,6 +23,7 @@ export default function CommunityLayout({
     newDb().getCommunityData(params.communityId),
   ), [params.communityId]));
 
+  // TODO consider adding community id here?
   const parentPage = (nextSegment
     ? nextSegment.charAt(0).toUpperCase() + nextSegment.slice(1)
     : 'CommunityOverview');

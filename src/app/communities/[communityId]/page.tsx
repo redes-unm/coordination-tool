@@ -25,6 +25,29 @@ export default function Community() {
   const router = useRouter();
   const collabCount = collaborators.length;
 
+  /* NOTE could probably extract tracking to a shared hook. However, must be
+   * careful when handling pages that SHOULD NOT track mount/unmount.
+   *
+   * export default function useTracking(page: string) {
+   *   const { handleTracking } = useContext(TrackingContext);
+   *   const trackEvent = useCallback((element: string, event: string) => {
+   *     const timestamp = new Date();
+   *     handleTracking({ event, element, timestamp, page });
+   *   }, [page, handleTracking]);
+   *
+   *   useEffect(() => {
+   *     trackEvent('', 'page-mount');
+   *     return () => trackEvent('', 'page-unmount');
+   *   }, [trackEvent]);
+
+   *   const trackClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+   *     trackEvent(event.currentTarget.dataset['element'] || 'link', 'click');
+   *   };
+   *
+   *   return {trackEvent, trackClick};
+   * }
+   */
+
   const { handleTracking } = useContext(TrackingContext);
   const trackEvent = useCallback((element: string, event: string) => {
     const timestamp = new Date();
