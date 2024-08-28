@@ -1,3 +1,4 @@
+import drawStyles from '@/lib/drawStyles';
 import modes, { Mode, assertMode } from '@/lib/mapboxDrawModes';
 import { throwErr } from '@/lib/util';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
@@ -18,7 +19,11 @@ export default function useDraw(
 
   // setup draw on map
   useEffect(() => {
-    const d = new MapboxDraw({ displayControlsDefault: false, modes });
+    const d = new MapboxDraw({
+      displayControlsDefault: false,
+      modes,
+      styles: drawStyles,
+    });
     draw.current = d;
     map?.addControl(d);
 
