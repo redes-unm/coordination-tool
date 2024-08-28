@@ -7,14 +7,14 @@ import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
-  useCallback, useContext, useEffect, useRef,
+  useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
 
 type EventHandlers = {
   save: ((a: Annotation) => Promise<void>),
   delete: ((id: string) => Promise<void>),
-  close?: (() => void) | undefined,
+  close?: ((cancelled?: boolean) => void) | undefined,
 };
 
 export default function usePopup(
@@ -26,6 +26,9 @@ export default function usePopup(
 ) {
   const root = useRef<Root | null>(null);
   const popup = useRef<Popup | null>(null);
+  const [closeOnCancel, setCloseOnCancel] = useState(editing);
+
+  useEffect(() => setCloseOnCancel(editing), [editing]);
 
   // create a new popup when the annotation changes
   useEffect(() => {
@@ -46,6 +49,7 @@ export default function usePopup(
   // the linter isn't smart enough to figure out the hook dependencies
   const closeHandler = handlers.close;
   const deleteHandler = handlers.delete;
+  const saveHandler = handlers.save;
 
   // register a close listener
   useEffect(() => {
@@ -70,6 +74,15 @@ export default function usePopup(
     }
     closeHandler?.();
   }, [annotation?.id, deleteHandler, closeHandler]);
+
+  const handleSave = useCallback(async (a: Annotation) => {
+    await saveHandler(a);
+    setCloseOnCancel(false);
+  }, [saveHandler]);
+
+  const handleCancel = useCallback(() => {
+    if (closeOnCancel) closeHandler?.(true);
+  }, [closeOnCancel, closeHandler]);
 
   const contextValue = useContext(CommunityContext);
 
@@ -106,12 +119,13 @@ export default function usePopup(
         <EditableItemDisplay
           item={annotation}
           editing={editing}
-          onSave={handlers.save}
+          onSave={handleSave}
           onDelete={handleDelete}
+          onCancel={handleCancel}
           Display={AnnotationDisplay}
           EditFormContents={AnnotationEditFormContents}
         />
       </CommunityContext.Provider>,
     );
-  }, [annotation, editing, handlers.save, handleDelete, map, contextValue]);
+  }, [annotation, editing, handleSave, handleDelete, handleCancel, map, contextValue]);
 }
