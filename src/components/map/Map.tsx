@@ -160,7 +160,10 @@ export default function Map({
   usePopup(map, selectedAnnotation, {
     save: onUpdate,
     delete: onDelete,
-    close: useCallback(() => setSelectedAnnotation(undefined), []),
+    close: useCallback((cancelled?: boolean) => {
+      setSelectedAnnotation(undefined);
+      if (cancelled && newAnnotation) onDelete(newAnnotation.id);
+    }, [newAnnotation, onDelete]),
   }, !!newAnnotation);
 
   useMapControl(
