@@ -1,6 +1,7 @@
 import {
   Annotation, annotationTypeDisplayNames, assertAnnotationType,
 } from '@/types';
+import { DEFAULT_ANNOTATION_COLOR } from '@/lib/drawStyles';
 import React, {
   ChangeEvent, useCallback, useContext, useMemo,
 } from 'react';
@@ -9,6 +10,7 @@ import TextInput from '../TextInput';
 import styles from './AnnotationEditFormContents.module.css';
 import SelectMenu from '../SelectMenu';
 import MultiSelectMenu from '../MultiSelectMenu';
+import ColorPicker from '../ColorPicker';
 
 type Props = {
   item: Annotation
@@ -59,6 +61,15 @@ function AnnotationEditFormContents({
           onChange({ ...annotation, type: t });
         }, [annotation, onChange])}
         label="Type"
+        labelAbove
+      />
+
+      <ColorPicker
+        label="Color"
+        value={annotation.color ?? DEFAULT_ANNOTATION_COLOR}
+        onChange={useCallback((c) => {
+          onChange({ ...annotation, color: c });
+        }, [annotation, onChange])}
         labelAbove
       />
 

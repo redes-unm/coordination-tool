@@ -37,6 +37,7 @@ export type Database = {
     Tables: {
       annotations: {
         Row: {
+          color: string | null
           communityid: string
           description: string | null
           geo: unknown
@@ -46,6 +47,7 @@ export type Database = {
           visible: boolean
         }
         Insert: {
+          color?: string | null
           communityid: string
           description?: string | null
           geo: unknown
@@ -55,6 +57,7 @@ export type Database = {
           visible: boolean
         }
         Update: {
+          color?: string | null
           communityid?: string
           description?: string | null
           geo?: unknown
@@ -171,13 +174,6 @@ export type Database = {
             referencedRelation: "communities"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "collaborators_userid_fkey"
-            columns: ["userid"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
         ]
       }
       communities: {
@@ -202,15 +198,7 @@ export type Database = {
           mapcenter?: unknown | null
           name?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "communities_creatorid_fkey"
-            columns: ["creatorid"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -225,15 +213,7 @@ export type Database = {
           name?: string
           userid?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_userid_fkey"
-            columns: ["userid"]
-            isOneToOne: true
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       tasks: {
         Row: {
@@ -298,15 +278,7 @@ export type Database = {
           timestamp?: string
           userid?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "tracking_userid_fkey"
-            columns: ["userid"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
@@ -354,39 +326,24 @@ export type Database = {
     Tables: {
       buckets: {
         Row: {
-          allowed_mime_types: string[] | null
-          avif_autodetection: boolean | null
           created_at: string | null
-          file_size_limit: number | null
           id: string
           name: string
           owner: string | null
-          owner_id: string | null
-          public: boolean | null
           updated_at: string | null
         }
         Insert: {
-          allowed_mime_types?: string[] | null
-          avif_autodetection?: boolean | null
           created_at?: string | null
-          file_size_limit?: number | null
           id: string
           name: string
           owner?: string | null
-          owner_id?: string | null
-          public?: boolean | null
           updated_at?: string | null
         }
         Update: {
-          allowed_mime_types?: string[] | null
-          avif_autodetection?: boolean | null
           created_at?: string | null
-          file_size_limit?: number | null
           id?: string
           name?: string
           owner?: string | null
-          owner_id?: string | null
-          public?: boolean | null
           updated_at?: string | null
         }
         Relationships: []
@@ -421,10 +378,7 @@ export type Database = {
           metadata: Json | null
           name: string | null
           owner: string | null
-          owner_id: string | null
-          path_tokens: string[] | null
           updated_at: string | null
-          version: string | null
         }
         Insert: {
           bucket_id?: string | null
@@ -434,10 +388,7 @@ export type Database = {
           metadata?: Json | null
           name?: string | null
           owner?: string | null
-          owner_id?: string | null
-          path_tokens?: string[] | null
           updated_at?: string | null
-          version?: string | null
         }
         Update: {
           bucket_id?: string | null
@@ -447,10 +398,7 @@ export type Database = {
           metadata?: Json | null
           name?: string | null
           owner?: string | null
-          owner_id?: string | null
-          path_tokens?: string[] | null
           updated_at?: string | null
-          version?: string | null
         }
         Relationships: [
           {
@@ -467,15 +415,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_insert_object: {
-        Args: {
-          bucketid: string
-          name: string
-          owner: string
-          metadata: Json
-        }
-        Returns: undefined
-      }
       extension: {
         Args: {
           name: string
@@ -494,13 +433,6 @@ export type Database = {
         }
         Returns: string[]
       }
-      get_size_by_bucket: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          size: number
-          bucket_id: string
-        }[]
-      }
       search: {
         Args: {
           prefix: string
@@ -508,9 +440,6 @@ export type Database = {
           limits?: number
           levels?: number
           offsets?: number
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
         }
         Returns: {
           name: string
@@ -611,5 +540,20 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 

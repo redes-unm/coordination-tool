@@ -19,16 +19,21 @@ export default function useDraw(
 
   // setup draw on map
   useEffect(() => {
+    if (!map) return () => {};
+
     const d = new MapboxDraw({
       displayControlsDefault: false,
       modes,
       styles: drawStyles,
+      userProperties: true,
     });
     draw.current = d;
-    map?.addControl(d);
+    map.addControl(d);
 
-    return () => { draw.current = null; };
-  }, [map]);
+    return () => {
+      map.removeControl(d);
+    };
+  }, [map, drawStyles]);
 
   // keep mode state in sync with draw mode
   useEffect(() => {
@@ -54,29 +59,23 @@ export default function useDraw(
   // watch for new features
   useEffect(() => {
     function handleDrawCreate(e: MapboxDraw.DrawCreateEvent) {
-      const feature = e.features[0] ?? throwErr('create fired with no features');
-      onCreate(feature);
-      draw.current?.setFeatureProperty(`${feature.id}`, 'drawModeSync', true);
+      onCreate(e.features[0] ?? throwErr('create fired with no features'));
     }
 
     map?.on('draw.create', handleDrawCreate);
     return () => { map?.off('draw.create', handleDrawCreate); };
   }, [map, onCreate]);
 
-  // keep features on map in sync with provided features
+  // Keep features on map in sync with the `features` prop.
   useEffect(() => {
     const d = draw.current;
     if (!map || !d) return;
 
-    const featuresToKeep = d.getAll().features
-      .filter((f) => !f.properties?.['drawModeSync']);
-
-    d.set({
-      type: 'FeatureCollection',
-      features: features
-        .map<Feature>((f) => ({ ...f, properties: { ...f.properties, drawModeSync: true } }))
-        .concat(...featuresToKeep),
-    });
+    // Use `add` to update any existing features and add new ones.
+    d.add({ type: 'FeatureCollection', features });
+    const newFeatureIds = new Set(features.map((f) => f.id));
+    const toDelete = d.getAll().features.filter((f) => f.id && !newFeatureIds.has(f.id));
+    if (toDelete.length > 0) d.delete(toDelete.map((f) => `${f.id}`));
   }, [map, features]);
 
   return [
