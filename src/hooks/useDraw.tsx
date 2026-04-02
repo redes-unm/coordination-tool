@@ -31,7 +31,11 @@ export default function useDraw(
     map.addControl(d);
 
     return () => {
-      map.removeControl(d);
+      try {
+        map.removeControl(d);
+      } catch (e) {
+        // Map may have already been removed
+      }
     };
   }, [map, drawStyles]);
 
@@ -43,7 +47,13 @@ export default function useDraw(
     }
 
     map?.on('draw.modechange', handleDrawModeChange);
-    return () => { map?.off('draw.modechange', handleDrawModeChange); };
+    return () => {
+      try {
+        map?.off('draw.modechange', handleDrawModeChange);
+      } catch (e) {
+        // Map may have already been removed
+      }
+    };
   }, [map]);
 
   // watch for selection changes
@@ -53,7 +63,13 @@ export default function useDraw(
     }
 
     map?.on('draw.selectionchange', handleDrawSelectionChange);
-    return () => { map?.off('draw.selectionchange', handleDrawSelectionChange); };
+    return () => {
+      try {
+        map?.off('draw.selectionchange', handleDrawSelectionChange);
+      } catch (e) {
+        // Map may have already been removed
+      }
+    };
   }, [map, onSelect]);
 
   // watch for new features
@@ -63,7 +79,13 @@ export default function useDraw(
     }
 
     map?.on('draw.create', handleDrawCreate);
-    return () => { map?.off('draw.create', handleDrawCreate); };
+    return () => {
+      try {
+        map?.off('draw.create', handleDrawCreate);
+      } catch (e) {
+        // Map may have already been removed
+      }
+    };
   }, [map, onCreate]);
 
   // Keep features on map in sync with the `features` prop.

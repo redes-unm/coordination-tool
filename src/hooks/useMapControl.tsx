@@ -31,7 +31,13 @@ export default function useControl<P extends {}>(
     };
 
     map?.addControl(control, position);
-    return () => { map?.removeControl(control); };
+    return () => {
+      try {
+        map?.removeControl(control);
+      } catch (e) {
+        // Map may have already been removed
+      }
+    };
   }, [map, position]);
 
   useEffect(() => {
