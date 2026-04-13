@@ -1,0 +1,36 @@
+name: Run Unit Tests
+
+on:
+  # Run on all pushes to the main branch
+  push:
+    branches:
+      - main
+  # Run on any pull request targeting the main branch
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the repository code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # You can change this to match your project's Node version
+          cache: 'npm' # Use 'yarn' if you use yarn instead of npm
+
+      # 3. Install dependencies
+      - name: Install Dependencies
+        run: npm ci # Use `yarn install --frozen-lockfile` if using yarn
+
+      # 4. Run the tests
+      - name: Run Tests
+        run: npm run test # Use `yarn test` if using yarn
