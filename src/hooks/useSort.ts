@@ -54,7 +54,7 @@ function categoryMatch<T>(cat: SortCategory<T>, t: T): boolean {
 export type SortCriteriaOrder = string[];
 export type SortDirection = 'ascending' | 'descending';
 
-function sortItems<T>(
+export function sortItems<T>(
   items: T[],
   orderedCriteria: SortCriterion<T>[],
   direction: SortDirection,
