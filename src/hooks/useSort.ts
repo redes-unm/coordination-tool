@@ -19,7 +19,7 @@ type EnumSortCriterion<T extends object> = {
 
 type BaseSortCriterion<T> = { name: string, categories?: SortCategory<T>[] };
 
-function criterionSort<T>(criterion: SortCriterion<T>, a: T, b: T): number {
+export function criterionSort<T>(criterion: SortCriterion<T>, a: T, b: T): number {
   if ('sort' in criterion) {
     return criterion.sort(a, b);
   }
@@ -47,7 +47,7 @@ type ValueSortCategory<T extends object> = {
   [K in keyof T]: { name: string, field: K, value: T[K] }
 }[keyof T];
 
-function categoryMatch<T>(cat: SortCategory<T>, t: T): boolean {
+export function categoryMatch<T>(cat: SortCategory<T>, t: T): boolean {
   return 'match' in cat ? cat.match(t) : t[cat.field] === cat.value;
 }
 
@@ -83,7 +83,7 @@ export function sortItems<T>(
 
 type Categorized<T> = { name: string, items: T[] }[];
 
-function categorizeItems<T>(
+export function categorizeItems<T>(
   items: T[],
   categories: SortCategory<T>[],
   direction: SortDirection,
@@ -101,7 +101,7 @@ function categorizeItems<T>(
 
 export type SortNames = { [id: string]: string };
 
-function extractNames<T>(criteria: SortCriteria<T>): SortNames {
+export function extractNames<T>(criteria: SortCriteria<T>): SortNames {
   return Object.entries(criteria).reduce((names, [id, criterion]) => ({
     ...names,
     [id]: criterion.name,
