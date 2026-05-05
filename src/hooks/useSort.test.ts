@@ -1,18 +1,19 @@
 import { renderHook, act } from '@testing-library/react';
+
 import useSort, {
   sortItems,
   SortCriterion,
   criterionSort,
   categoryMatch,
   categorizeItems,
-  extractNames
+  extractNames,
 } from './useSort';
 
 describe('sortItems', () => {
   it('sorts items in ascending and descending order based on a simple property', () => {
     // 1. Arrange: Create our dummy items and sorting rules
     type DummyItem = { name: string };
-    
+
     const items: DummyItem[] = [
       { name: 'Zebra' },
       { name: 'Apple' },
@@ -20,7 +21,7 @@ describe('sortItems', () => {
     ];
 
     const criteria: SortCriterion<DummyItem>[] = [
-      { name: 'Sort by Name', field: 'name' }
+      { name: 'Sort by Name', field: 'name' },
     ];
 
     // 2. Act: Run the function for both ascending and descending directions
@@ -42,9 +43,9 @@ describe('sortItems', () => {
 
   it('handles an empty array without crashing', () => {
     const criteria: SortCriterion<{ name: string }>[] = [
-      { name: 'Name', field: 'name' }
+      { name: 'Name', field: 'name' },
     ];
-    
+
     expect(sortItems([], criteria, 'ascending')).toEqual([]);
   });
 
@@ -59,7 +60,7 @@ describe('sortItems', () => {
     // Sort by role first, then by name to break the tie between the two Admins
     const criteria: SortCriterion<Person>[] = [
       { name: 'Sort by Role', field: 'role' },
-      { name: 'Sort by Name', field: 'name' }
+      { name: 'Sort by Name', field: 'name' },
     ];
 
     expect(sortItems(items, criteria, 'ascending')).toEqual([
@@ -77,7 +78,7 @@ describe('sortItems', () => {
     ];
 
     const criteria: SortCriterion<DummyItem>[] = [{ name: 'Name', field: 'name' }];
-    
+
     // In standard JS, uppercase letters come before lowercase letters
     expect(sortItems(items, criteria, 'ascending')).toEqual([
       { name: 'Zebra' },
@@ -104,8 +105,8 @@ describe('useSort', () => {
 
     expect(result.current.sortDirection).toBe('ascending');
     expect(result.current.sortCriteriaOrder).toEqual(['name']);
-    
-    // Because there are no categories defined in our mock criteria, 
+
+    // Because there are no categories defined in our mock criteria,
     // categorizeItems puts everything under an empty string name fallback.
     expect(result.current.sorted).toEqual([
       {
@@ -115,7 +116,7 @@ describe('useSort', () => {
           { id: 3, name: 'Mango' },
           { id: 1, name: 'Zebra' },
         ],
-      }
+      },
     ]);
   });
 
@@ -170,9 +171,9 @@ describe('useSort', () => {
     ];
     const tieCriteria = { group: { name: 'Group', field: 'group' as const } };
     const fallback = { name: 'Fallback ID', field: 'id' as const };
-    
+
     const { result } = renderHook(() => useSort(tieItems, tieCriteria, fallback));
-    
+
     expect(result.current.sorted[0].items).toEqual([
       { id: 1, group: 'A' },
       { id: 2, group: 'A' },
@@ -182,7 +183,7 @@ describe('useSort', () => {
   it('recalculates when the input items array changes', () => {
     const { result, rerender } = renderHook(
       ({ currentItems }) => useSort(currentItems, criteria),
-      { initialProps: { currentItems: items } }
+      { initialProps: { currentItems: items } },
     );
 
     expect(result.current.sorted[0].items).toHaveLength(3);
@@ -244,7 +245,7 @@ describe('categorizeItems', () => {
     { status: 'Pending', id: 2 },
     { status: 'Done', id: 3 },
   ];
-  
+
   const categories = [
     { name: 'Completed', field: 'status', value: 'Done' as const },
     { name: 'Remaining', field: 'status', value: 'Pending' as const },
@@ -269,7 +270,7 @@ describe('categorizeItems', () => {
   it('returns items under an empty name if no categories matched and array is not empty', () => {
     const noMatchCats = [{ name: 'Failed', field: 'status', value: 'Failed' as const }];
     const result = categorizeItems(items, noMatchCats, 'ascending');
-    
+
     // Expected because the items didn't match the 'Failed' category
     // and categorizeItems provides a fallback catch-all grouping.
     expect(result).toEqual([{ name: '', items }]);
@@ -282,7 +283,7 @@ describe('extractNames', () => {
       nameSort: { name: 'Name', field: 'name' as const },
       roleSort: { name: 'Role', field: 'role' as const },
     };
-    
+
     expect(extractNames(criteria)).toEqual({
       nameSort: 'Name',
       roleSort: 'Role',

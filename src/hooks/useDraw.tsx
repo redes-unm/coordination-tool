@@ -37,7 +37,7 @@ export default function useDraw(
         // Map may have already been removed
       }
     };
-  }, [map, drawStyles]);
+  }, [map]);
 
   // keep mode state in sync with draw mode
   useEffect(() => {
