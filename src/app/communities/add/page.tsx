@@ -6,9 +6,10 @@ import styles from './page.module.css';
 
 export default async function AddCommunity() {
   const db = newDb();
+  const prod = process.env.NODE_ENV === 'production';
   const adminId = process.env['ADMIN_ID'];
-  const user = await getUser();
 
+  const user = await getUser();
   async function getProfileOrDefault(userId: string, defaultName: string): Promise<Profile> {
     try {
       return await db.getProfile(userId);
@@ -19,7 +20,9 @@ export default async function AddCommunity() {
 
   const [userProfile, adminProfile] = await Promise.all([
     getProfileOrDefault(user.id, 'You'),
-    adminId && user.id !== adminId ? getProfileOrDefault(adminId, 'Admin') : null,
+    (prod && adminId && user.id !== adminId)
+      ? getProfileOrDefault(adminId, 'Admin')
+      : Promise.resolve(null),
   ]);
 
   return (
