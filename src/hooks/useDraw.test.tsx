@@ -13,13 +13,13 @@ jest.mock('@mapbox/mapbox-gl-draw', () => {
 });
 
 // Mock internal utilities and constants used by the hook
-jest.mock('@/lib/drawStyles', () => ([]));
-jest.mock('@/lib/mapboxDrawModes', () => ({
+jest.mock('../lib/drawStyles', () => ([]));
+jest.mock('../lib/mapboxDrawModes', () => ({
   __esModule: true,
   default: {},
   assertMode: jest.fn(),
 }));
-jest.mock('@/lib/util', () => ({
+jest.mock('../lib/util', () => ({
   throwErr: jest.fn(() => { throw new Error('mock error'); }),
 }));
 

@@ -1,14 +1,23 @@
 import { renderHook, act } from '@testing-library/react';
 import usePopup from './usePopup';
-import mapboxgl from 'mapbox-gl';
-import EditableItemDisplay from '@/components/EditableItemDisplay';
+import { Popup } from 'mapbox-gl';
+import EditableItemDisplay from '../components/EditableItemDisplay';
 
 // Mock dependencies
-jest.mock('@/components/EditableItemDisplay', () => jest.fn(() => null));
+jest.mock('mapbox-gl', () => {
+  const PopupMock = jest.fn();
+  return {
+    __esModule: true,
+    default: { Popup: PopupMock },
+    Popup: PopupMock,
+  };
+});
+
+jest.mock('../components/EditableItemDisplay', () => jest.fn(() => null));
 
 jest.mock('@turf/center', () => jest.fn((feature) => ({ geometry: { coordinates: [10, 20] } })));
 
-jest.mock('@/lib/util', () => ({
+jest.mock('../lib/util', () => ({
   toLngLat: jest.fn((coords) => coords),
   throwErr: jest.fn((msg) => { throw new Error(msg); }),
 }));
@@ -54,7 +63,7 @@ describe('usePopup', () => {
       }),
     };
 
-    jest.spyOn(mapboxgl, 'Popup').mockImplementation(() => mockPopupInstance);
+    (Popup as unknown as jest.Mock).mockImplementation(() => mockPopupInstance);
 
     // Mock global ResizeObserver
     mockObserve = jest.fn();
@@ -75,16 +84,16 @@ describe('usePopup', () => {
       { initialProps: { mapObj: null, ann: mockAnnotation } }
     );
 
-    expect(mapboxgl.Popup).not.toHaveBeenCalled();
+    expect(Popup).not.toHaveBeenCalled();
 
     rerender({ mapObj: mockMap, ann: { ...mockAnnotation, id: undefined } });
-    expect(mapboxgl.Popup).not.toHaveBeenCalled();
+    expect(Popup).not.toHaveBeenCalled();
   });
 
   it('should initialize Popup, create React root, and render EditableItemDisplay', () => {
     renderHook(() => usePopup(mockMap, mockAnnotation, mockHandlers, true));
 
-    expect(mapboxgl.Popup).toHaveBeenCalledTimes(1);
+    expect(Popup).toHaveBeenCalledTimes(1);
     expect(mockPopupInstance.addTo).toHaveBeenCalledWith(mockMap);
     expect(mockPopupInstance.setHTML).toHaveBeenCalledWith('<div id="test-1-popup-container"/>');
 

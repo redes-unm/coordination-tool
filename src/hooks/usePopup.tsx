@@ -1,9 +1,9 @@
-import EditableItemDisplay from '@/components/EditableItemDisplay';
-import AnnotationDisplay from '@/components/map/AnnotationDisplay';
-import AnnotationEditFormContents from '@/components/map/AnnotationEditFormContents';
-import CommunityContext from '@/contexts/CommunityContext';
-import { throwErr, toLngLat } from '@/lib/util';
-import { Annotation } from '@/types';
+import EditableItemDisplay from '../components/EditableItemDisplay';
+import AnnotationDisplay from '../components/map/AnnotationDisplay';
+import AnnotationEditFormContents from '../components/map/AnnotationEditFormContents';
+import CommunityContext from '../contexts/CommunityContext';
+import { throwErr, toLngLat } from '../lib/util';
+import { Annotation } from '../types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
