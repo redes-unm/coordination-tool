@@ -24,6 +24,7 @@ export default function useControl<P extends {}>(
       },
 
       onRemove() {
+        root.current?.unmount();
         root.current = null;
         this.container?.parentNode?.removeChild(this.container);
         setContainer(undefined);

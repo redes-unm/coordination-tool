@@ -11,6 +11,7 @@ jest.mock('react-dom/client', () => ({
 describe('useControl', () => {
   let mockMap: any;
   let mockRender: jest.Mock;
+  let mockUnmount: jest.Mock;
   const MockComponent = ({ text }: { text: string }) => <div>{text}</div>;
 
   beforeEach(() => {
@@ -20,7 +21,8 @@ describe('useControl', () => {
       removeControl: jest.fn(),
     };
     mockRender = jest.fn();
-    (createRoot as jest.Mock).mockReturnValue({ render: mockRender });
+    mockUnmount = jest.fn();
+    (createRoot as jest.Mock).mockReturnValue({ render: mockRender, unmount: mockUnmount });
   });
 
   it('should initialize and add map control without rendering initially', () => {
@@ -123,6 +125,7 @@ describe('useControl', () => {
     });
 
     // It should strip the element from the DOM
+    expect(mockUnmount).toHaveBeenCalledTimes(1);
     expect(container!.parentNode).toBeNull();
   });
 });
