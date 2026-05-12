@@ -42,6 +42,14 @@ export default function useSearch<T extends object>(
 
   useEffect(() => search(searchText), [search, searchText]);
 
+  // Cleanup pending debounced calls on unmount or dependency changes
+  useEffect(() => {
+    return () => {
+      trackSearch.clear();
+      search.clear();
+    };
+  }, [trackSearch, search]);
+
   return {
     searched,
     searchText,
