@@ -153,7 +153,9 @@ describe('useFilter', () => {
   });
 
   it('EDGE CASE: should evaluate safely and cleanly when things and filter config are completely empty', () => {
-    const { result } = renderHook(() => useFilter([], {}));
+    const emptyThings: any[] = [];
+    const emptyFilter = {};
+    const { result } = renderHook(() => useFilter(emptyThings, emptyFilter));
 
     expect(result.current.filtered).toEqual([]);
     expect(result.current.filterEnabled).toEqual({});

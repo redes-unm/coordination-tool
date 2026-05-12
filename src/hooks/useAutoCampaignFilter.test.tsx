@@ -11,11 +11,12 @@ jest.mock('next/navigation', () => ({
 describe('useAutoCampaignFilter', () => {
   const mockSetFilterEnabled = jest.fn();
   const mockCampaignFilter = {
+    name: 'Campaign',
     items: {
-      'camp-1': { name: 'Campaign One' },
-      'camp-2': { name: 'Campaign Two' },
+      'camp-1': { name: 'Campaign One', field: 'campaign', value: '1' },
+      'camp-2': { name: 'Campaign Two', field: 'campaign', value: '2' },
     },
-  };
+  } as any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -27,7 +28,7 @@ describe('useAutoCampaignFilter', () => {
     });
 
     const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter as any)
+      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
     );
 
     expect(result.current.message).toBe('');
@@ -40,7 +41,7 @@ describe('useAutoCampaignFilter', () => {
     });
 
     const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter as any)
+      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
     );
 
     expect(result.current.message).toBe('Filtered to campaign Campaign One.');
@@ -49,12 +50,13 @@ describe('useAutoCampaignFilter', () => {
     // Extract the state updater function passed to setFilterEnabled
     const updaterFunction = mockSetFilterEnabled.mock.calls[0][0];
     
-    // Test the state updater function behavior
-    const oldState: FilterEnabled = { campaign: { 'camp-1': false, 'camp-2': true } };
+    // Test the state updater function behavior to ensure it isolates the 'campaign' group
+    const oldState: FilterEnabled = { otherGroup: { 'a': true } };
     const newState = updaterFunction(oldState);
 
     expect(newState).toEqual({
-      campaign: {
+      otherGroup: { 'a': true }, // preserves old state
+      campaign: {                // correctly applies the boolean mask
         'camp-1': true,
         'camp-2': false,
       },
@@ -67,11 +69,11 @@ describe('useAutoCampaignFilter', () => {
     });
 
     const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter as any)
+      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
     );
 
     act(() => {
-      result.current.handleFilterEnabled({ campaign: { 'camp-2': true } } as any);
+      result.current.handleFilterEnabled({ campaign: { 'camp-2': true } });
     });
 
     expect(result.current.message).toBe('');
@@ -84,7 +86,7 @@ describe('useAutoCampaignFilter', () => {
     });
 
     const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter as any)
+      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
     );
 
     expect(result.current.message).toBe('');
@@ -98,7 +100,7 @@ describe('useAutoCampaignFilter', () => {
     }));
 
     const { result, rerender } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter as any)
+      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
     );
 
     expect(result.current.message).toBe('Filtered to campaign Campaign One.');

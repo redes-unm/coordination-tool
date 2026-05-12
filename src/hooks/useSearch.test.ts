@@ -18,14 +18,16 @@ describe('useSearch', () => {
   });
 
   it('should initialize with all items and an empty search text', () => {
-    const { result } = renderHook(() => useSearch(mockThings, ['name', 'category']));
+    const fields = ['name', 'category'] as any;
+    const { result } = renderHook(() => useSearch(mockThings, fields));
 
     expect(result.current.searchText).toBe('');
     expect(result.current.searched).toEqual(mockThings);
   });
 
   it('should update searchText immediately but delay the search filtering via debounce', () => {
-    const { result } = renderHook(() => useSearch(mockThings, ['name']));
+    const fields = ['name'] as any;
+    const { result } = renderHook(() => useSearch(mockThings, fields));
 
     act(() => {
       result.current.setSearchText('app');
@@ -49,7 +51,8 @@ describe('useSearch', () => {
   });
 
   it('should perform case-insensitive searches across multiple fields', () => {
-    const { result } = renderHook(() => useSearch(mockThings, ['name', 'category']));
+    const fields = ['name', 'category'] as any;
+    const { result } = renderHook(() => useSearch(mockThings, fields));
 
     act(() => {
       // Mixed case testing
@@ -70,7 +73,8 @@ describe('useSearch', () => {
   it('should trigger the onSearch callback after the debounce period if provided', () => {
     const mockOnSearch = jest.fn();
     // Testing with a custom debounce timing of 500ms
-    const { result } = renderHook(() => useSearch(mockThings, ['name'], mockOnSearch, 500));
+    const fields = ['name'] as any;
+    const { result } = renderHook(() => useSearch(mockThings, fields, mockOnSearch, 500));
 
     act(() => {
       result.current.setSearchText('banana');
@@ -88,7 +92,8 @@ describe('useSearch', () => {
 
   it('EDGE CASE: should safely ignore empty string searches for the onSearch tracking callback', () => {
     const mockOnSearch = jest.fn();
-    const { result } = renderHook(() => useSearch(mockThings, ['name'], mockOnSearch));
+    const fields = ['name'] as any;
+    const { result } = renderHook(() => useSearch(mockThings, fields, mockOnSearch));
 
     act(() => result.current.setSearchText(''));
     act(() => { jest.advanceTimersByTime(300); });
@@ -99,7 +104,8 @@ describe('useSearch', () => {
 
   it('EDGE CASE: should cleanup and cancel debounced calls on unmount to prevent memory leaks', () => {
     const mockOnSearch = jest.fn();
-    const { result, unmount } = renderHook(() => useSearch(mockThings, ['name'], mockOnSearch));
+    const fields = ['name'] as any;
+    const { result, unmount } = renderHook(() => useSearch(mockThings, fields, mockOnSearch));
 
     act(() => result.current.setSearchText('car'));
 

@@ -1,12 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import usePopup from './usePopup';
-import { createRoot } from 'react-dom/client';
 import mapboxgl from 'mapbox-gl';
+import EditableItemDisplay from '@/components/EditableItemDisplay';
 
 // Mock dependencies
-jest.mock('react-dom/client', () => ({
-  createRoot: jest.fn(),
-}));
+jest.mock('@/components/EditableItemDisplay', () => jest.fn(() => null));
 
 jest.mock('@turf/center', () => jest.fn((feature) => ({ geometry: { coordinates: [10, 20] } })));
 
@@ -20,8 +18,6 @@ describe('usePopup', () => {
   let mockAnnotation: any;
   let mockHandlers: any;
   let mockPopupInstance: any;
-  let mockRender: jest.Mock;
-  let mockUnmount: jest.Mock;
   let resizeCallback: ResizeObserverCallback;
   let mockObserve: jest.Mock;
   let mockDisconnect: jest.Mock;
@@ -60,10 +56,6 @@ describe('usePopup', () => {
 
     jest.spyOn(mapboxgl, 'Popup').mockImplementation(() => mockPopupInstance);
 
-    mockRender = jest.fn();
-    mockUnmount = jest.fn();
-    (createRoot as jest.Mock).mockReturnValue({ render: mockRender, unmount: mockUnmount });
-
     // Mock global ResizeObserver
     mockObserve = jest.fn();
     mockDisconnect = jest.fn();
@@ -95,15 +87,12 @@ describe('usePopup', () => {
     expect(mapboxgl.Popup).toHaveBeenCalledTimes(1);
     expect(mockPopupInstance.addTo).toHaveBeenCalledWith(mockMap);
     expect(mockPopupInstance.setHTML).toHaveBeenCalledWith('<div id="test-1-popup-container"/>');
-    expect(createRoot).toHaveBeenCalledTimes(1);
 
-    // Extract the element that was rendered into the root
-    expect(mockRender).toHaveBeenCalledTimes(1);
-    const renderedTree = mockRender.mock.calls[0][0];
-    const editableDisplayElement = renderedTree.props.children;
+    expect(EditableItemDisplay).toHaveBeenCalledTimes(1);
+    const props = (EditableItemDisplay as jest.Mock).mock.calls[0][0];
 
-    expect(editableDisplayElement.props.item).toEqual(mockAnnotation);
-    expect(editableDisplayElement.props.editing).toBe(true);
+    expect(props.item).toEqual(mockAnnotation);
+    expect(props.editing).toBe(true);
   });
 
   it('should register Mapbox close event and trigger close handler', () => {
@@ -119,17 +108,15 @@ describe('usePopup', () => {
     });
 
     expect(mockHandlers.close).toHaveBeenCalledTimes(1);
-    expect(mockUnmount).toHaveBeenCalledTimes(1);
   });
 
   it('should properly proxy handleDelete and trigger close', async () => {
     renderHook(() => usePopup(mockMap, mockAnnotation, mockHandlers));
 
-    const renderedTree = mockRender.mock.calls[0][0];
-    const editableDisplayProps = renderedTree.props.children.props;
+    const props = (EditableItemDisplay as jest.Mock).mock.calls[0][0];
 
     await act(async () => {
-      await editableDisplayProps.onDelete();
+      await props.onDelete();
     });
 
     expect(mockHandlers.delete).toHaveBeenCalledWith('test-1');
@@ -140,29 +127,28 @@ describe('usePopup', () => {
     // Mount with editing = true
     renderHook(() => usePopup(mockMap, mockAnnotation, mockHandlers, true));
 
-    let renderedTree = mockRender.mock.calls[mockRender.mock.calls.length - 1][0];
-    let editableDisplayProps = renderedTree.props.children.props;
+    const mockCalls = (EditableItemDisplay as jest.Mock).mock.calls;
+    let props = mockCalls[mockCalls.length - 1][0];
 
     // Simulate cancel while closeOnCancel is true
     act(() => {
-      editableDisplayProps.onCancel();
+      props.onCancel();
     });
     expect(mockHandlers.close).toHaveBeenCalledWith(true);
 
     // Simulate save, which sets closeOnCancel = false
     await act(async () => {
-      await editableDisplayProps.onSave(mockAnnotation);
+      await props.onSave(mockAnnotation);
     });
     expect(mockHandlers.save).toHaveBeenCalledWith(mockAnnotation);
 
     mockHandlers.close.mockClear();
 
     // Fetch latest render props after the state update
-    renderedTree = mockRender.mock.calls[mockRender.mock.calls.length - 1][0];
-    editableDisplayProps = renderedTree.props.children.props;
+    props = mockCalls[mockCalls.length - 1][0];
 
     act(() => {
-      editableDisplayProps.onCancel();
+      props.onCancel();
     });
     // Because we just saved, closeOnCancel is false, so it shouldn't trigger closeHandler
     expect(mockHandlers.close).not.toHaveBeenCalled();
@@ -187,7 +173,6 @@ describe('usePopup', () => {
     unmount();
 
     expect(mockPopupInstance.remove).toHaveBeenCalledTimes(1);
-    expect(mockUnmount).toHaveBeenCalledTimes(1);
     expect(mockDisconnect).toHaveBeenCalledTimes(1);
   });
 });
