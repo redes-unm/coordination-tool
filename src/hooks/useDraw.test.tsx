@@ -1,16 +1,14 @@
 import { renderHook, act } from '@testing-library/react';
-import useDraw from './useDraw';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import useDraw from './useDraw';
 
 // Mock the MapboxDraw dependency
-jest.mock('@mapbox/mapbox-gl-draw', () => {
-  return jest.fn().mockImplementation(() => ({
-    add: jest.fn(),
-    delete: jest.fn(),
-    getAll: jest.fn().mockReturnValue({ features: [] }),
-    changeMode: jest.fn(),
-  }));
-});
+jest.mock('@mapbox/mapbox-gl-draw', () => jest.fn().mockImplementation(() => ({
+  add: jest.fn(),
+  delete: jest.fn(),
+  getAll: jest.fn().mockReturnValue({ features: [] }),
+  changeMode: jest.fn(),
+})));
 
 // Mock internal utilities and constants used by the hook
 jest.mock('../lib/drawStyles', () => ([]));
@@ -43,13 +41,13 @@ describe('useDraw', () => {
 
   it('should initialize MapboxDraw and add to map', () => {
     const { result } = renderHook(() => useDraw(mockMap, [], mockOnSelect, mockOnCreate));
-    
+
     expect(MapboxDraw).toHaveBeenCalledTimes(1);
     expect(mockMap.addControl).toHaveBeenCalledTimes(1);
-    
-    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0].value;
+
+    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0]!.value;
     expect(mockMap.addControl).toHaveBeenCalledWith(drawInstance);
-    
+
     expect(result.current[0]).toBe('simple_select');
   });
 
@@ -66,10 +64,10 @@ describe('useDraw', () => {
 
     // Extract the mock handler bound to map events and simulate the selection change
     const selectionChangeHandler = mockMap.on.mock.calls.find((call: any[]) => call[0] === 'draw.selectionchange')[1];
-    
+
     const mockFeature = { id: 'test-id' };
     selectionChangeHandler({ features: [mockFeature] });
-    
+
     expect(mockOnSelect).toHaveBeenCalledWith(mockFeature);
   });
 
@@ -78,17 +76,17 @@ describe('useDraw', () => {
 
     // Extract the mock handler bound to map events and simulate the create event
     const createHandler = mockMap.on.mock.calls.find((call: any[]) => call[0] === 'draw.create')[1];
-    
+
     const mockFeature = { id: 'test-id' };
     createHandler({ features: [mockFeature] });
-    
+
     expect(mockOnCreate).toHaveBeenCalledWith(mockFeature);
   });
 
   it('should allow mode changes via returned setter', () => {
     const { result } = renderHook(() => useDraw(mockMap, [], mockOnSelect, mockOnCreate));
-    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0].value;
-    
+    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0]!.value;
+
     act(() => {
       result.current[1]('draw_polygon' as any);
     });
@@ -100,30 +98,30 @@ describe('useDraw', () => {
   it('should sync features with MapboxDraw instance and remove deleted ones', () => {
     const initialFeatures = [{ id: '1', type: 'Feature' }, { id: '2', type: 'Feature' }];
     const nextFeatures = [{ id: '1', type: 'Feature' }];
-    
+
     const { rerender } = renderHook(
       ({ features }) => useDraw(mockMap, features as any, mockOnSelect, mockOnCreate),
-      { initialProps: { features: initialFeatures } }
+      { initialProps: { features: initialFeatures } },
     );
-    
-    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0].value;
-    
+
+    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0]!.value;
+
     // Simulate that the MapboxDraw instance currently has both features before the render
     drawInstance.getAll.mockReturnValue({ features: initialFeatures });
-    
+
     // Rerender the hook with one feature removed
     rerender({ features: nextFeatures });
-    
+
     expect(drawInstance.add).toHaveBeenCalledWith({ type: 'FeatureCollection', features: nextFeatures });
     expect(drawInstance.delete).toHaveBeenCalledWith(['2']);
   });
 
   it('should clean up map controls and events on unmount', () => {
     const { unmount } = renderHook(() => useDraw(mockMap, [], mockOnSelect, mockOnCreate));
-    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0].value;
+    const drawInstance = (MapboxDraw as unknown as jest.Mock).mock.results[0]!.value;
 
     unmount();
-    
+
     expect(mockMap.removeControl).toHaveBeenCalledWith(drawInstance);
     expect(mockMap.off).toHaveBeenCalledWith('draw.modechange', expect.any(Function));
     expect(mockMap.off).toHaveBeenCalledWith('draw.selectionchange', expect.any(Function));
@@ -133,7 +131,7 @@ describe('useDraw', () => {
   it('should delay initialization until the map is provided', () => {
     const { rerender } = renderHook(
       ({ mapObj }) => useDraw(mapObj, [], mockOnSelect, mockOnCreate),
-      { initialProps: { mapObj: null as any } }
+      { initialProps: { mapObj: null as any } },
     );
 
     // MapboxDraw shouldn't initialize while the map is null

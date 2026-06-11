@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
-import useControl from './useMapControl';
 import React from 'react';
+import useControl from './useMapControl';
 
 describe('useControl', () => {
   let mockMap: any;
@@ -23,7 +23,7 @@ describe('useControl', () => {
 
   it('should set container, initialize root, and render when onAdd is called by mapbox', () => {
     renderHook(() => useControl(mockMap, 'top-right', MockComponent, { text: 'hello' }));
-    
+
     const control = mockMap.addControl.mock.calls[0][0];
     let container: HTMLDivElement;
 
@@ -38,14 +38,14 @@ describe('useControl', () => {
   });
 
   it('should reuse root and trigger a re-render when props change', () => {
-    let currentProps = { text: 'initial' };
+    const currentProps = { text: 'initial' };
     const { rerender } = renderHook(
       ({ props }) => useControl(mockMap, 'bottom-left', MockComponent, props),
-      { initialProps: { props: currentProps } }
+      { initialProps: { props: currentProps } },
     );
 
     const control = mockMap.addControl.mock.calls[0][0];
-    
+
     act(() => {
       control.onAdd();
     });
@@ -54,7 +54,7 @@ describe('useControl', () => {
 
     // Update props and rerender the hook
     rerender({ props: { text: 'updated' } });
-    
+
     expect(MockComponent).toHaveBeenCalledTimes(2);
     expect(MockComponent).toHaveBeenLastCalledWith(expect.objectContaining({ text: 'updated' }), expect.any(Object));
   });
@@ -62,7 +62,7 @@ describe('useControl', () => {
   it('should gracefully skip initialization if the map is null or undefined', () => {
     const { rerender } = renderHook(
       ({ mapObj }) => useControl(mapObj, 'bottom-right', MockComponent, { text: 'test' }),
-      { initialProps: { mapObj: null as any } }
+      { initialProps: { mapObj: null as any } },
     );
 
     expect(mockMap.addControl).not.toHaveBeenCalled();
@@ -87,9 +87,9 @@ describe('useControl', () => {
 
   it('EDGE CASE: should clear the DOM container and nullify root on onRemove', () => {
     renderHook(() => useControl(mockMap, 'top-left', MockComponent, { text: 'test' }));
-    
+
     const control = mockMap.addControl.mock.calls[0][0];
-    
+
     let container: HTMLDivElement;
     act(() => {
       container = control.onAdd();

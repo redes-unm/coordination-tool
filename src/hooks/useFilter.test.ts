@@ -33,12 +33,12 @@ describe('useFilter', () => {
     const { result } = renderHook(() => useFilter(mockThings, mockFilter));
 
     expect(result.current.filtered).toEqual(mockThings);
-    
+
     expect(result.current.filterEnabled).toEqual({
       categoryFilter: { catA: true, catB: true },
       valueFilter: { high: true, low: true },
     });
-    
+
     expect(result.current.filterNames).toEqual({
       categoryFilter: {
         name: 'Category',
@@ -59,9 +59,9 @@ describe('useFilter', () => {
       result.current.setFilterEnabled(newState);
     });
 
-    expect(result.current.filterEnabled.categoryFilter.catA).toBe(false);
-    expect(result.current.filterEnabled.categoryFilter.catB).toBe(true);
-    
+    expect(result.current.filterEnabled['categoryFilter']!['catA']!).toBe(false);
+    expect(result.current.filterEnabled['categoryFilter']!['catB']!).toBe(true);
+
     // With Cat A disabled, only Cat B items should remain
     expect(result.current.filtered).toEqual([{ id: '2', category: 'B', value: 20 }]);
   });
@@ -78,7 +78,7 @@ describe('useFilter', () => {
       categoryFilter: { catA: false, catB: false },
       valueFilter: { high: false, low: false },
     });
-    
+
     // Since all are disabled, no items can match
     expect(result.current.filtered).toEqual([]);
 
@@ -101,15 +101,15 @@ describe('useFilter', () => {
       result.current.setFilterEnabled(newState);
     });
 
-    expect(result.current.filterEnabled.categoryFilter.catA).toBe(false);
+    expect(result.current.filterEnabled['categoryFilter']!['catA']!).toBe(false);
 
     // Update the external filter dependency by simulating a new category item being fetched/added
     currentFilter = {
       ...mockFilter,
       categoryFilter: {
-        ...mockFilter.categoryFilter,
+        ...mockFilter['categoryFilter']!,
         items: {
-          ...mockFilter.categoryFilter.items,
+          ...mockFilter['categoryFilter']!.items,
           catC: { name: 'Cat C', field: 'category', value: 'C' },
         },
       },
@@ -118,7 +118,7 @@ describe('useFilter', () => {
     rerender();
 
     // The hook should keep 'catA' disabled but intelligently default 'catC' to true
-    expect(result.current.filterEnabled.categoryFilter).toEqual({
+    expect(result.current.filterEnabled['categoryFilter']).toEqual({
       catA: false,
       catB: true,
       catC: true,
@@ -168,7 +168,7 @@ describe('useFilter', () => {
 
     // Completely remove the `categoryFilter` object
     currentFilter = {
-      valueFilter: mockFilter.valueFilter,
+      valueFilter: mockFilter['valueFilter']!,
     };
 
     rerender();
@@ -186,6 +186,6 @@ describe('useFilter', () => {
       result.current.setFilterEnabled((old) => toggleSingleEnabled(old, 'categoryFilter', 'catB', false));
     });
 
-    expect(result.current.filterEnabled.categoryFilter.catB).toBe(false);
+    expect(result.current.filterEnabled['categoryFilter']!['catB']!).toBe(false);
   });
 });

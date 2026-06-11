@@ -27,8 +27,8 @@ describe('useAutoCampaignFilter', () => {
       get: () => null,
     });
 
-    const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
+    const { result } = renderHook(
+      () => useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter),
     );
 
     expect(result.current.message).toBe('');
@@ -40,8 +40,8 @@ describe('useAutoCampaignFilter', () => {
       get: (param: string) => (param === 'campaignFilter' ? 'camp-1' : null),
     });
 
-    const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
+    const { result } = renderHook(
+      () => useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter),
     );
 
     expect(result.current.message).toBe('Filtered to campaign Campaign One.');
@@ -49,14 +49,14 @@ describe('useAutoCampaignFilter', () => {
 
     // Extract the state updater function passed to setFilterEnabled
     const updaterFunction = mockSetFilterEnabled.mock.calls[0][0];
-    
+
     // Test the state updater function behavior to ensure it isolates the 'campaign' group
-    const oldState: FilterEnabled = { otherGroup: { 'a': true } };
+    const oldState: FilterEnabled = { otherGroup: { a: true } };
     const newState = updaterFunction(oldState);
 
     expect(newState).toEqual({
-      otherGroup: { 'a': true }, // preserves old state
-      campaign: {                // correctly applies the boolean mask
+      otherGroup: { a: true }, // preserves old state
+      campaign: { // correctly applies the boolean mask
         'camp-1': true,
         'camp-2': false,
       },
@@ -68,8 +68,8 @@ describe('useAutoCampaignFilter', () => {
       get: () => null,
     });
 
-    const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
+    const { result } = renderHook(
+      () => useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter),
     );
 
     act(() => {
@@ -85,8 +85,8 @@ describe('useAutoCampaignFilter', () => {
       get: (param: string) => (param === 'campaignFilter' ? 'invalid-camp' : null),
     });
 
-    const { result } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
+    const { result } = renderHook(
+      () => useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter),
     );
 
     expect(result.current.message).toBe('');
@@ -99,12 +99,12 @@ describe('useAutoCampaignFilter', () => {
       get: (param: string) => (param === 'campaignFilter' ? currentParam : null),
     }));
 
-    const { result, rerender } = renderHook(() =>
-      useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter)
+    const { result, rerender } = renderHook(
+      () => useAutoCampaignFilter(mockSetFilterEnabled, mockCampaignFilter),
     );
 
     expect(result.current.message).toBe('Filtered to campaign Campaign One.');
-    
+
     // Simulate URL parameter removal and re-render
     currentParam = null;
     rerender();

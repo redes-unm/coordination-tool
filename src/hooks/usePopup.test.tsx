@@ -1,7 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
-import usePopup from './usePopup';
 import { Popup } from 'mapbox-gl';
 import EditableItemDisplay from '../components/EditableItemDisplay';
+import usePopup from './usePopup';
 
 // Mock dependencies
 jest.mock('mapbox-gl', () => {
@@ -15,7 +15,7 @@ jest.mock('mapbox-gl', () => {
 
 jest.mock('../components/EditableItemDisplay', () => jest.fn(() => null));
 
-jest.mock('@turf/center', () => jest.fn((feature) => ({ geometry: { coordinates: [10, 20] } })));
+jest.mock('@turf/center', () => jest.fn(() => ({ geometry: { coordinates: [10, 20] } })));
 
 jest.mock('../lib/util', () => ({
   toLngLat: jest.fn((coords) => coords),
@@ -50,7 +50,8 @@ describe('usePopup', () => {
       close: jest.fn(),
     };
 
-    // Mock Mapbox Popup behavior, including simulating the injection of the HTML container into the document
+    // Mock Mapbox Popup behavior, including simulating the injection of the HTML
+    // container into the document
     mockPopupInstance = {
       addTo: jest.fn().mockReturnThis(),
       remove: jest.fn(),
@@ -72,8 +73,11 @@ describe('usePopup', () => {
       constructor(cb: ResizeObserverCallback) {
         resizeCallback = cb;
       }
+
       observe = mockObserve;
+
       unobserve = jest.fn();
+
       disconnect = mockDisconnect;
     } as any;
   });
@@ -81,7 +85,7 @@ describe('usePopup', () => {
   it('should not initialize the popup if map or annotation.id is missing', () => {
     const { rerender } = renderHook(
       ({ mapObj, ann }) => usePopup(mapObj, ann, mockHandlers),
-      { initialProps: { mapObj: null, ann: mockAnnotation } }
+      { initialProps: { mapObj: null, ann: mockAnnotation } },
     );
 
     expect(Popup).not.toHaveBeenCalled();
@@ -111,7 +115,7 @@ describe('usePopup', () => {
 
     // Extract and trigger the bound close event
     const closeHandler = mockPopupInstance.on.mock.calls.find((call: any[]) => call[0] === 'close')[1];
-    
+
     act(() => {
       closeHandler();
     });
@@ -154,7 +158,7 @@ describe('usePopup', () => {
     mockHandlers.close.mockClear();
 
     // Fetch latest render props after the state update
-    props = mockCalls[mockCalls.length - 1][0];
+    [props] = mockCalls[mockCalls.length - 1];
 
     act(() => {
       props.onCancel();

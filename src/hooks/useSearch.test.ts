@@ -35,7 +35,7 @@ describe('useSearch', () => {
 
     // 1. Text should update instantly for a responsive UI
     expect(result.current.searchText).toBe('app');
-    
+
     // 2. The filter should NOT have fired yet
     expect(result.current.searched).toEqual(mockThings);
 

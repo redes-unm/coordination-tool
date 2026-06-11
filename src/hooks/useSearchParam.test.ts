@@ -20,7 +20,7 @@ describe('useSearchParam', () => {
   it('should return the current value of the search parameter if it exists', () => {
     // Simulate a URL like `?myParam=hello`
     (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams('?myParam=hello'));
-    
+
     const { result } = renderHook(() => useSearchParam('myParam'));
 
     expect(result.current[0]).toBe('hello');
@@ -29,7 +29,7 @@ describe('useSearchParam', () => {
   it('should return null if the search parameter does not exist', () => {
     // Simulate a URL missing the requested param
     (useSearchParams as jest.Mock).mockReturnValue(new URLSearchParams('?otherParam=123'));
-    
+
     const { result } = renderHook(() => useSearchParam('myParam'));
 
     expect(result.current[0]).toBeNull();
@@ -75,7 +75,7 @@ describe('useSearchParam', () => {
     act(() => {
       result.current[1](null);
     });
-    
+
     // Deleting the only parameter leaves an empty string, which the hook formats safely as `?`
     expect(mockPush).toHaveBeenCalledWith('?');
   });

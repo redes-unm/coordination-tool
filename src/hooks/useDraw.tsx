@@ -1,12 +1,12 @@
-import drawStyles from '../lib/drawStyles';
-import modes, { Mode, assertMode } from '../lib/mapboxDrawModes';
-import { throwErr } from '../lib/util';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { Feature } from 'geojson';
 import mapboxgl from 'mapbox-gl';
 import {
   useCallback, useEffect, useRef, useState,
 } from 'react';
+import drawStyles from '../lib/drawStyles';
+import modes, { Mode, assertMode } from '../lib/mapboxDrawModes';
+import { throwErr } from '../lib/util';
 
 export default function useDraw(
   map: mapboxgl.Map | null | undefined,
