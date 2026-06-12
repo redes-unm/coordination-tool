@@ -24,7 +24,6 @@ export default function useControl<P extends {}>(
       },
 
       onRemove() {
-        root.current?.unmount();
         root.current = null;
         this.container?.parentNode?.removeChild(this.container);
         setContainer(undefined);
@@ -32,13 +31,7 @@ export default function useControl<P extends {}>(
     };
 
     map?.addControl(control, position);
-    return () => {
-      try {
-        map?.removeControl(control);
-      } catch (e) {
-        // Map may have already been removed
-      }
-    };
+    return () => { map?.removeControl(control); };
   }, [map, position]);
 
   useEffect(() => {

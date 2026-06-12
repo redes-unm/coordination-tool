@@ -1,7 +1,6 @@
 import {
   Annotation, Campaign, Collaborator, Community, CommunityData, Profile, Task, TrackStoreData,
 } from '@/types';
-import { DEFAULT_ANNOTATION_COLOR } from '@/lib/drawStyles';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Geometry } from 'geojson';
 import { validate } from 'uuid';
@@ -88,7 +87,6 @@ export default class Db {
         id: a.id,
         name: a.name,
         description: a.description ?? '',
-        color: a.color ?? DEFAULT_ANNOTATION_COLOR,
         type: a.type,
         geometry: a.geo as Geometry,
         campaignIds: a.campaignannotations.map((ca) => ca.campaignid),
@@ -283,7 +281,6 @@ export default class Db {
         id: a.id,
         name: a.name,
         description: a.description,
-        color: a.color,
         geo: a.geometry,
         type: a.type,
         communityid: communityId,
@@ -307,7 +304,6 @@ export default class Db {
         id: a.id,
         name: a.name,
         description: a.description,
-        color: a.color,
         geo: a.geometry,
         type: a.type,
         communityid: communityId,

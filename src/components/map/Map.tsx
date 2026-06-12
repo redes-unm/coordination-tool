@@ -10,7 +10,6 @@ import { throwErr } from '@/lib/util';
 import usePopup from '@/hooks/usePopup';
 import useDraw from '@/hooks/useDraw';
 import { Annotation } from '@/types';
-import { DEFAULT_ANNOTATION_COLOR } from '@/lib/drawStyles';
 import strftime from 'strftime';
 import useMapControl from '@/hooks/useMapControl';
 import saveAs from 'file-saver';
@@ -37,7 +36,6 @@ function annotationToFeature(a: Annotation): AnnotationFeature {
       description: a.description,
       type: a.type,
       campaignIds: a.campaignIds,
-      color: a.color,
     },
   };
 }
@@ -151,7 +149,6 @@ export default function Map({
         type: 'infra',
         geometry: f.geometry,
         campaignIds: [],
-        color: DEFAULT_ANNOTATION_COLOR,
       };
 
       setNewAnnotation(annotation);
