@@ -4,9 +4,10 @@
 // Original code copyright (c) Mapbox
 // ISC License
 
-const magenta = '#fc07cf';
-const blue = '#3bb2d0';
+export const DEFAULT_ANNOTATION_COLOR = '#FFA500';
 const white = '#fff';
+
+const annotationColor = ['coalesce', ['get', 'user_color'], DEFAULT_ANNOTATION_COLOR]; // Look for 'user_color' property
 
 const styles = [
   // Polygons
@@ -20,11 +21,7 @@ const styles = [
       ['==', '$type', 'Polygon'],
     ],
     paint: {
-      'fill-color': [
-        'case',
-        ['==', ['get', 'active'], 'true'], blue,
-        magenta,
-      ],
+      'fill-color': annotationColor,
       'fill-opacity': 0.1,
     },
   },
@@ -45,11 +42,7 @@ const styles = [
       'line-join': 'round',
     },
     paint: {
-      'line-color': [
-        'case',
-        ['==', ['get', 'active'], 'true'], blue,
-        magenta,
-      ],
+      'line-color': annotationColor,
       'line-dasharray': [
         'case',
         ['==', ['get', 'active'], 'true'], [0.2, 2],
@@ -92,11 +85,7 @@ const styles = [
         ['==', ['get', 'active'], 'true'], 7,
         5,
       ],
-      'circle-color': [
-        'case',
-        ['==', ['get', 'active'], 'true'], blue,
-        magenta,
-      ],
+      'circle-color': annotationColor,
     },
   },
   // Vertex
@@ -136,7 +125,7 @@ const styles = [
         ['==', ['get', 'active'], 'true'], 5,
         3,
       ],
-      'circle-color': blue,
+      'circle-color': annotationColor,
     },
   },
   // Midpoint
@@ -151,7 +140,7 @@ const styles = [
     ],
     paint: {
       'circle-radius': 3,
-      'circle-color': blue,
+      'circle-color': annotationColor,
     },
   },
 ];

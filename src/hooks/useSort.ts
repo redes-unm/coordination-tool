@@ -1,25 +1,35 @@
 import { throwErr } from '@/lib/util';
 import { useMemo, useState } from 'react';
 
-export type SortCriteria<T> = { [id: string]: SortCriterion<T> };
+export type SortCriteria<T> = {
+  [id: string]: SortCriterion<T>;
+};
 
 export type SortCriterion<T> = FunctionSortCriterion<T>
 | (T extends object ? CompareSortCriterion<T> : never)
 | (T extends object ? EnumSortCriterion<T> : never);
 
-type FunctionSortCriterion<T> = BaseSortCriterion<T> & { sort: (a: T, b: T) => number };
+type FunctionSortCriterion<T> = BaseSortCriterion<T> & {
+  sort: (a: T, b: T) => number;
+};
 
 type CompareSortCriterion<T extends object> = {
-  [K in keyof T]: BaseSortCriterion<T> & { field: K }
+  [K in keyof T]: BaseSortCriterion<T> & { field: K };
 }[keyof T];
 
 type EnumSortCriterion<T extends object> = {
-  [K in keyof T]: BaseSortCriterion<T> & { field: K, order: T[K][] }
+  [K in keyof T]: BaseSortCriterion<T> & {
+    field: K;
+    order: T[K][];
+  };
 }[keyof T];
 
-type BaseSortCriterion<T> = { name: string, categories?: SortCategory<T>[] };
+type BaseSortCriterion<T> = {
+  name: string;
+  categories?: SortCategory<T>[];
+};
 
-function criterionSort<T>(criterion: SortCriterion<T>, a: T, b: T): number {
+export function criterionSort<T>(criterion: SortCriterion<T>, a: T, b: T): number {
   if ('sort' in criterion) {
     return criterion.sort(a, b);
   }
@@ -42,19 +52,26 @@ function criterionSort<T>(criterion: SortCriterion<T>, a: T, b: T): number {
 type SortCategory<T> = FunctionSortCategory<T>
 | (T extends object ? ValueSortCategory<T> : never);
 
-type FunctionSortCategory<T> = { name: string, match: (t: T) => boolean };
+type FunctionSortCategory<T> = {
+  name: string;
+  match: (t: T) => boolean;
+};
 type ValueSortCategory<T extends object> = {
-  [K in keyof T]: { name: string, field: K, value: T[K] }
+  [K in keyof T]: {
+    name: string;
+    field: K;
+    value: T[K];
+  };
 }[keyof T];
 
-function categoryMatch<T>(cat: SortCategory<T>, t: T): boolean {
+export function categoryMatch<T>(cat: SortCategory<T>, t: T): boolean {
   return 'match' in cat ? cat.match(t) : t[cat.field] === cat.value;
 }
 
 export type SortCriteriaOrder = string[];
 export type SortDirection = 'ascending' | 'descending';
 
-function sortItems<T>(
+export function sortItems<T>(
   items: T[],
   orderedCriteria: SortCriterion<T>[],
   direction: SortDirection,
@@ -81,9 +98,12 @@ function sortItems<T>(
   });
 }
 
-type Categorized<T> = { name: string, items: T[] }[];
+type Categorized<T> = {
+  name: string;
+  items: T[];
+}[];
 
-function categorizeItems<T>(
+export function categorizeItems<T>(
   items: T[],
   categories: SortCategory<T>[],
   direction: SortDirection,
@@ -99,9 +119,11 @@ function categorizeItems<T>(
   return direction === 'ascending' ? categorized : categorized.reverse();
 }
 
-export type SortNames = { [id: string]: string };
+export type SortNames = {
+  [id: string]: string;
+};
 
-function extractNames<T>(criteria: SortCriteria<T>): SortNames {
+export function extractNames<T>(criteria: SortCriteria<T>): SortNames {
   return Object.entries(criteria).reduce((names, [id, criterion]) => ({
     ...names,
     [id]: criterion.name,
@@ -113,12 +135,12 @@ export default function useSort<T>(
   criteria: SortCriteria<T>,
   fallbackCriterion?: SortCriterion<T>,
 ): {
-    sorted: Categorized<T>
-    sortNames: SortNames
-    sortCriteriaOrder: SortCriteriaOrder
-    setSortCriteriaOrder: (o: SortCriteriaOrder) => void
-    sortDirection: SortDirection
-    setSortDirection: (o: SortDirection) => void
+    sorted: Categorized<T>;
+    sortNames: SortNames;
+    sortCriteriaOrder: SortCriteriaOrder;
+    setSortCriteriaOrder: (o: SortCriteriaOrder) => void;
+    sortDirection: SortDirection;
+    setSortDirection: (o: SortDirection) => void;
   } {
   const [
     criteriaOrder,
@@ -132,7 +154,9 @@ export default function useSort<T>(
       const orderedCriteria = criteriaOrder
         .map((id) => criteria[id] ?? throwErr('invalid sort criteria order'));
 
-      if (fallbackCriterion) orderedCriteria.push(fallbackCriterion);
+      if (fallbackCriterion) {
+        orderedCriteria.push(fallbackCriterion);
+      }
 
       return categorizeItems(
         sortItems(items, orderedCriteria, direction),

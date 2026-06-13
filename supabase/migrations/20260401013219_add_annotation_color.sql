@@ -1,0 +1,1 @@
+alter table annotations add column color text;

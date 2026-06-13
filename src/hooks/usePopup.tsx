@@ -1,15 +1,15 @@
-import EditableItemDisplay from '@/components/EditableItemDisplay';
-import AnnotationDisplay from '@/components/map/AnnotationDisplay';
-import AnnotationEditFormContents from '@/components/map/AnnotationEditFormContents';
-import CommunityContext from '@/contexts/CommunityContext';
-import { throwErr, toLngLat } from '@/lib/util';
-import { Annotation } from '@/types';
 import center from '@turf/center';
 import mapboxgl, { Popup, PopupOptions } from 'mapbox-gl';
 import {
   useCallback, useContext, useEffect, useRef, useState,
 } from 'react';
 import { Root, createRoot } from 'react-dom/client';
+import EditableItemDisplay from '../components/EditableItemDisplay';
+import AnnotationDisplay from '../components/map/AnnotationDisplay';
+import AnnotationEditFormContents from '../components/map/AnnotationEditFormContents';
+import CommunityContext from '../contexts/CommunityContext';
+import { throwErr, toLngLat } from '../lib/util';
+import { Annotation } from '../types';
 
 type EventHandlers = {
   save: ((a: Annotation) => Promise<void>),
@@ -26,6 +26,7 @@ export default function usePopup(
 ) {
   const root = useRef<Root | null>(null);
   const popup = useRef<Popup | null>(null);
+  const observer = useRef<ResizeObserver | null>(null);
   const [closeOnCancel, setCloseOnCancel] = useState(editing);
 
   useEffect(() => setCloseOnCancel(editing), [editing]);
@@ -42,7 +43,10 @@ export default function usePopup(
     return () => {
       p.remove();
       popup.current = null;
+      root.current?.unmount();
       root.current = null;
+      observer.current?.disconnect();
+      observer.current = null;
     };
   }, [annotation?.id, map, options]);
 
@@ -60,7 +64,10 @@ export default function usePopup(
     function handleClose() {
       closeHandler?.();
       popup.current = null;
+      root.current?.unmount();
       root.current = null;
+      observer.current?.disconnect();
+      observer.current = null;
     }
 
     const p = popup.current;
@@ -105,13 +112,13 @@ export default function usePopup(
       // but no longer works when it's being edited because it's gotten bigger.
       // Trigger the repositioning whenever the popup's size changes with a
       // little hack: pan the map by 0.
-      const observer = new ResizeObserver((entries) => {
+      observer.current = new ResizeObserver((entries) => {
         if (entries.find((e) => e.target.id === id)) {
           map?.panBy([0, 0]);
         }
       });
 
-      observer.observe(rootEl);
+      observer.current.observe(rootEl);
     }
 
     root.current.render(

@@ -8,7 +8,9 @@
     "start": "echo starting \"$(cat public/version.txt)\" && next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "gen-db-types": "supabase migration up && (echo '// DO NOT MODIFY. Types generated with `npm run gen-db-types`.' && supabase gen types typescript --local) >src/db/types.generated.ts"
+    "gen-db-types": "supabase migration up && (echo '// DO NOT MODIFY. Types generated with `npm run gen-db-types`.' && supabase gen types typescript --local) >src/db/types.generated.ts",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -41,8 +43,11 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/file-saver": "^2.0.7",
     "@types/geojson": "^7946.0.13",
+    "@types/jest": "^30.0.0",
     "@types/mapbox__mapbox-gl-draw": "^1.4.6",
     "@types/mapbox__mapbox-gl-geocoder": "^5.0.0",
     "@types/mapbox-gl": "^3.1.0",
@@ -55,7 +60,10 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^17.1.0",
     "eslint-config-next": "14.0.4",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
     "supabase": "^1.150.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
